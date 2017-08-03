@@ -1,0 +1,22 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>LARRY</groupId>
+  <artifactId>LARRY.vlc.tool</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  
+	<dependencies>
+		<dependency>
+			<groupId>uk.co.caprica</groupId>
+			<artifactId>VLCj</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.riccardove.easyjasub</groupId>
+			<artifactId>subtitleConvert</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		
+	</dependencies>
+	
+</project>
