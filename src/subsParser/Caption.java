@@ -63,9 +63,9 @@ public class Caption
                 + "E"
                 + episodeNum
                 + "    "
-                + start
+                + start.getTime(Const.TIME_FORMAT_SRT)//TODO use style format stuff
                 + "---"
-                + end
+                + end.getTime(Const.TIME_FORMAT_SRT)
                 + "      "
                 + content;
     }

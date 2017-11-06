@@ -40,12 +40,34 @@ public class DatabaseOperations
 
     public ResultSet executeQuery(String query) throws SQLException
     {
+        //TODO ESCAPE ALL QUERIES!!!!!!!!!!!!!!!
         return statement.executeQuery(query);
+    }
+
+    public ResultSet executeQueryLimit(String query, int limit) throws SQLException
+    {
+        String limitStr;
+
+        if (limit <= 0)
+        {
+            limitStr = "";
+        }
+        else
+        {
+            limitStr = " LIMIT " + limit;
+        }
+
+        return statement.executeQuery(query + limitStr);
+    }
+
+    public static String escapeSingleQuotes(String string)
+    {
+        //replaces ' with ''
+        return string.replace("'", "''");
     }
 
     public void createDatabaseAndLogin(String databaseName, String username, String password) throws SQLException
     {
         this.login(databaseName, false, username, password);
     }
-
 }

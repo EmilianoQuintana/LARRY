@@ -29,19 +29,30 @@ public class FileOperations
         {
             amount++;
             if (amount > 6)
+            {
                 break;
+            }
             if (currFile.isFile())
             {
                 try
                 {
                     String name = currFile.getName();
-                    System.out.println(name);
+                    System.out.print(name + "\t\t");
                     if (!name.startsWith(filePrefix))
+                    {
+                        System.out.println("***** Doesn't start with Prefix " + filePrefix + " ***** ");
                         continue;
+                    }
                     if (subsCollection.hasFileInLibrary(name))
+                    {
+                        System.out.println("Already in library! ");
                         continue;
+                    }
                     else
+                    {
                         subsCollection.addFileNameToLibrary(name);
+                        System.out.println("Added!");
+                    }
 
                     TimedTextFileFormat timedTextFileFormat = null;
                     String extension = getFileExtension(name).toLowerCase();
@@ -66,26 +77,30 @@ public class FileOperations
                             break; //will simply ignore the file
                     }
                     if (timedTextFileFormat == null)
+                    {
                         continue;
+                    }
 
                     int[] seasonAndEpisode = FileOperations.parseSeasonEpisodeFromFileName(name);
+                    int seasonNum = -1;
+                    int episodeNum = -1;
                     if (seasonAndEpisode != null)
                     {
-                        int seasonNum = seasonAndEpisode[0];
-                        int episodeNum = seasonAndEpisode[1];
-                        InputStream fileInputStream = new FileInputStream(currFile);
-
-                        TimedTextObject tto = timedTextFileFormat.parseFile(currFile.getName(), fileInputStream, seasonNum, episodeNum);
-
-                        for (Caption c : tto.captions.values())
-                            subsCollection.addCaption(c);
-
-                    } else //File's name did not contain SxxExx
-                    {
-                        System.out.println("This file's name does not have season and episode numbers and will be ignored:    " + currFile.getName());
+                        seasonNum = seasonAndEpisode[0];
+                        episodeNum = seasonAndEpisode[1];
                     }
-                }
-                catch (Exception ex)
+
+                    InputStream fileInputStream = new FileInputStream(currFile);
+
+                    TimedTextObject tto = timedTextFileFormat.parseFile(currFile.getName(), fileInputStream, seasonNum, episodeNum);
+
+                    for (Caption c : tto.captions.values())
+                    {
+                        subsCollection.addCaption(c);
+                    }
+
+
+                } catch (Exception ex)
                 {
                     ex.printStackTrace();
                 }
@@ -101,8 +116,7 @@ public class FileOperations
         try
         {
             return fileName.substring(fileName.lastIndexOf(".") + 1);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return "";
         }
@@ -118,8 +132,11 @@ public class FileOperations
             String result = matcher.group();
             seasonNum = Integer.parseInt(result.substring(1, 3));
             episodeNum = Integer.parseInt(result.substring(4, 6));
-        } else
+        }
+        else
+        {
             return null;
+        }
 
         return new int[]{seasonNum, episodeNum};
     }

@@ -6,7 +6,7 @@ public class Main
     // Temporary for TESTING
     public static void main(String[] args) throws Exception
     {
-        LarryDB LDB = new LarryDB();
+        DBLarry LDB = new DBLarry();
         LDB.temp();
 
 

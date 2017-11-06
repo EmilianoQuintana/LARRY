@@ -233,7 +233,7 @@ public class Time
     @Override
     public String toString()
     {
-        throw new RuntimeException("don't call Time.toString()!");
+        throw new RuntimeException("don't call Time.toString()! use GetTime(format)");
     }
 
     /**
