@@ -1,6 +1,6 @@
 package subsParser;
 
-import LARRY.DatabaseOperations;
+import General.DatabaseOperations;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

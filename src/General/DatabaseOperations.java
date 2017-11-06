@@ -1,4 +1,4 @@
-package LARRY;
+package General;
 
 import org.h2.jdbcx.JdbcDataSource;
 
@@ -11,19 +11,15 @@ public class DatabaseOperations
 {
     private Statement statement;
 
-    final private static String defaultUsername = "LARRY";
-    final private static String defaultPassword = "DigLazarus2008";
-
-    public void login(String databaseName) throws SQLException
+    public void login(String databaseName, String username, String password) throws SQLException
     {
-        this.login(databaseName, true);
+        this.login(databaseName, true, username, password);
     }
 
-    public void login(String databaseName, boolean createIfNotExists) throws SQLException
+    public void login(String databaseName, boolean createIfNotExists, String username, String password) throws SQLException
     {
         this.loginDetails("jdbc:h2:file:" + "./databases/" + databaseName + ";IFEXISTS=" + String.valueOf(createIfNotExists).toUpperCase(),
-                DatabaseOperations.defaultUsername,
-                DatabaseOperations.defaultPassword);
+                username, password);
     }
 
     public void loginDetails(String url, String username, String password) throws SQLException
@@ -47,9 +43,9 @@ public class DatabaseOperations
         return statement.executeQuery(query);
     }
 
-    public void createDatabaseAndLogin(String databaseName) throws SQLException
+    public void createDatabaseAndLogin(String databaseName, String username, String password) throws SQLException
     {
-        this.login(databaseName, false);
+        this.login(databaseName, false, username, password);
     }
 
 }
