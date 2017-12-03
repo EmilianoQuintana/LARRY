@@ -46,6 +46,39 @@ public class SubsCollection
 
     public void addCaption(Caption caption) throws SQLException
     {
+        /*
+        int processedCaptionsCounter = 0;
+
+        StringBuilder captionsValuesBuilder = new StringBuilder();
+
+        String SEPARATOR = ",";
+        for (Caption caption : captions)
+        {
+            processedCaptionsCounter++;
+            captionsValuesBuilder.append("(" + caption.seasonNum + ", "
+                    + caption.episodeNum + ", '"
+                    + caption.start.toSQLTime3() + "', '"
+                    + caption.end.toSQLTime3() + "', '"
+                    + DatabaseOperations.escapeSingleQuotes(caption.content) + "')" + SEPARATOR);
+
+            if (processedCaptionsCounter >= SubsCollection.MAX_CAPTIONS_INSERT_AMOUNT)
+            {
+                //Delete trailing separator
+                captionsValuesBuilder
+                        .delete(captionsValuesBuilder.length() - SEPARATOR.length(), captionsValuesBuilder.length());
+
+                String captionPropsSQLValues = captionsValuesBuilder.toString();
+                databaseOperations.executeUpdate(
+                        "INSERT INTO t_captions (season_num, episode_num, start, end, content) VALUES "
+                                + captionPropsSQLValues
+                                + ";");
+            }
+
+        }
+         */
+
+
+
         // No such caption is yet in the collection?
         databaseOperations.executeUpdate("INSERT INTO t_captions (season_num, episode_num, start, end, content) VALUES ("
                 + caption.seasonNum + ", " + caption.episodeNum + ", '" + caption.start.toSQLTime3() + "', '" + caption.end.toSQLTime3() + "', '" + DatabaseOperations.escapeSingleQuotes(caption.content) + "')");

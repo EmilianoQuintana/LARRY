@@ -3,6 +3,8 @@ package subsParser;
 public class Caption
 {
 
+    public static final int NO_SEASON = -1;
+    public static final int NO_EPISODE = -1;
     public Style style;
     public Region region;
 
@@ -50,7 +52,9 @@ public class Caption
         }
         StringBuilder sb = new StringBuilder();
         for (String line : lines)
+        {
             sb.append(line + " ");
+        }
         sb.deleteCharAt(sb.length() - 1);
         this.content = sb.toString();
     }
@@ -58,10 +62,16 @@ public class Caption
     @Override
     public String toString()
     {
-        return "S"
-                + seasonNum
-                + "E"
-                + episodeNum
+        String printString = "";
+        if (seasonNum != NO_SEASON)
+        {
+            printString += "S" + String.format("%02d", seasonNum);
+        }
+        if (episodeNum != NO_EPISODE)
+        {
+            printString += "E" + String.format("%02d", seasonNum);
+        }
+        return printString
                 + "    "
                 + start.getTime(Const.TIME_FORMAT_SRT)//TODO use style format stuff
                 + "---"
@@ -69,4 +79,6 @@ public class Caption
                 + "      "
                 + content;
     }
+
+
 }

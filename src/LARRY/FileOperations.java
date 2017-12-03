@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 public class FileOperations
 {
+    private static final int MAX_FILES_TO_ADD = 999;
     private static String regex_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
     public static void updateSubsCollectionFromFolder(SubsCollection subsCollection, String filePrefix, String folderPath)
@@ -28,8 +29,9 @@ public class FileOperations
         for (File currFile : filesInFolder)
         {
             amount++;
-            if (amount > 6)
+            if (amount > MAX_FILES_TO_ADD)
             {
+                System.out.println("Maximum amount of files added! Returning to calling function.");
                 break;
             }
             if (currFile.isFile())
@@ -82,8 +84,8 @@ public class FileOperations
                     }
 
                     int[] seasonAndEpisode = FileOperations.parseSeasonEpisodeFromFileName(name);
-                    int seasonNum = -1;
-                    int episodeNum = -1;
+                    int seasonNum = Caption.NO_SEASON;
+                    int episodeNum = Caption.NO_EPISODE;
                     if (seasonAndEpisode != null)
                     {
                         seasonNum = seasonAndEpisode[0];

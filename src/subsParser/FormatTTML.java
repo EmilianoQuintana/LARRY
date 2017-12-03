@@ -384,7 +384,7 @@ public class FormatTTML implements TimedTextFileFormat
 			else {
 				//unrecognized format
 				value = "ffffffff";
-				tto.warnings += "Unrecoginzed format: "+color+"\n\n";
+				tto.warnings += "Unrecognized format: " + color + "\n\n";
 			}
 			
 		} else if (color.startsWith("rgb")){

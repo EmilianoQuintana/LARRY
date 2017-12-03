@@ -1,14 +1,55 @@
 package LARRY;
 
+import subsParser.Caption;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+
+import javax.swing.*;
+import java.sql.SQLException;
+import java.util.List;
+
 public class Main
 {
+    public static void testWithGUI(GUI gui, DBLarry DB)
+    {
+
+        List<Caption> results = null;
+        try
+        {
+            results = DB.getAllCaptionsFor("love", 60);
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        for (Caption cap : results)
+        {
+            System.out.println(cap.toString());
+        }
+
+        String testFolderPath = "O:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm - Seasons 1-6 + Extras" +
+                "\\Curb Your Enthusiasm - Season 3";
+        Caption caption = results.get(0);
+        String resultFileAddress = DB.getAbsoluteFilePathForCaption(caption, "Curb Your Enthusiasm - ", testFolderPath);
+        System.out.println("Chosen caption:");
+        System.out.println(caption.toString());
+        System.out.println("Absolute address:");
+        System.out.println(resultFileAddress);
+
+        gui.PlayMedia(resultFileAddress, caption.start.getMseconds());
+    }
 
     // Temporary for TESTING
     public static void main(String[] args) throws Exception
     {
-        DBLarry LDB = new DBLarry();
-        LDB.temp();
+        DBLarry DB = new DBLarry();
+        DB.tempTests();
 
+        new NativeDiscovery().discover();
+
+        SwingUtilities.invokeLater(() -> {
+            GUI gui = new GUI();
+            testWithGUI(gui, DB);
+        });
 
 
         /*
