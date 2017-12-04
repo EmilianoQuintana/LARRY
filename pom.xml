@@ -3,9 +3,21 @@
   <groupId>LARRY</groupId>
   <artifactId>LARRY.vlc.tool</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  
-  
-	<dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
 		<dependency>
 			<groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>

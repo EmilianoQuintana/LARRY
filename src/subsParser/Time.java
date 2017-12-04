@@ -12,7 +12,7 @@ public class Time
      * @param format supported formats: "hh:mm:ss,ms", "h:mm:ss.cs" and "h:m:s:f/fps"
      * @param value  string in the correct format
      */
-    protected Time(String format, String value)
+    public Time(String format, String value)
     {
         if (format.equalsIgnoreCase(Const.TIME_FORMAT_SRT))
         {

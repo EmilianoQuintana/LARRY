@@ -562,7 +562,7 @@ to move our cargo?
 
 133
 00:12:02,960 --> 00:12:07,317
-I thought General Solohob
+I thought Database Solohob
 is in charge of the export business.
 
 134
@@ -2354,7 +2354,7 @@ Location?
 
 553
 00:35:40,000 --> 00:35:42,912
-Stuttgart, Germany. 28 Königstrasse.
+Stuttgart, Germany. 28 Kï¿½nigstrasse.
 
 554
 00:35:43,120 --> 00:35:44,314
@@ -3859,7 +3859,7 @@ we moved Jane Foster.
 903
 00:59:03,720 --> 00:59:05,995
 They've got an excellent
-observatory in Tromsø.
+observatory in Tromsï¿½.
 
 904
 00:59:06,120 --> 00:59:09,510
@@ -4161,7 +4161,7 @@ Dreykov's daughter,
 
 973
 01:02:54,800 --> 01:02:56,552
-São Paulo,
+Sï¿½o Paulo,
 
 974
 01:02:57,560 --> 01:02:59,949
@@ -4550,7 +4550,7 @@ with such mistrust.
 
 1062
 01:06:21,080 --> 01:06:22,479
-Are you boys really that naïve?
+Are you boys really that naï¿½ve?
 
 1063
 01:06:22,600 --> 01:06:24,397

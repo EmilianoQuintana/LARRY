@@ -1,4 +1,4 @@
-package General;
+package Database;
 
 import org.h2.jdbcx.JdbcDataSource;
 
@@ -16,13 +16,13 @@ public class DatabaseOperations
         this.login(databaseName, true, username, password);
     }
 
-    public void login(String databaseName, boolean createIfNotExists, String username, String password) throws SQLException
+    private void login(String databaseName, boolean createIfNotExists, String username, String password) throws SQLException
     {
         this.loginDetails("jdbc:h2:file:" + "./databases/" + databaseName + ";IFEXISTS=" + String.valueOf(createIfNotExists).toUpperCase(),
                 username, password);
     }
 
-    public void loginDetails(String url, String username, String password) throws SQLException
+    private void loginDetails(String url, String username, String password) throws SQLException
     {
         JdbcDataSource dataSource = new JdbcDataSource();
         dataSource.setURL(url);
