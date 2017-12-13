@@ -71,7 +71,8 @@ public class DBLarry
                 "end VARCHAR(255) NOT NULL, " +
                 "content VARCHAR(255) NOT NULL ); " +
                 // Words to Captions
-                "CREATE TABLE IF NOT EXISTS t_words_to_captions (word_id INT NOT NULL PRIMARY KEY, caption_id INT NOT NULL); " +
+                "CREATE TABLE IF NOT EXISTS t_words_to_captions (word_id INT NOT NULL, caption_id INT NOT NULL, " +
+                "PRIMARY KEY (word_id, caption_id)); " +
                 // Files seen
                 "CREATE TABLE IF NOT EXISTS t_files_seen (file_name varchar(255) NOT NULL PRIMARY KEY, file_id INT AUTO_INCREMENT); ";
         databaseOperator.executeUpdate(dbCreateTablesUpd);

@@ -122,6 +122,8 @@ public class SubsCollection
                     if (!ValidWordsDictionary.instance().contains(subWord))
                         continue;
                     
+                    
+                    
                     insertCaptionWord(subWord, caption_id);
                 }
         }
