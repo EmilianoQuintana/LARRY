@@ -10,10 +10,11 @@ public class DBLarry
 {
     private SubsCollection collection;
 
-    private final static String LARRY_DB_NAME = "DBLarry";
-    private final static String defaultUsername = "LARRY";
-    private final static String defaultPassword = "DigLazarus2008";
-    
+    private static final String LARRY_DB_NAME = "DBLarry",
+                                defaultUsername = "LARRY",
+                                defaultPassword = "DigLazarus2008";
+
+
     public DBLarry() throws SQLException
     {
         initializeDatabase();
@@ -62,19 +63,21 @@ public class DBLarry
     
         String dbCreateTablesUpd = "" +
                 // Words
-                "CREATE TABLE IF NOT EXISTS t_words (word VARCHAR(255) NOT NULL PRIMARY KEY, word_id INT NOT NULL AUTO_INCREMENT); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_words (word VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", word_id INT " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + "); " +
                 // Captions
-                "CREATE TABLE IF NOT EXISTS t_captions (caption_id INT NOT NULL AUTO_INCREMENT, " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_captions (caption_id INT NOT NULL AUTO_INCREMENT, " +
                 "season_num INT NOT NULL, " +
                 "episode_num INT NOT NULL, " +
                 "start VARCHAR(255) NOT NULL, " +
                 "end VARCHAR(255) NOT NULL, " +
                 "content VARCHAR(255) NOT NULL ); " +
                 // Words to Captions
-                "CREATE TABLE IF NOT EXISTS t_words_to_captions (word_id INT NOT NULL, caption_id INT NOT NULL, " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_words_to_captions (word_id INT NOT NULL, caption_id INT NOT NULL, " +
                 "PRIMARY KEY (word_id, caption_id)); " +
                 // Files seen
-                "CREATE TABLE IF NOT EXISTS t_files_seen (file_name varchar(255) NOT NULL PRIMARY KEY, file_id INT AUTO_INCREMENT); ";
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_files_seen (file_name varchar(255) NOT NULL PRIMARY KEY, file_id INT AUTO_INCREMENT); " +
+                // Names of series/movie
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_media_names (media_id INT NOT NULL ";
         databaseOperator.executeUpdate(dbCreateTablesUpd);
 
 
