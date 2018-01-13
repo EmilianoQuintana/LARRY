@@ -15,10 +15,10 @@ public class Const
 	public static final String DLM_SRT_ARROW   = " --> ";
 	
 	// Error messages
-	public static final String MSG_SAME_START_TIME       = "caption with same start time found...\n\n";
-	public static final String MSG_INCORRECT_TIME_FORMAT = "incorrect time format at line ";
-	public static final String MSG_EXPECTED_AT           = " expected at line ";
-	public static final String MSG_SKIPPING_TO_NEXT_LINE = "\n skipping to next line\n\n";
-	public static final String MSG_UNEXP_END_OF_FILE     = "unexpected end of file, maybe last caption is not complete.\n\n";
+	public static final String MSG_SAME_START_TIME       = "caption with same start time found...\n\n",
+							   MSG_INCORRECT_TIME_FORMAT = "incorrect time format at line ",
+							   MSG_EXPECTED_AT           = " expected at line ",
+							   MSG_SKIPPING_TO_NEXT_LINE = "\n skipping to next line\n\n",
+							   MSG_UNEXP_END_OF_FILE     = "unexpected end of file, maybe last caption is not complete.\n\n";
 
 }

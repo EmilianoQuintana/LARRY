@@ -63,21 +63,35 @@ public class DBLarry
     
         String dbCreateTablesUpd = "" +
                 // Words
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_words (word VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", word_id INT " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + "); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_WORDS + " " +
+                "(word VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
+                "word_id INT " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + "); " +
+
                 // Captions
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_captions (caption_id INT NOT NULL AUTO_INCREMENT, " +
-                "season_num INT NOT NULL, " +
-                "episode_num INT NOT NULL, " +
-                "start VARCHAR(255) NOT NULL, " +
-                "end VARCHAR(255) NOT NULL, " +
-                "content VARCHAR(255) NOT NULL ); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_CAPTIONS + " " +
+                "(caption_id INT + " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + ", " +
+                "season_num INT " + SQL.NOT_NULL + ", " +
+                "episode_num INT " + SQL.NOT_NULL + ", " +
+                "start VARCHAR(255) " + SQL.NOT_NULL + ", " +
+                "end VARCHAR(255) " + SQL.NOT_NULL + ", " +
+                "content VARCHAR(255) " + SQL.NOT_NULL + " ); " +
+
                 // Words to Captions
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_words_to_captions (word_id INT NOT NULL, caption_id INT NOT NULL, " +
-                "PRIMARY KEY (word_id, caption_id)); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_WORDS_TO_CAPTIONS + " " +
+                "(word_id INT " + SQL.NOT_NULL + ", " +
+                "caption_id INT " + SQL.NOT_NULL + ", " +
+                SQL.PRIMARY_KEY + " (word_id, caption_id)); " +
+
                 // Files seen
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_files_seen (file_name varchar(255) NOT NULL PRIMARY KEY, file_id INT AUTO_INCREMENT); " +
-                // Names of series/movie
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " t_media_names (media_id INT NOT NULL ";
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_FILES_SEEN + " " +
+                "(file_name VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
+                "file_id INT " + SQL.AUTO_INCREMENT + "); " +
+
+                // Names of series/movies
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_MEDIA_NAMES + " " +
+                "(media_name VARCHAR(255) " + SQL.NOT_NULL + ", " +
+                "media_id INT " + SQL.NOT_NULL + ")";
+
         databaseOperator.executeUpdate(dbCreateTablesUpd);
 
 
