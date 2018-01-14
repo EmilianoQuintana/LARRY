@@ -186,13 +186,13 @@ public class SubsCollection
 */
         
         ResultSet resultSet = databaseOperations.executeQueryLimit(
-                "SELECT " + SQL.TBL_CAPTIONS + ".* " +
-                        "FROM " + SQL.TBL_CAPTIONS + " " +
-                        "INNER JOIN " + SQL.TBL_WORDS_TO_CAPTIONS + " " +
-                        "ON " + SQL.TBL_WORDS_TO_CAPTIONS + ".word_id = " + SQL.TBL_WORDS + ".word_id " +
-                        "INNER JOIN " + SQL.TBL_WORDS + " " +
-                        "ON " + SQL.TBL_WORDS + ".word = " + "'" + sanitize(lowercaseWord) + "'" +
-                        "WHERE " + SQL.TBL_CAPTIONS + ".caption_id = " + SQL.TBL_WORDS_TO_CAPTIONS + ".caption_id ", captionCountLimit);
+                "SELECT " + SQL.TBL_CAPTIONS + ".*" +
+                        " FROM " + SQL.TBL_CAPTIONS +
+                        " INNER JOIN " + SQL.TBL_WORDS_TO_CAPTIONS +
+                        " ON " + SQL.TBL_WORDS_TO_CAPTIONS + ".word_id = " + SQL.TBL_WORDS + ".word_id" +
+                        " INNER JOIN " + SQL.TBL_WORDS +
+                        " ON " + SQL.TBL_WORDS + ".word = " + "'" + sanitize(lowercaseWord) +
+                        " WHERE " + SQL.TBL_CAPTIONS + ".caption_id = " + SQL.TBL_WORDS_TO_CAPTIONS + ".caption_id", captionCountLimit);
 
         List<Caption> result = new LinkedList<>();
 

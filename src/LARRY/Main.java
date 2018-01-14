@@ -2,7 +2,6 @@ package LARRY;
 
 import Database.DBLarry;
 import subsParser.Caption;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -38,15 +37,24 @@ public class Main
         System.out.println("Absolute address:");
         System.out.println(resultFileAddress);
         
-        gui.PlayMedia(resultFileAddress, caption.start.getMseconds());
+        gui.startPlayingMedia(resultFileAddress, caption.start.getMseconds());
     }
     
     private static void test2(GUI gui, DBLarry DB)
     {
+        final long subtitlesDelay = -52000;
+        String wordToFind = "okay";
+        
+        
         List<Caption> results;
         try
         {
-            results = DB.getAllCaptionsFor("dirk", 60);
+            results = DB.getAllCaptionsFor(wordToFind, 60);
+            //remove captions with starting time after negative delay (fixes videos with extra subs at beginning)
+            if (subtitlesDelay < 0)
+            {
+                results.removeIf(caption -> caption.start.getMseconds() < -subtitlesDelay);
+            }
         }
         catch (SQLException e)
         {
@@ -54,26 +62,40 @@ public class Main
             return;
         }
         
+        /*
         for (Caption cap : results)
         {
             System.out.println(cap.toString());
         }
+        */
+        
+        gui.setMarkedCaptionMoments(results);
         
         String testFolderPath = "C:\\Itamar\\Workspace\\Larry\\LARRY\\resources\\temporary";
-        Caption caption = results.get(0);
-        String resultFileAddress = DBLarry.getAbsoluteFilePathForCaption(caption, "Dirk", testFolderPath);
-        System.out.println("Chosen caption:");
-        System.out.println(caption.toString());
+        Caption firstCaption = results.get(0);
+        String resultFileAddress = DBLarry.getAbsoluteFilePathForCaption(firstCaption, "Dirk", testFolderPath);
+        /*
+        System.out.println("First caption:");
+        System.out.println(firstCaption.toString());
         System.out.println("Absolute address:");
         System.out.println(resultFileAddress);
+        */
+        gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
+        gui.startPlayingMedia(resultFileAddress, 0);
         
-        gui.PlayMedia(resultFileAddress, caption.start.getMseconds());
+        gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
     }
     
     // Temporary for TESTING
     public static void main(String[] args) throws SQLException
     {
         DBLarry DB = new DBLarry();
+        
+        SwingUtilities.invokeLater(() -> {
+            GUI gui = new GUI();
+            test2(gui, DB);
+        });
+        
         /*
         long t1 = System.currentTimeMillis();
         
@@ -83,11 +105,6 @@ public class Main
     
         long t2 = System.currentTimeMillis();
         System.out.println("Total time:\t\t"+(t2-t1)+" ms");
-        /*
-        SwingUtilities.invokeLater(() -> {
-            GUI gui = new GUI();
-            test2(gui, DB);
-        });
 
         t1 = System.currentTimeMillis();
         List<Caption> results = DB.getAllCaptionsFor("you", 600);
@@ -102,7 +119,7 @@ public class Main
         System.out.println("Total time:\t\t"+(t2-t1)+" ms");
         
         */
-
+        
     }
     
 }
