@@ -28,23 +28,23 @@ public class SubsCollection
     
     public void addFileNameToLibrary(String fileName) throws SQLException
     {
-        databaseOperations.executeUpdate("INSERT INTO t_files_seen (file_name) VALUES ('" + sanitize(fileName) + "')");
+        databaseOperations.executeUpdate("INSERT INTO " + SQL.TBL_FILES_SEEN + " (file_name) VALUES ('" + sanitize(fileName) + "')");
     }
     
     public void removeFileNameFromLibrary(String fileName) throws SQLException
     {
-        databaseOperations.executeUpdate("DELETE t_files_seen WHERE file_name = '" + sanitize(fileName) + "'");
+        databaseOperations.executeUpdate("DELETE " + SQL.TBL_FILES_SEEN + " WHERE file_name = '" + sanitize(fileName) + "'");
     }
     
     public boolean hasFileInLibrary(String fileName) throws SQLException
     {
-        ResultSet results = databaseOperations.executeQueryLimit("SELECT * FROM t_files_seen WHERE file_name = '" + sanitize(fileName) + "'", 1);
+        ResultSet results = databaseOperations.executeQueryLimit("SELECT * FROM " + SQL.TBL_FILES_SEEN + " WHERE file_name = '" + sanitize(fileName) + "'", 1);
         return results.next();
     }
     
     private int getWordID(String word) throws SQLException
     {
-        ResultSet results = databaseOperations.executeQueryLimit("SELECT word_id FROM t_words WHERE word = '" + sanitize(word) + "'", 1);
+        ResultSet results = databaseOperations.executeQueryLimit("SELECT word_id FROM " + SQL.TBL_WORDS + " WHERE word = '" + sanitize(word) + "'", 1);
         if (!results.next())
         {
             return NONEXISTENT_ID;
@@ -87,7 +87,7 @@ public class SubsCollection
         
         
         // No such caption is yet in the collection?
-        databaseOperations.executeUpdate("INSERT INTO t_captions (season_num, episode_num, start, end, content) VALUES ("
+        databaseOperations.executeUpdate("INSERT INTO " + SQL.TBL_CAPTIONS + " (season_num, episode_num, start, end, content) VALUES ("
                 + sanitize(caption.seasonNum) + ", " + sanitize(caption.episodeNum) + ", '" + sanitize(caption.start.toSQLTime3()) + "', '" + sanitize(caption.end.toSQLTime3()) + "', '" + sanitize(caption.content) + "')");
         ResultSet results = databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
         results.next();
@@ -122,6 +122,8 @@ public class SubsCollection
                     if (!ValidWordsDictionary.instance().contains(subWord))
                         continue;
                     
+                    
+                    
                     insertCaptionWord(subWord, caption_id);
                 }
         }
@@ -140,7 +142,7 @@ public class SubsCollection
         int word_id = getWordID(word);
         if (word_id == NONEXISTENT_ID)
         {
-            databaseOperations.executeUpdate("INSERT INTO t_words (word) VALUES ('" + sanitize(word) + "')");
+            databaseOperations.executeUpdate("INSERT INTO + " + SQL.TBL_WORDS + " (word) VALUES ('" + sanitize(word) + "')");
             ResultSet results = databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
             results.next();
             word_id = results.getInt(1); //TODO test
@@ -149,10 +151,10 @@ public class SubsCollection
         // Now the word is in the collection in any case
         
         //Now check if this word-caption combination is already in the words_to_captions table
-        ResultSet results = databaseOperations.executeQueryLimit("SELECT * FROM t_words_to_captions WHERE word_id = " + sanitize(word_id) + " AND caption_id = " + sanitize(caption_id), 1);
+        ResultSet results = databaseOperations.executeQueryLimit("SELECT * FROM + " + SQL.TBL_WORDS_TO_CAPTIONS + " WHERE word_id = " + sanitize(word_id) + " AND caption_id = " + sanitize(caption_id), 1);
         if (!results.next())
         {
-            databaseOperations.executeUpdate("INSERT INTO t_words_to_captions (word_id, caption_id) VALUES (" + sanitize(word_id) + ", " + sanitize(caption_id) + ")");
+            databaseOperations.executeUpdate("INSERT INTO " + SQL.TBL_WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" + sanitize(word_id) + ", " + sanitize(caption_id) + ")");
             return true;
         }
         //else the caption-word combination already exists
@@ -184,14 +186,16 @@ public class SubsCollection
 */
         
         ResultSet resultSet = databaseOperations.executeQueryLimit(
-                "SELECT t_captions.* " +
-                        "FROM t_captions " +
-                        "INNER JOIN t_words_to_captions ON t_words_to_captions.word_id = t_words.word_id " +
-                        "INNER JOIN t_words ON t_words.word = " + "'" + sanitize(lowercaseWord) + "'" +
-                        "WHERE t_captions.caption_id = t_words_to_captions.caption_id ", captionCountLimit);
-        
+                "SELECT " + SQL.TBL_CAPTIONS + ".*" +
+                        " FROM " + SQL.TBL_CAPTIONS +
+                        " INNER JOIN " + SQL.TBL_WORDS_TO_CAPTIONS +
+                        " ON " + SQL.TBL_WORDS_TO_CAPTIONS + ".word_id = " + SQL.TBL_WORDS + ".word_id" +
+                        " INNER JOIN " + SQL.TBL_WORDS +
+                        " ON " + SQL.TBL_WORDS + ".word = " + "'" + sanitize(lowercaseWord) +
+                        " WHERE " + SQL.TBL_CAPTIONS + ".caption_id = " + SQL.TBL_WORDS_TO_CAPTIONS + ".caption_id", captionCountLimit);
+
         List<Caption> result = new LinkedList<>();
-        
+
         while (resultSet.next())
         {
             Caption cap = new Caption();

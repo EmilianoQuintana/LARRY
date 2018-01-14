@@ -1,7 +1,5 @@
 package Database;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.*;
 import java.net.URL;
 import java.util.HashSet;
@@ -54,6 +52,8 @@ public class ValidWordsDictionary
         {
             e.printStackTrace();
         }
+        
+        //TODO possibly read all words from the database's WORDS table
         
         buffer = new LinkedList<>();
     }
