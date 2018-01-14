@@ -2,9 +2,7 @@ package LARRY;
 
 import Database.DBLarry;
 import subsParser.Caption;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
-import javax.swing.*;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -12,7 +10,6 @@ public class Main
 {
     private static void test1(GUI gui, DBLarry DB)
     {
-        
         List<Caption> results;
         try
         {
@@ -32,7 +29,8 @@ public class Main
         String testFolderPath = "O:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm - Seasons 1-6 + Extras" +
                 "\\Curb Your Enthusiasm - Season 3";
         Caption caption = results.get(0);
-        String resultFileAddress = DBLarry.getAbsoluteFilePathForCaption(caption, "Curb Your Enthusiasm - ", testFolderPath);
+        String resultFileAddress = DBLarry
+                .findAbsoluteFilePathForCaption(caption, testFolderPath, "Curb Your Enthusiasm - ");
         System.out.println("Chosen caption:");
         System.out.println(caption.toString());
         System.out.println("Absolute address:");
@@ -61,7 +59,7 @@ public class Main
         
         String testFolderPath = "C:\\Itamar\\Workspace\\Larry\\LARRY\\resources\\temporary";
         Caption caption = results.get(0);
-        String resultFileAddress = DBLarry.getAbsoluteFilePathForCaption(caption, "Dirk", testFolderPath);
+        String resultFileAddress = DBLarry.findAbsoluteFilePathForCaption(caption, testFolderPath, "Dirk");
         System.out.println("Chosen caption:");
         System.out.println(caption.toString());
         System.out.println("Absolute address:");

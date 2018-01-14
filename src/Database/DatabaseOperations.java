@@ -9,19 +9,65 @@ import java.sql.Statement;
 
 public class DatabaseOperations
 {
+    // SQL Statements Constants:
+    public static final String SELECT = " SELECT ";
+    public static final String LIMIT = " LIMIT ";
+    public static final String UPDATE = " UPDATE ";
+    public static final String CREATE_TABLE = " CREATE_TABLE ";
+    public static final String IF_NOT_EXISTS = " IF NOT EXISTS ";
+
     private Statement statement;
 
+    /***
+     *
+     * @param databaseName
+     * @param username
+     * @param password
+     * @throws SQLException
+     */
+    public void createDatabaseAndLogin(String databaseName, String username, String password) throws SQLException
+    {
+        this.login(databaseName, false, username, password);
+    }
+
+    /**
+     * Creates and starts the connection to the application's Database.
+     *
+     * @param databaseName Name of the desired Database
+     * @param username     Username to login with
+     * @param password     Password to login with
+     * @throws SQLException
+     */
     public void login(String databaseName, String username, String password) throws SQLException
     {
         this.login(databaseName, true, username, password);
     }
 
+    /**
+     * Creates and starts the connection to the application's Database, if it doesn't already exist.
+     * @param databaseName      Name of the desired Database
+     * @param createIfNotExists Should I create the DB if it doesn't exist?
+     * @param username          Username to login with
+     * @param password          Password to login with
+     * @throws SQLException
+     */
     private void login(String databaseName, boolean createIfNotExists, String username, String password) throws SQLException
     {
-        this.loginDetails("jdbc:h2:file:" + "./databases/" + databaseName + ";IFEXISTS=" + String.valueOf(createIfNotExists).toUpperCase(),
-                username, password);
+        this.loginDetails("jdbc:h2:file:./databases/"
+                        + databaseName
+                        + ";IFEXISTS="
+                        + String.valueOf(createIfNotExists).toUpperCase(),
+                username,
+                password);
     }
 
+    /***
+     * TODO - what does it do exactly????
+     * @param url
+     * @param username
+     * @param password
+     * @throws SQLException
+     */
     private void loginDetails(String url, String username, String password) throws SQLException
     {
         JdbcDataSource dataSource = new JdbcDataSource();
@@ -44,6 +90,13 @@ public class DatabaseOperations
         return statement.executeQuery(query);
     }
 
+    /**
+     * Executes a query while limiting the number of results/rows to be processed.
+     * @param query SQL query to execute.
+     * @param limit Number of lines to be processed.
+     * @return
+     * @throws SQLException
+     */
     public ResultSet executeQueryLimit(String query, int limit) throws SQLException
     {
         String limitStr;
@@ -54,7 +107,7 @@ public class DatabaseOperations
         }
         else
         {
-            limitStr = " LIMIT " + limit;
+            limitStr = DatabaseOperations.LIMIT + limit;
         }
 
         return statement.executeQuery(query + limitStr);
@@ -62,12 +115,8 @@ public class DatabaseOperations
 
     public static String escapeSingleQuotes(String string)
     {
-        //replaces ' with ''
+        // Replacing ' with '' :
         return string.replace("'", "''");
     }
 
-    public void createDatabaseAndLogin(String databaseName, String username, String password) throws SQLException
-    {
-        this.login(databaseName, false, username, password);
-    }
 }

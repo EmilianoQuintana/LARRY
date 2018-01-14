@@ -20,16 +20,20 @@ public class DBLarry
     }
     
     /**
-     * Tries to find and return a path for the file containing the caption. Will take a file if its
-     * name beings with the prefix format, including matching seasons/episode if necessary
-     *
-     * @return absolute path for file, or null if unable to find a file
+     * Tries to find a path for the file containing the given Caption.
+     * It will return a found file if its name beings with the prefix string, including matching seasons/episode if necessary.
+     * @param caption       Caption, according to which to search for a matching file.
+     * @param folderPath    Path to the folder, in which to search for the file.
+     * @param filePrefix    String prefix for the filename.
+     * @return Absolute path for file, or null if no matching file was found
      */
-    public static String getAbsoluteFilePathForCaption(Caption caption, String filePrefix, String folderPath)
+    public static String findAbsoluteFilePathForCaption(Caption caption, String folderPath, String filePrefix)
     {
         File folder = new File(folderPath);
         File[] listOfFiles = folder.listFiles();
         assert listOfFiles != null;
+
+        // Iterating over the files in the given folder
         for (File file : listOfFiles)
         {
             if (file.getName().startsWith(filePrefix))
