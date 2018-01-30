@@ -1,5 +1,6 @@
 package Database;
 
+import LARRY.Errors;
 import subsParser.Caption;
 
 import java.io.File;
@@ -11,13 +12,13 @@ public class DBLarry
     private SubsCollection collection;
 
     private static final String LARRY_DB_NAME = "DBLarry",
-                                defaultUsername = "LARRY",
-                                defaultPassword = "DigLazarus2008";
+            defaultUsername = "LARRY",
+            defaultPassword = "DigLazarus2008";
 
 
     public DBLarry() throws SQLException
     {
-        initializeDatabase();
+        this.initializeDatabase();
     }
     
     /**
@@ -29,11 +30,14 @@ public class DBLarry
      * @return Absolute path for file, or null if no matching file was found
      */
     public static String findAbsoluteFilePathForCaption(Caption caption, String folderPath, String filePrefix)
+            throws Errors.GhostFolderException
     {
         File folder = new File(folderPath);
         File[] listOfFiles = folder.listFiles();
-        assert listOfFiles != null;
-
+        if (listOfFiles == null)
+        {
+            throw new Errors.GhostFolderException(folderPath);
+        }
         // Iterating over the files in the given folder
         for (File file : listOfFiles)
         {
@@ -55,7 +59,7 @@ public class DBLarry
 
     private static String formatAsSxxExx(Caption caption)
     {
-        return "S" + String.format("%02d", caption.seasonNum) + "E" + String.format("%02d", caption.seasonNum);
+        return "S" + String.format("%02d", caption.seasonNum) + "E" + String.format("%02d", caption.episodeNum);
     }
 
     private void initializeDatabase() throws SQLException
@@ -67,57 +71,58 @@ public class DBLarry
     
         String dbCreateTablesUpd = "" +
                 // Words
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_WORDS + " " +
-                "(word VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
-                "word_id INT " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + "); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + SQL.TBL.WORDS +
+                "(" + SQL.COL.WORD + SQL.VARCHAR_255 + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
+                SQL.COL.WORD_ID + SQL.INT + SQL.NOT_NULL + SQL.AUTO_INCREMENT + "); " +
 
                 // Captions
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_CAPTIONS + " " +
-                "(caption_id INT + " + SQL.NOT_NULL + SQL.AUTO_INCREMENT + ", " +
-                "season_num INT " + SQL.NOT_NULL + ", " +
-                "episode_num INT " + SQL.NOT_NULL + ", " +
-                "start VARCHAR(255) " + SQL.NOT_NULL + ", " +
-                "end VARCHAR(255) " + SQL.NOT_NULL + ", " +
-                "content VARCHAR(255) " + SQL.NOT_NULL + " ); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + SQL.TBL.CAPTIONS +
+                "(" + SQL.COL.CAPTION_ID + SQL.INT + SQL.NOT_NULL + SQL.AUTO_INCREMENT + ", " +
+                SQL.COL.SEASON_NUM + SQL.INT + SQL.NOT_NULL + ", " +
+                SQL.COL.EPISODE_NUM + SQL.INT + SQL.NOT_NULL + ", " +
+                SQL.COL.START + SQL.VARCHAR_255 + SQL.NOT_NULL + ", " +
+                SQL.COL.END + SQL.VARCHAR_255 + SQL.NOT_NULL + ", " +
+                SQL.COL.CONTENT + SQL.VARCHAR_255 + SQL.NOT_NULL + " ); " +
 
                 // Words to Captions
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_WORDS_TO_CAPTIONS + " " +
-                "(word_id INT " + SQL.NOT_NULL + ", " +
-                "caption_id INT " + SQL.NOT_NULL + ", " +
-                SQL.PRIMARY_KEY + " (word_id, caption_id)); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + SQL.TBL.WORDS_TO_CAPTIONS +
+                "(" + SQL.COL.WORD_ID + SQL.INT + SQL.NOT_NULL + ", " +
+                SQL.COL.CAPTION_ID + SQL.INT + SQL.NOT_NULL + ", " +
+                SQL.PRIMARY_KEY + " (" + SQL.COL.WORD_ID + ", " + SQL.COL.CAPTION_ID + ")); " +
 
                 // Files seen
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_FILES_SEEN + " " +
-                "(file_name VARCHAR(255) " + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
-                "file_id INT " + SQL.AUTO_INCREMENT + "); " +
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + SQL.TBL.FILES_SEEN +
+                "(" + SQL.COL.FILE_NAME + SQL.VARCHAR_255 + SQL.NOT_NULL + SQL.PRIMARY_KEY + ", " +
+                SQL.COL.FILE_ID + SQL.INT + SQL.AUTO_INCREMENT + "); " +
 
                 // Names of series/movies
-                SQL.CREATE_TABLE_IF_NOT_EXISTS + " " + SQL.TBL_MEDIA_NAMES + " " +
-                "(media_name VARCHAR(255) " + SQL.NOT_NULL + ", " +
-                "media_id INT " + SQL.NOT_NULL + ")";
+                SQL.CREATE_TABLE_IF_NOT_EXISTS + SQL.TBL.MEDIA_NAMES +
+                "(" + SQL.COL.MEDIA_NAME + SQL.VARCHAR_255 + SQL.NOT_NULL + ", " +
+                SQL.COL.MEDIA_ID + SQL.INT + SQL.NOT_NULL + ")";
 
         databaseOperator.executeUpdate(dbCreateTablesUpd);
 
 
-        collection = new SubsCollection(databaseOperator);
+        this.collection = new SubsCollection(databaseOperator);
     }
 
-    public void tempTests() throws SQLException
+    public void tempTests()
     {
         String filePrefix = "Curb Your Enthusiasm";
         String folderPath = "O:\\GOOGLE DRIVE --- HERE\\PC BACKUP\\I - Personal\\Documents\\Programming" +
                 "\\InteliJ\\LARRY\\Subtitles\\Subtitles";
 
-        updateSubsCollectionFromFolder(filePrefix, folderPath);
+        this.updateSubsCollectionFromFolder(filePrefix, folderPath);
     }
     
     public void updateSubsCollectionFromFolder(String filePrefix, String folderPath)
     {
-        FileOperations.updateSubsCollectionFromFolder(collection, filePrefix, folderPath);
+        FileOperations.updateSubsCollectionFromFolder(this.collection, filePrefix, folderPath);
     }
 
-    public List<Caption> getAllCaptionsFor(String word, int captionCountLimit) throws SQLException
+    public List<Caption> getAllCaptionsFor(String word, int captionCountLimit, boolean sortByQuality)
+            throws SQLException
     {
-        return collection.getAllCaptionsFor(word, captionCountLimit);
+        return this.collection.getAllCaptionsFor(word, captionCountLimit, sortByQuality);
     }
 }

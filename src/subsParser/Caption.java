@@ -65,13 +65,13 @@ public class Caption
         for (int i = 0; i < lines.length; i++)
         {
             // Destroying all remaining XML tags:
-            lines[i] = lines[i].replaceAll("\\<.*?\\>", "");
+            lines[i] = lines[i].replaceAll("<.*?>", "");
         }
 
         // Appending spaces after each line:
         for (String line : lines)
         {
-            sb.append(line + " ");
+            sb.append(line).append(" ");
         }
 
         sb.deleteCharAt(sb.length() - 1);
@@ -87,23 +87,23 @@ public class Caption
     {
         String printString = "";
 
-        if (seasonNum != NO_SEASON)
+        if (this.seasonNum != NO_SEASON)
         {
-            printString += "S" + String.format("%02d", seasonNum);
+            printString += "S" + String.format("%02d", this.seasonNum);
         }
 
-        if (episodeNum != NO_EPISODE)
+        if (this.episodeNum != NO_EPISODE)
         {
-            printString += "E" + String.format("%02d", seasonNum);
+            printString += "E" + String.format("%02d", this.episodeNum);
         }
 
         return printString
                 + "\t"
-                + start.getTime(Const.TIME_FORMAT_SRT)//TODO use style format stuff
+                + this.start.getTime(Const.TIME_FORMAT_SRT)//TODO use style format stuff
                 + "---"
-                + end.getTime(Const.TIME_FORMAT_SRT)
+                + this.end.getTime(Const.TIME_FORMAT_SRT)
                 + "      "
-                + content;
+                + this.content;
     }
 
 

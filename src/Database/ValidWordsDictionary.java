@@ -29,10 +29,10 @@ public class ValidWordsDictionary
     
     private void initialize()
     {
-        valid_words = new HashSet<>();
+        this.valid_words = new HashSet<>();
         
         //Don't ask about this next line. Not my fault
-        try (BufferedReader buffer = new BufferedReader(new FileReader(getFile())))
+        try (BufferedReader buffer = new BufferedReader(new FileReader(this.getFile())))
         {
             
             String line = buffer.readLine();
@@ -40,7 +40,7 @@ public class ValidWordsDictionary
             while (line != null)
             
             {
-                valid_words.add(line.trim()); //Adds entire line, does not trim any inner spaces from multi-words!
+                this.valid_words.add(line.trim()); //Adds entire line, does not trim any inner spaces from multi-words!
                 
                 
                 //next iteration
@@ -52,10 +52,10 @@ public class ValidWordsDictionary
         {
             e.printStackTrace();
         }
-        
+
         //TODO possibly read all words from the database's WORDS table
-        
-        buffer = new LinkedList<>();
+
+        this.buffer = new LinkedList<>();
     }
     
     private File getFile()
@@ -79,7 +79,7 @@ public class ValidWordsDictionary
     
     public boolean contains(String word)
     {
-        return valid_words.contains(word);
+        return this.valid_words.contains(word);
     }
     
     /**
@@ -88,28 +88,28 @@ public class ValidWordsDictionary
     public void addWord(String word)
     {
         //Will not add to buffer if word is already there
-        if (valid_words.add(word))
+        if (this.valid_words.add(word))
         {
-            buffer.add(word);
-            if (buffer.size() > BUFFER_SIZE)
+            this.buffer.add(word);
+            if (this.buffer.size() > BUFFER_SIZE)
             {
-                flushBuffer();
+                this.flushBuffer();
             }
         }
     }
-    
-    public void flushBuffer()
+
+    private void flushBuffer()
     {
         //Create big string to write
         StringBuilder sb = new StringBuilder();
-        for (String word : buffer)
+        for (String word : this.buffer)
         {
             sb.append(word);
             sb.append("\n");
         }
         //If you edit this code, keep in mind that I assumed the file ends on a line break
         //Write to file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(getFile(), true)))
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.getFile(), true)))
         {
             writer.write(sb.toString());
         }
@@ -117,8 +117,8 @@ public class ValidWordsDictionary
         {
             e.printStackTrace();
         }
-        
-        buffer.clear();
+
+        this.buffer.clear();
     }
     
     private static void test()
