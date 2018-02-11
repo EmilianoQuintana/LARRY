@@ -10,19 +10,19 @@ import java.sql.Statement;
 public class DatabaseOperations
 {
     // SQL Statements Constants:
-    public static final String SELECT = " SELECT ";
-    public static final String LIMIT = " LIMIT ";
-    public static final String UPDATE = " UPDATE ";
-    public static final String CREATE_TABLE = " CREATE_TABLE ";
-    public static final String IF_NOT_EXISTS = " IF NOT EXISTS ";
+//    public static final String SELECT = " SELECT ";
+//    public static final String LIMIT = " LIMIT ";
+//    public static final String UPDATE = " UPDATE ";
+//    public static final String CREATE_TABLE = " CREATE_TABLE ";
+//    public static final String IF_NOT_EXISTS = " IF NOT EXISTS ";
 
     private Statement statement;
 
     /***
      *
-     * @param databaseName
-     * @param username
-     * @param password
+     * @param databaseName Name of the Database
+     * @param username UserName to login to the DB
+     * @param password Password to login to the DB
      * @throws SQLException
      */
     public void createDatabaseAndLogin(String databaseName, String username, String password) throws SQLException
@@ -76,18 +76,18 @@ public class DatabaseOperations
         dataSource.setPassword(password);
 
         Connection connection = dataSource.getConnection();
-        statement = connection.createStatement();
+        this.statement = connection.createStatement();
     }
 
     public void executeUpdate(String command) throws SQLException
     {
-        statement.executeUpdate(command); //maybe should be executeLargeUpdate later, TODO make sure
+        this.statement.executeUpdate(command); //maybe should be executeLargeUpdate later, TODO make sure
     }
 
     public ResultSet executeQuery(String query) throws SQLException
     {
         //TODO ESCAPE ALL QUERIES!!!!!!!!!!!!!!!
-        return statement.executeQuery(query);
+        return this.statement.executeQuery(query);
     }
 
     /**
@@ -107,16 +107,10 @@ public class DatabaseOperations
         }
         else
         {
-            limitStr = DatabaseOperations.LIMIT + limit;
+            limitStr = SQL.LIMIT + limit;
         }
 
-        return statement.executeQuery(query + limitStr);
-    }
-
-    public static String escapeSingleQuotes(String string)
-    {
-        // Replacing ' with '' :
-        return string.replace("'", "''");
+        return this.statement.executeQuery(query + limitStr);
     }
 
 }

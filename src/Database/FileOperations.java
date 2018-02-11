@@ -1,5 +1,6 @@
 package Database;
 
+import LARRY.Messages;
 import subsParser.*;
 
 import java.io.File;
@@ -11,26 +12,27 @@ import java.util.regex.Pattern;
 public class FileOperations
 {
     private static final int MAX_FILES_TO_ADD = 999;
-    private static final String regex_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
+    private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
     public static void updateSubsCollectionFromFolder(SubsCollection subsCollection, String filePrefix,
                                                       String folderPath)
+            throws Messages.EmptyFolderException
     {
         File workingFolder = new File(folderPath);
         File[] filesInFolder = workingFolder.listFiles();
 
         int amount = 0;
+
         if (filesInFolder == null)
         {
-            System.out.println("No files were found in folder: " + folderPath);
-            return;
+            throw new Messages.EmptyFolderException(folderPath);
         }
         for (File currFile : filesInFolder)
         {
             amount++;
-            if (amount > MAX_FILES_TO_ADD)
+            if (amount > FileOperations.MAX_FILES_TO_ADD)
             {
-                System.out.println("Maximum amount of files added! Returning to calling function.");
+                Messages.printInConsole(new Messages.MaximumAmountOfFilesAddedException().getMessage());
                 break;
             }
             if (currFile.isFile())
@@ -41,6 +43,7 @@ public class FileOperations
 
                     TimedTextFileFormat timedTextFileFormat;
                     String extension = getFileExtension(name).toLowerCase();
+
                     switch (extension)
                     {
                         case "srt":
@@ -70,18 +73,19 @@ public class FileOperations
                     System.out.print(name + "\t\t");
                     if (!name.startsWith(filePrefix))
                     {
-                        System.out.println("***** Doesn't start with Prefix " + filePrefix + " ***** ");
+                        Messages.printInConsole(
+                                new Messages.FileDoesNotStartWithPrefixException(filePrefix).getMessage());
                         continue;
                     }
                     if (subsCollection.hasFileInLibrary(name))
                     {
-                        System.out.println("Already in library! ");
+                        Messages.printInConsole(new Messages.FileAlreadyInLibraryException(name).getMessage());
                         continue;
                     }
                     else
                     {
                         subsCollection.addFileNameToLibrary(name);
-                        System.out.print("Adding...");
+                        Messages.printInConsole(Messages.MSG_ADDING_FILE);
                     }
 
                     int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(name);
@@ -103,7 +107,7 @@ public class FileOperations
                         subsCollection.addCaption(c);
                     }
 
-                    System.out.println("...Added!"); //continues from the "Adding..." line
+                    Messages.printInConsole(Messages.MSG_ADDED_FILE); //continues from the "Adding..." line
 
 
                 } catch (Exception ex)
@@ -115,9 +119,10 @@ public class FileOperations
     }
 
     /**
-     * (will return empty string if there is no extension.)
-     *
-     * @return extension without the dot. e.g. "blah.srt" will return "srt"
+     * Returns the extension of a given file name.
+     * <p>
+     * If there is no extension, returns an empty string.
+     * @return File Extension after the dot character. e.g. "SomeSubtitles.srt" will return "srt"
      */
     private static String getFileExtension(String fileName)
     {
@@ -131,14 +136,19 @@ public class FileOperations
     }
 
     /**
-     * @param name file name (extension doesn't matter)
-     * @return an array - {seasonNum, episodeNum} - if file name contains a 'SxxExx' style string, or null otherwise.
+     * Finds the SeasonNumber and EpisodeNumber in a given FileName formatted with 'SxxExx' in it.
+     * @param fileName FileName (The extension is irrelevant).
+     * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber.
+     * @exception Messages.FileNotFormattedWithSxxExxException
+     * if the given FileName is not formatted with 'SxxExx' in it.
      */
-    private static int[] parseSxxExxFromFilename(String name)
+    private static int[] parseSxxExxFromFilename(String fileName)
+            throws Messages.FileNotFormattedWithSxxExxException
     {
         int seasonNum, episodeNum;
-        Pattern pattern = Pattern.compile(regex_SxxExx);
-        Matcher matcher = pattern.matcher(name);
+        Pattern pattern = Pattern.compile(REGEX_SxxExx);
+        Matcher matcher = pattern.matcher(fileName);
+
         if (matcher.find())
         {
             String result = matcher.group();
@@ -147,7 +157,7 @@ public class FileOperations
         }
         else
         {
-            return null;
+            throw new Messages.FileNotFormattedWithSxxExxException(fileName);
         }
 
         return new int[]{seasonNum, episodeNum};

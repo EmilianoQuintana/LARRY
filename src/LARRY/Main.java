@@ -10,7 +10,8 @@ import java.util.List;
 
 public class Main
 {
-    private static void test1(GUI gui, DBLarry DB) throws Errors.GhostFolderException
+    private static void test1(GUI gui, DBLarry DB)
+            throws Messages.GhostFolderException, Messages.SeasonNumberTooBigException
     {
         final long subtitlesDelay = 0;
         final String testFolderPath = "E:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm - Seasons 1-6 + Extras" +
@@ -54,7 +55,8 @@ public class Main
         //gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
     }
 
-    private static void test2(GUI gui, DBLarry DB) throws Errors.GhostFolderException
+    private static void test2(GUI gui, DBLarry DB)
+            throws Messages.GhostFolderException, Messages.SeasonNumberTooBigException
     {
         String testFolderPath = "C:\\Itamar\\Workspace\\Larry\\LARRY\\resources\\temporary";
         final long subtitlesDelay = -52000;
@@ -97,11 +99,18 @@ public class Main
     }
 
     // Temporary for TESTING
-    public static void main(String[] args) throws SQLException
+    public static void main(String[] args)
+            throws SQLException
     {
         DBLarry DB = new DBLarry();
 
-        DB.updateSubsCollectionFromFolder("Curb", "Subtitles\\Subtitles");
+        try
+        {
+            DB.updateSubsCollectionFromFolder("Curb", "Subtitles\\Subtitles");
+        } catch (Messages.EmptyFolderException exEmptyFolder)
+        {
+
+        }
 
         new NativeDiscovery().discover();
 
@@ -110,9 +119,12 @@ public class Main
             try
             {
                 test1(gui, DB);
-            } catch (Errors.GhostFolderException e)
+            } catch (Messages.GhostFolderException e)
             {
                 e.printStackTrace();
+            } catch (Messages.SeasonNumberTooBigException e)
+            {
+
             }
         });
         

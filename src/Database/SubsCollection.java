@@ -1,5 +1,6 @@
 package Database;
 
+import LARRY.Messages;
 import subsParser.Caption;
 import subsParser.Const;
 import subsParser.Time;
@@ -21,45 +22,37 @@ public class SubsCollection
         this.databaseOperations = dataOp;
     }
 
-    private <T> String sanitize(T objAsString)
-    {
-        return DatabaseOperations.escapeSingleQuotes(objAsString.toString());
-    }
-
     public void addFileNameToLibrary(String fileName) throws SQLException
     {
-        this.databaseOperations.executeUpdate(
-                SQL.INSERT_INTO + SQL.TBL.FILES_SEEN + " (" + SQL.COL.FILE_NAME + ") " + SQL.VALUES + " ('" +
-                        this.sanitize(fileName) + "')");
+        this.databaseOperations.executeUpdate(SQL.Query.insertFileNameToFilesSeen(fileName));
+
+//                SQL.INSERT_INTO + SQL.TBL.FILES_SEEN + " (" + SQL.COL.FILE_NAME + ") " + SQL.VALUES + " ('" +
+//                        SQL.sanitize(fileName) + "')");
     }
 
     public void removeFileNameFromLibrary(String fileName) throws SQLException
     {
-        this.databaseOperations
-                .executeUpdate(
-                        SQL.DELETE + SQL.TBL.FILES_SEEN + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
-                                this.sanitize(fileName) +
-                                "'");
+        this.databaseOperations.executeUpdate(SQL.Query.deleteFileNameFromFilesSeen(fileName));
+//                        SQL.DELETE + SQL.TBL.FILES_SEEN + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
+//                                SQL.sanitize(fileName) +
+//                                "'");
     }
 
     public boolean hasFileInLibrary(String fileName) throws SQLException
     {
-        ResultSet results = this.databaseOperations.executeQueryLimit(
-                SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
-                        this.sanitize(fileName) + "'", 1);
+        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectFileFromFilesSeen(fileName), 1);
+//                SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
+//                        SQL.sanitize(fileName) + "'", 1);
         return results.next();
     }
 
     private int getWordID(String word) throws SQLException
     {
-        ResultSet results = this.databaseOperations
-                .executeQueryLimit(
-                        SQL.SELECT + SQL.COL.WORD_ID + " " + SQL.FROM + SQL.TBL.WORDS + " " + SQL.WHERE + SQL.COL.WORD +
-                                " = '" + this.sanitize(word) + "'",
-                        1);
+        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectWordIDFromWords(word), 1);
+
         if (!results.next())
         {
-            return NONEXISTENT_ID;
+            return SubsCollection.NONEXISTENT_ID;
         }
         return results.getInt(SQL.COL.WORD_ID);
     }
@@ -102,10 +95,10 @@ public class SubsCollection
         this.databaseOperations.executeUpdate(
                 SQL.INSERT_INTO + SQL.TBL.CAPTIONS + " (" + SQL.COL.SEASON_NUM + ", " + SQL.COL.EPISODE_NUM + ", " +
                         SQL.COL.START + ", " + SQL.COL.END + ", " + SQL.COL.CONTENT + ") " + SQL.VALUES + " ("
-                        + this.sanitize(caption.seasonNum) + ", " + this.sanitize(caption.episodeNum) + ", '" +
-                        this.sanitize(caption.start.toSQLTime3()) + "', '" + this.sanitize(caption.end.toSQLTime3()) +
+                        + SQL.sanitize(caption.getSeasonNum()) + ", " + SQL.sanitize(caption.getEpisodeNum()) + ", '" +
+                        SQL.sanitize(caption.start.toSQLTime3()) + "', '" + SQL.sanitize(caption.end.toSQLTime3()) +
                         "', '" +
-                        this.sanitize(caption.content) + "')");
+                        SQL.sanitize(caption.content) + "')");
         ResultSet results = this.databaseOperations.executeQuery(SQL.SELECT + " LAST_INSERT_ID()");
         results.next();
         int caption_id = results.getInt(1); //TODO test
@@ -169,7 +162,7 @@ public class SubsCollection
             this.databaseOperations
                     .executeUpdate(
                             SQL.INSERT_INTO + " " + SQL.TBL.WORDS + " (" + SQL.COL.WORD + ") " + SQL.VALUES + " ('" +
-                                    this.sanitize(word) + "')");
+                                    SQL.sanitize(word) + "')");
             ResultSet results = this.databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
             results.next();
             word_id = results.getInt(1); //TODO test
@@ -179,14 +172,14 @@ public class SubsCollection
 
         //Now check if this word-caption combination is already in the words_to_captions table
         ResultSet results = this.databaseOperations.executeQueryLimit(
-                "SELECT * FROM " + SQL.TBL.WORDS_TO_CAPTIONS + " WHERE word_id = " + this.sanitize(word_id) +
-                        " AND caption_id = " + this.sanitize(caption_id), 1);
+                "SELECT * FROM " + SQL.TBL.WORDS_TO_CAPTIONS + " WHERE word_id = " + SQL.sanitize(word_id) +
+                        " AND caption_id = " + SQL.sanitize(caption_id), 1);
         if (!results.next())
         {
             this.databaseOperations.executeUpdate(
-                    "INSERT INTO " + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" +
-                            this.sanitize(word_id) +
-                            ", " + this.sanitize(caption_id) + ")");
+                    SQL.INSERT_INTO + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" +
+                            SQL.sanitize(word_id) +
+                            ", " + SQL.sanitize(caption_id) + ")");
             return true;
         }
         //else the caption-word combination already exists
@@ -195,7 +188,7 @@ public class SubsCollection
 
 
     public List<Caption> getAllCaptionsFor(String word, int captionCountLimit, boolean sortByQuality)
-            throws SQLException
+            throws SQLException, Messages.SeasonNumberTooBigException
     {
         String lowercaseWord = word.toLowerCase();
 
@@ -203,7 +196,7 @@ public class SubsCollection
 
         if (wordID == NONEXISTENT_ID)
         {
-            System.out.println("Word doesn't exist: " + word);    //Errors.MSG_NONEXISTENT_WORD, word);
+            Messages.printInConsole(new Messages.WordNotFoundException(word).getMessage());
             return new LinkedList<>();
         }
 
@@ -224,7 +217,7 @@ public class SubsCollection
                         " INNER JOIN " + SQL.TBL.WORDS_TO_CAPTIONS +
                         " ON " + SQL.TBL.WORDS_TO_CAPTIONS + ".word_id = " + SQL.TBL.WORDS + ".word_id" +
                         " INNER JOIN " + SQL.TBL.WORDS +
-                        " ON " + SQL.TBL.WORDS + ".word = " + "'" + this.sanitize(lowercaseWord) + "'" +
+                        " ON " + SQL.TBL.WORDS + ".word = " + "'" + SQL.sanitize(lowercaseWord) + "'" +
                         " WHERE " + SQL.TBL.CAPTIONS + ".caption_id = " + SQL.TBL.WORDS_TO_CAPTIONS + ".caption_id",
                 captionCountLimit);
 
@@ -236,8 +229,8 @@ public class SubsCollection
             Caption cap = new Caption();
             cap.content = resultSet.getString("content");
             cap.captionNum = resultSet.getInt("caption_id");
-            cap.seasonNum = resultSet.getInt("season_num");
-            cap.episodeNum = resultSet.getInt("episode_num");
+            cap.setSeasonNum(resultSet.getInt("season_num"));
+            cap.setEpisodeNum(resultSet.getInt("episode_num"));
             cap.start = new Time(Const.TIME_FORMAT_SRT, resultSet.getString("start"));
             cap.end = new Time(Const.TIME_FORMAT_SRT, resultSet.getString("end"));
             captionSortKeys.put(cap, SubsCollection.calcSortKeyForCaption(cap, lowercaseWord));
@@ -265,7 +258,7 @@ public class SubsCollection
 
     public List<Caption> getAllCaptionsInEpisodeFor(String word, int seasonNum, int episodeNum, int captionCountLimit,
                                                     boolean sortByQuality)
-            throws SQLException
+            throws SQLException, Messages.SeasonNumberTooBigException
     {
         List<Caption> list = new LinkedList<>();
 
@@ -273,7 +266,8 @@ public class SubsCollection
         for (Caption caption : this.getAllCaptionsFor(word, captionCountLimit, sortByQuality))
         {
             // Adding only the captions in the desired episode in the desired season:
-            if (caption.seasonNum == seasonNum && caption.episodeNum == episodeNum)
+            if (caption.getSeasonNum() == seasonNum
+                    && caption.getEpisodeNum() == episodeNum)
             {
                 list.add(caption);
             }
@@ -283,4 +277,16 @@ public class SubsCollection
         return list;
     }
 
+    public String getMediaName(int mediaID)
+            throws SQLException
+    {
+        ResultSet resultSet = this.databaseOperations.executeQueryLimit(SQL.Query.selectMediaIDFromMedias(mediaID), 1);
+
+        if (!resultSet.next())
+        {
+            return "";
+        }
+
+        return resultSet.getString(SQL.COL.MEDIA_NAME);
+    }
 }

@@ -1,15 +1,19 @@
 package subsParser;
 
+import LARRY.Messages;
+
 public class Caption
 {
 
     public static final int NO_SEASON = -1;
     public static final int NO_EPISODE = -1;
+    public static final int MAX_SEASON = 999;
     public Style style;
     public Region region;
 
-    public int seasonNum;
-    public int episodeNum;
+    public int mediaID;
+    private int seasonNum;
+    private int episodeNum;
     public int captionNum;
     public Time start;
     public Time end;
@@ -21,9 +25,50 @@ public class Caption
     public String content = "";
 
     /**
-     * Returns the Season Number of this Caption.
+     * @return This Caption's Media ID number.
+     */
+    public int getMediaID()
+    {
+        return this.mediaID;
+    }
+
+    /**
+     * Sets this Caption's SeasonNumber.
      *
-     * @return This Caption's SeasonNumber.
+     * @param seasonNum SeasonNumber to set. Allowed value must be between 0-999 inclusive.
+     * @throws Messages.SeasonNumberTooBigException
+     */
+    public void setSeasonNum(int seasonNum)
+            throws Messages.SeasonNumberTooBigException
+    {
+        if (seasonNum < 0)
+        {
+            this.seasonNum = Caption.NO_SEASON;
+        }
+        else
+        {
+            if (seasonNum > Caption.MAX_SEASON)
+            {
+                this.seasonNum = Caption.MAX_SEASON;
+                throw new Messages.SeasonNumberTooBigException(this.seasonNum);
+            }
+            else
+            {
+                this.seasonNum = seasonNum;
+            }
+        }
+    }
+
+    /**
+     * @return This Caption's Season Number as an integer number.
+     */
+    public int getSeasonNum()
+    {
+        return this.seasonNum;
+    }
+
+    /**
+     * @return This Caption's SeasonNumber, padded with leading zeros to fit 3 digits.
      */
     public String getSeason()
     {
@@ -31,8 +76,25 @@ public class Caption
     }
 
     /**
-     * Returns this Caption's Episode Number, in 3 digits, including leading zeros.
-     * @return This Caption's Episode Number (e.g.: '015').
+     * Sets this Caption's Episode Number.
+     *
+     * @param episodeNum
+     */
+    public void setEpisodeNum(int episodeNum)
+    {
+
+    }
+
+    /**
+     * @return This Caption's Episode Number as an integer number.
+     */
+    public int getEpisodeNum()
+    {
+        return this.episodeNum;
+    }
+
+    /**
+     * @return This Caption's Episode Number, padded with leading zeros to fit 3 digits. (e.g.: '015').
      */
     public String getEpisode()
     {
@@ -40,9 +102,8 @@ public class Caption
     }
 
     /**
-     * Returns this Caption's Episode Number, in [i_Digits] digits, including leading zeros.
      * @param i_Digits - number of digits in which to format the Episode Number
-     * @return This Caption's Episode Number.
+     * @return This Caption's Episode Number, padded with leading zeros to fit <code>i_Digits</code> digits..
      */
     public String getEpisode(int i_Digits)
     {
@@ -79,15 +140,20 @@ public class Caption
     }
 
     /**
-     * Prints this caption's details in an easy-to-read manner.
-     * @return This Caption's SeasonNumber and EpisodeNumber if exist, Start- and End-Times.
+     * Returns this caption's details in an easy-to-read manner.
+     * @return A <code>String</code> of this Caption's SeasonNumber, EpisodeNumber, Start- and End-Times.
      */
     @Override
     public String toString()
     {
         String printString = "";
 
-        if (this.seasonNum != NO_SEASON)
+        if (this.getMediaID() != 0)
+        {
+            //TODO add MediaName fetch and append to toString method
+        }
+
+        if (this.getSeasonNum() != NO_SEASON)
         {
             printString += "S" + String.format("%02d", this.seasonNum);
         }
@@ -105,6 +171,4 @@ public class Caption
                 + "      "
                 + this.content;
     }
-
-
 }
