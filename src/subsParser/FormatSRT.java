@@ -118,8 +118,8 @@ public class FormatSRT implements TimedTextFileFormat
 							String end   = line.substring(line.length()-12, line.length());							
 							caption.start = new Time(Const.TIME_FORMAT_SRT, start);
 							caption.end   = new Time(Const.TIME_FORMAT_SRT, end);
-							caption.seasonNum  = nSeasonNum;
-							caption.episodeNum = nEpisodeNum;
+							caption.setSeasonNum(nSeasonNum);
+							caption.setEpisodeNum(nEpisodeNum);
 						}
 						catch (Exception e){
 							tto.warnings += Const.MSG_INCORRECT_TIME_FORMAT    // "incorrect time format at line " 
@@ -225,7 +225,7 @@ public class FormatSRT implements TimedTextFileFormat
 				current.end.mseconds -= tto.offset;
 			}
 			//text is added
-			String[] lines = cleanTextForSRT(current);
+			String[] lines = this.cleanTextForSRT(current);
 			int i=0;
 			while(i<lines.length)
 				file.add(index++,""+lines[i++]);

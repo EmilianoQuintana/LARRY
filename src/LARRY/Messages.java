@@ -1,5 +1,7 @@
 package LARRY;
 
+import Database.SubsCollection;
+
 public class Messages
 {
     private static final String
@@ -8,10 +10,12 @@ public class Messages
             MSG_GHOST_FOLDER = "Unknown folder: %s",
             MSG_DOES_NOT_START_PREFIX = "Does not start with Prefix %s",
             MSG_FILE_ALREADY_IN_LIBRARY = "File %s is already in library. ",
-            MSG_MAXIMUM_FILES_ADDED = "Maximum amount of files added! ", // Returning to calling function.",
+            MSG_MAXIMUM_FILES_ADDED = "Cannot add any more files; maximum amount is %d)", // Returning to calling function.",
+            MSG_SUPPORTED_SUBTITLE_FORMATS = "Supported subtitle formats: %s",
+            MSG_SUPPORTED_VIDEO_FORMATS = "Supported video formats: %s",
 
     MSG_SxxExx_NOT_FOUND = "Could not identify SeasonNumber and EpisodeNumber in file %s",
-            MSG_SEASON_NUM_TOO_BIG = "The given Season Number is too big";
+            MSG_SEASON_NUM_TOO_BIG = "The given Season Number %d is too big";
 
     public static final String
             MSG_ADDING_FILE = "Adding...",
@@ -137,7 +141,16 @@ public class Messages
         @Override
         public String getMessage()
         {
-            return (String.format(Messages.MSG_MAXIMUM_FILES_ADDED));
+            return (String.format(Messages.MSG_MAXIMUM_FILES_ADDED, SubsCollection.MAX_FILES_TO_ADD));
+        }
+    }
+
+    public static class SupportedSubtitleFormats extends Exception
+    {
+        @Override
+        public String getMessage()
+        {
+            return super.getMessage();
         }
     }
 

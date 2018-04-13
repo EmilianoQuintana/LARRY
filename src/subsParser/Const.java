@@ -13,7 +13,14 @@ public class Const
 	
 	// Delimiters:
 	public static final String DLM_SRT_ARROW   = " --> ";
-	
+
+	// Subtitles File Formats:
+	public static final String SUBS_FORMAT_ASS = "ASS",
+			SUBS_FORMAT_SCC = "SCC",
+			SUBS_FORMAT_SRT = "SRT",
+			SUBS_FORMAT_STL = "STL",
+			SUBS_FORMAT_TTML = "TTML";
+
 	// Error messages
 	public static final String MSG_SAME_START_TIME = "caption with same start time found...\n\n",
 			MSG_INCORRECT_TIME_FORMAT = "incorrect time format at line ",

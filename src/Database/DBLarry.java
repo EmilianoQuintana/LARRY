@@ -56,7 +56,7 @@ public class DBLarry
 
     /**
      * Tries to find a path for the file containing the given Caption.
-     * It will return a found file if its name beings with the prefix string, including matching seasons/episode if necessary.
+     * It will return a found file if its name begins with the prefix string, including matching seasons/episode if necessary.
      * @param caption       Caption, according to which to search for a matching file.
      * @param folderPath    Path to the folder, in which to search for the file.
      * @param filePrefix    String prefix for the filename.

@@ -14,8 +14,32 @@ public class SubsCollection
 {
     private static final int NONEXISTENT_ID = -1;
     private static final int MINIMUM_SUBWORD_LENGTH = 3;
+
+    public static final int MAX_FILES_TO_ADD = 999;
+
     // Main Subtitles Collection List:
     private DatabaseOperations databaseOperations;
+
+    private static HashSet<String> supportedSubtitlesFormats;
+
+    // List of all the supported Subtitle File Formats:
+    public static HashSet getSupportedSubtitlesFormats()
+    {
+        // The list of supported Subtitle Formats is a static singleton property of class SubsCollection:
+        if (SubsCollection.supportedSubtitlesFormats.isEmpty())
+        {
+            SubsCollection.supportedSubtitlesFormats = new HashSet<String>();
+
+            // Building the list of supported Subtitle Files, according to the available subsParser classes:
+            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_ASS);
+            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_SCC);
+            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_SRT);
+            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_STL);
+            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_TTML);
+        }
+
+        return SubsCollection.supportedSubtitlesFormats;
+    }
 
     public SubsCollection(DatabaseOperations dataOp)
     {
