@@ -1,6 +1,7 @@
 package Database;
 
 import LARRY.Messages;
+import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import subsParser.*;
@@ -14,58 +15,6 @@ import java.util.regex.Pattern;
 
 public class FileOperations
 {
-    public class FileExtension
-    {
-        private File file;
-        private String extension;
-
-        public FileExtension(File file)
-        {
-            this.setFile(file);
-        }
-
-        public FileExtension(String extension)
-        {
-            this.setExtension(extension);
-        }
-
-        public void setFile(File file)
-        {
-            this.file = file;
-            this.setExtension(FilenameUtils.getExtension(this.getFile().getName()));
-        }
-
-        public File getFile()
-        {
-            return this.file;
-        }
-
-        public boolean hasFile()
-        {
-            boolean hasFile = false;
-
-            if (this.getFile() != null)
-            {
-                hasFile = true;
-            }
-
-            return hasFile;
-        }
-
-        public void setExtension(String extension)
-        {
-            this.extension = extension.substring(extension.lastIndexOf(".") + 1, extension.length()).toUpperCase();
-        }
-
-        /**
-         * @return This FileExtension's extension, in UPPER CASE.
-         */
-        public String getExtension()
-        {
-            return this.extension;
-        }
-    }
-
     private static final String ALL_FILE_EXTENSIONS = "*.*";
     private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
@@ -95,9 +44,9 @@ public class FileOperations
                 try
                 {
                     String name = currFile.getName();
+                    String extension = FileOperations.getCleanExtension(name);
 
                     TimedTextFileFormat timedTextFileFormat;
-                    String extension = FileOperations.getFileExtension(name).toUpperCase();
 
                     switch (extension)
                     {
@@ -173,79 +122,75 @@ public class FileOperations
         }
     }
 
+    //region Getters for Extensions (original and Clean)
+
     /**
-     * Returns a list of all the files within a given folder.
+     * Returns the clean, lower-case extension of a given File.
      *
-     * @param folderPath Path of the desired folder
-     * @return Array of files in the given folder.
+     * @param file The desired file to get the extension of.
+     * @return The extension of the given File, cleaned and in lower-case.
      */
-    public static File[] getListOfFilesInFolder(String folderPath)
+    public static String getCleanExtension(File file)
     {
-        return new File(folderPath).listFiles();
+        return FileOperations.getCleanExtension(file.getName());
     }
 
     /**
-     * Returns a list of all the files, of a certain extension, that are in a desired folder.
+     * Returns the clean, lower-case extension of a given filename.
      *
-     * @param folderPath Path of the desired folder
-     * @param extension  Desired extension of the files
-     * @return File Array of the files found.
+     * @param fileName The desired filename to get the extension of.
+     * @return The extension of the given filename, cleaned and in lower-case.
      */
-    public static File[] getListOfFilesInFolder(String folderPath, FileOperations.FileExtension extension)
+    public static String getCleanExtension(String fileName)
     {
-        FileOperations.FileExtension[] extensions = new FileOperations.FileExtension[1];
-        extensions[0] = extension;
-
-        return FileOperations.getListOfFilesInFolder(folderPath, extensions, false);
+        return FilenameUtils.getExtension(fileName).toLowerCase();
     }
 
     /**
-     * Returns a list of all the files, of certain extensions, that are in a desired folder.
-     * You can choose to also search the inner folders that are inside the given folder (recursive search).
+     * Returns the clean, lower-case extensions of multiple given files.
      *
-     * @param folderPath      Path of the desired folder
-     * @param extensions      Array of the desired extensions
-     * @param recursiveSearch Whether to also search the inner folders inside the given folder
-     * @return File Array of the files found.
+     * @param files File Array of the desired files.
+     * @return A String Array of file extensions from the given files, cleaned and in lower-case.
      */
-    public static File[] getListOfFilesInFolder(String folderPath, FileOperations.FileExtension[] extensions,
-                                                boolean recursiveSearch)
+    public static String[] getCleanExtensions(File[] files)
     {
-        File folder = new File(folderPath);
-        String[] strExtensions = new String[extensions.length];
+        String[] extensions = null;
 
-        // Copying the FileExtensions to a String array:
-        for (int iCurrStrExt = 0; iCurrStrExt <= extensions.length; iCurrStrExt++)
+        if ((files != null) && (files.length > 0))
         {
-            strExtensions[iCurrStrExt] = extensions[iCurrStrExt].getExtension();
+            extensions = new String[files.length];
+
+            for (int iCurrFile = 0; iCurrFile < files.length; iCurrFile++)
+            {
+                extensions[iCurrFile] = FileOperations.getCleanExtension(files[iCurrFile]);
+            }
+
         }
 
-        //WildcardFileFilter wildcardFileFilter = new WildcardFileFilter("*." + extension.getExtension());
-        Collection<File> filesCollection = FileUtils.listFiles(folder, strExtensions, recursiveSearch);
-        File[] filesArray = new File[filesCollection.size()];
-
-        return filesCollection.toArray(filesArray);
-
-//        javax.swing.filechooser.FileFilter swingFileFilter = new javax.swing.filechooser.FileNameExtensionFilter(
-//                "given extension", extension.getExtension());
-//        java.io.FileFilter ioFileFilter = file -> swingFileFilter.accept(file);
-//
-//        return new File(folderPath).listFiles(ioFileFilter);
+        return extensions;
     }
 
-    public static File[] getListOfSubtitleFilesInFolder(String folderPath)
+    /**
+     * Returns the clean, lower-case extensions of multiple given filenames.
+     *
+     * @param filenames String Array of the desired filenames.
+     * @return A String Array of file extensions from the given filenames, cleaned and in lower-case.
+     */
+    public static String[] getCleanExtensions(String[] filenames)
     {
-        //FileOperations.FileExtension[] extensions = SubsCollection.getSupportedSubtitlesFormats().toArray();
-        //FileOperations.getListOfFilesInFolder(folderPath, extensions)
+        String[] extensions = null;
 
-        return null;
-    }
+        if ((filenames != null) && (filenames.length > 0))
+        {
+            extensions = new String[filenames.length];
 
-    public static boolean checkIfFileIsSupported(File checkedFile)
-    {
-        return SubsCollection.getSupportedSubtitlesFormats()
-                .contains(FileOperations.getFileExtension(checkedFile.getName()));
+            for (int iCurrFile = 0; iCurrFile < filenames.length; iCurrFile++)
+            {
+                extensions[iCurrFile] = FileOperations.getCleanExtension(filenames[iCurrFile]);
+            }
+        }
 
+        return extensions;
     }
 
     /**
@@ -258,14 +203,6 @@ public class FileOperations
     private static String getFileExtension(String fileName)
     {
         return FilenameUtils.getExtension(fileName);
-
-//        try
-//        {
-//            return fileName.substring(fileName.lastIndexOf(".") + 1);
-//        } catch (Exception e)
-//        {
-//            return "";
-//        }
     }
 
     /**
@@ -278,6 +215,157 @@ public class FileOperations
     private static String getFileExtension(File file)
     {
         return FileOperations.getFileExtension(file.getName());
+    }
+
+    //endregion
+
+    //region Getters for List of Files from Folder
+
+    /**
+     * Returns a list of all the files within a given folder.
+     *
+     * @param folderPath Path of the desired folder
+     * @return Array of files in the given folder.
+     */
+    public static File[] getFilesFromFolder(String folderPath)
+    {
+        return new File(folderPath).listFiles();
+    }
+
+    /**
+     * Returns a list of all the files, of a certain extension, that are in a desired folder.
+     *
+     * @param folderPath Path of the desired folder
+     * @param extension  Desired extensions of the files.
+     * @return File Array of the files found.
+     */
+    public static File[] getFilesFromFolder(String folderPath, String extension)
+    {
+        String[] extensions = new String[1];
+        extensions[0] = extension;
+
+        return FileOperations.getFilesFromFolder(folderPath, extensions, false);
+    }
+
+    /**
+     * Returns a list of all the files, of certain extensions, that are in a desired folder.
+     * You can choose to also search the inner folders that are inside the given folder (recursive search).
+     * @param folderPath      Path of the desired folder
+     * @param extensions      Array of the desired extensions
+     * @param recursiveSearch Whether to also search the inner folders inside the given folder
+     * @return File Array of the files found.
+     */
+    public static File[] getFilesFromFolder(String folderPath, String[] extensions,
+                                            boolean recursiveSearch)
+    {
+        File folder = new File(folderPath);
+
+        //WildcardFileFilter wildcardFileFilter = new WildcardFileFilter("*." + extension.getExtension());
+        Collection<File> filesCollection = FileUtils
+                .listFiles(folder, FileOperations.getCleanExtensions(extensions), recursiveSearch);
+        File[] filesArray = new File[filesCollection.size()];
+
+        return filesCollection.toArray(filesArray);
+    }
+
+    /**
+     * Returns a list of all the Subtitle files that are in a desired folder.
+     *
+     * @param folderPath Path of the desired folder.
+     * @return File Array of the Subtitle files found.
+     */
+    public static File[] getSubtitleFilesFromFolder(String folderPath)
+    {
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, Const.getSupportedSubtitlesFormats());
+    }
+
+    /**
+     * Returns all the Subtitle files of a given format that are in a desired folder.
+     *
+     * @param folderPath Path of the desired folder.
+     * @param subsFormat Desired format of the subtitle files.
+     * @return File Array of the Subtitle files found.
+     */
+    public static File[] getSubtitleFilesFromFolder(String folderPath, String subsFormat)
+    {
+        String[] subsFormats = new String[1];
+        subsFormats[0] = subsFormat;
+
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, subsFormats);
+    }
+
+    /**
+     * This method is PRIVATE by design! Do not turn into public. I don't want the ability to search only SOME of
+     * all the supported subtitle formats instead of all of them.
+     * Returns a list of all the Subtitle files of multiple given formats that are in a desired folder.
+     *
+     * @param folderPath  Path of the desired folder.
+     * @param subsFormats Desired formats of the subtitle files.
+     * @return File Array of the Subtitle files found.
+     */
+    private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats)
+    {
+        return FileOperations.getFilesFromFolder(folderPath, subsFormats, false);
+    }
+
+    /**
+     * Returns all the Video files that are in a given folder.
+     *
+     * @param folderPath Path of the desired folder.
+     * @return File Array of the Video files found.
+     */
+    public static File[] getVideoFilesFromFolder(String folderPath)
+    {
+        return FileOperations.getFilesFromFolder(folderPath, MediaOperations.getSupportedVideoExtensions(), false);
+    }
+
+    /**
+     * Searches a given folder for Video and Subtitle files, and tries to match pairs of corresponding ones.
+     *
+     * @param folderPath      Path of the desired folder.
+     * @param recursiveSearch Whether to also search the inner folders inside the given folder.
+     * @return //TODO What data structure to use for storing matching pairs of files?
+     */
+    public static Pair<File, File> getMatchingVideoAndSubtitleFiles(String folderPath, boolean recursiveSearch)
+    {
+        int requiredExtensionsAmount = MediaOperations.getSupportedSubtitleFormats().length +
+                MediaOperations.getSupportedVideoExtensions().length;
+        String[] requiredExtensions = new String[requiredExtensionsAmount];
+        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath, requiredExtensions, false);
+
+//        filesInFolder.
+//        Pair<File, File> videoPairs;
+//        for (:
+//             )
+//        {
+//
+//        }
+
+//        return videoToSubtitleMap;
+
+        return null;
+    }
+
+    //endregion
+
+    /**
+     * Checks if a specified file is supported by LARRY.
+     * @param checkedFile Desired file to check.
+     * @return True if the file is supported, otherwise false.
+     */
+    public static boolean checkIfFileIsSupported(File checkedFile)
+    {
+        boolean isSupported;
+
+        isSupported = Const.getSupportedSubtitlesFormatsSet()
+                .contains(FileOperations.getCleanExtension(checkedFile));
+
+        if (!isSupported)
+        {
+            isSupported = MediaOperations.getSupportedVideoExtensionsSet().contains(checkedFile);
+        }
+
+        return isSupported;
     }
 
     /**

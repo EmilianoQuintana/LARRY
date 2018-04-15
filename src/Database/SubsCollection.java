@@ -20,27 +20,6 @@ public class SubsCollection
     // Main Subtitles Collection List:
     private DatabaseOperations databaseOperations;
 
-    private static HashSet<String> supportedSubtitlesFormats;
-
-    // List of all the supported Subtitle File Formats:
-    public static HashSet getSupportedSubtitlesFormats()
-    {
-        // The list of supported Subtitle Formats is a static singleton property of class SubsCollection:
-        if (SubsCollection.supportedSubtitlesFormats.isEmpty())
-        {
-            SubsCollection.supportedSubtitlesFormats = new HashSet<String>();
-
-            // Building the list of supported Subtitle Files, according to the available subsParser classes:
-            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_ASS);
-            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_SCC);
-            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_SRT);
-            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_STL);
-            SubsCollection.supportedSubtitlesFormats.add(Const.SUBS_FORMAT_TTML);
-        }
-
-        return SubsCollection.supportedSubtitlesFormats;
-    }
-
     public SubsCollection(DatabaseOperations dataOp)
     {
         this.databaseOperations = dataOp;
@@ -68,17 +47,6 @@ public class SubsCollection
 //                SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
 //                        SQL.sanitize(fileName) + "'", 1);
         return results.next();
-    }
-
-    private int getWordID(String word) throws SQLException
-    {
-        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectWordIDFromWords(word), 1);
-
-        if (!results.next())
-        {
-            return SubsCollection.NONEXISTENT_ID;
-        }
-        return results.getInt(SQL.COL.WORD_ID);
     }
 
     public void addCaption(Caption caption) throws SQLException
@@ -168,49 +136,6 @@ public class SubsCollection
         }
     }
 
-    /**
-     * @return false if the word-caption pair was already in there
-     */
-    private boolean insertCaptionWord(String word, int caption_id) throws SQLException
-    {
-        //Add word to dictionary, for ease of checking other subwords later
-        if (!ValidWordsDictionary.instance().contains(word))
-        {
-            ValidWordsDictionary.instance().addWord(word);
-        }
-
-        // No such word is yet in the collection? - adding it
-        int word_id = this.getWordID(word);
-        if (word_id == NONEXISTENT_ID)
-        {
-            this.databaseOperations
-                    .executeUpdate(
-                            SQL.INSERT_INTO + " " + SQL.TBL.WORDS + " (" + SQL.COL.WORD + ") " + SQL.VALUES + " ('" +
-                                    SQL.sanitize(word) + "')");
-            ResultSet results = this.databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
-            results.next();
-            word_id = results.getInt(1); //TODO test
-        }
-
-        // Now the word is in the collection in any case
-
-        //Now check if this word-caption combination is already in the words_to_captions table
-        ResultSet results = this.databaseOperations.executeQueryLimit(
-                "SELECT * FROM " + SQL.TBL.WORDS_TO_CAPTIONS + " WHERE word_id = " + SQL.sanitize(word_id) +
-                        " AND caption_id = " + SQL.sanitize(caption_id), 1);
-        if (!results.next())
-        {
-            this.databaseOperations.executeUpdate(
-                    SQL.INSERT_INTO + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" +
-                            SQL.sanitize(word_id) +
-                            ", " + SQL.sanitize(caption_id) + ")");
-            return true;
-        }
-        //else the caption-word combination already exists
-        return false;
-    }
-
-
     public List<Caption> getAllCaptionsFor(String word, int captionCountLimit, boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
@@ -266,20 +191,6 @@ public class SubsCollection
         return result;
     }
 
-    private static int calcSortKeyForCaption(Caption cap, String lowercaseWord)
-    {
-        String regex = ".*\\b" + Pattern.quote(lowercaseWord) + "\\b.*";
-        if (cap.content.matches(regex))
-        {
-            //Content contains *whole* word, not as part of another word
-            return 0;
-        }
-        else
-        {
-            return 1;
-        }
-    }
-
     public List<Caption> getAllCaptionsInEpisodeFor(String word, int seasonNum, int episodeNum, int captionCountLimit,
                                                     boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
@@ -313,4 +224,72 @@ public class SubsCollection
 
         return resultSet.getString(SQL.COL.MEDIA_NAME);
     }
+
+    private int getWordID(String word) throws SQLException
+    {
+        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectWordIDFromWords(word), 1);
+
+        if (!results.next())
+        {
+            return SubsCollection.NONEXISTENT_ID;
+        }
+        return results.getInt(SQL.COL.WORD_ID);
+    }
+
+    /**
+     * @return false if the word-caption pair was already in there
+     */
+    private boolean insertCaptionWord(String word, int caption_id) throws SQLException
+    {
+        //Add word to dictionary, for ease of checking other subwords later
+        if (!ValidWordsDictionary.instance().contains(word))
+        {
+            ValidWordsDictionary.instance().addWord(word);
+        }
+
+        // No such word is yet in the collection? - adding it
+        int word_id = this.getWordID(word);
+        if (word_id == NONEXISTENT_ID)
+        {
+            this.databaseOperations
+                    .executeUpdate(
+                            SQL.INSERT_INTO + " " + SQL.TBL.WORDS + " (" + SQL.COL.WORD + ") " + SQL.VALUES + " ('" +
+                                    SQL.sanitize(word) + "')");
+            ResultSet results = this.databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
+            results.next();
+            word_id = results.getInt(1); //TODO test
+        }
+
+        // Now the word is in the collection in any case
+
+        //Now check if this word-caption combination is already in the words_to_captions table
+        ResultSet results = this.databaseOperations.executeQueryLimit(
+                "SELECT * FROM " + SQL.TBL.WORDS_TO_CAPTIONS + " WHERE word_id = " + SQL.sanitize(word_id) +
+                        " AND caption_id = " + SQL.sanitize(caption_id), 1);
+        if (!results.next())
+        {
+            this.databaseOperations.executeUpdate(
+                    SQL.INSERT_INTO + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" +
+                            SQL.sanitize(word_id) +
+                            ", " + SQL.sanitize(caption_id) + ")");
+            return true;
+        }
+        //else the caption-word combination already exists
+        return false;
+    }
+
+    private static int calcSortKeyForCaption(Caption cap, String lowercaseWord)
+    {
+        String regex = ".*\\b" + Pattern.quote(lowercaseWord) + "\\b.*";
+        if (cap.content.matches(regex))
+        {
+            //Content contains *whole* word, not as part of another word
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
 }

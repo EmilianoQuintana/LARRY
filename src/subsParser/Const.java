@@ -1,5 +1,7 @@
 package subsParser;
 
+import java.util.HashSet;
+
 public class Const
 {	
 	// General:
@@ -15,17 +17,52 @@ public class Const
 	public static final String DLM_SRT_ARROW   = " --> ";
 
 	// Subtitles File Formats:
-	public static final String SUBS_FORMAT_ASS = "ASS",
-			SUBS_FORMAT_SCC = "SCC",
-			SUBS_FORMAT_SRT = "SRT",
-			SUBS_FORMAT_STL = "STL",
-			SUBS_FORMAT_TTML = "TTML";
+	public static final String SUBS_FORMAT_ASS = "ass",
+			SUBS_FORMAT_SCC = "scc",
+			SUBS_FORMAT_SRT = "srt",
+			SUBS_FORMAT_STL = "stl",
+			SUBS_FORMAT_TTML = "ttml";
 
-	// Error messages
-	public static final String MSG_SAME_START_TIME = "caption with same start time found...\n\n",
-			MSG_INCORRECT_TIME_FORMAT = "incorrect time format at line ",
-			MSG_EXPECTED_AT = " expected at line ",
-			MSG_SKIPPING_TO_NEXT_LINE = "\n skipping to next line\n\n",
-			MSG_UNEXP_END_OF_FILE = "unexpected end of file, maybe last caption is not complete.\n\n";
+	//region Supported Subtitle Formats
+
+	public static String[] supportedSubtitlesFormatsStr =
+			{
+					SUBS_FORMAT_ASS,
+					SUBS_FORMAT_SCC,
+					SUBS_FORMAT_SRT,
+					SUBS_FORMAT_STL,
+					SUBS_FORMAT_TTML,
+			};
+
+	public static HashSet<String> supportedSubtitlesFormatsSet;
+
+	/**
+	 * Returns a HashSet of all the supported Subtitle File Formats.
+	 */
+	public static HashSet<String> getSupportedSubtitlesFormatsSet()
+	{
+		// The HashSet of supported Subtitle Formats is a static singleton property of class SubsCollection:
+		if (supportedSubtitlesFormatsSet.isEmpty())
+		{
+			supportedSubtitlesFormatsSet = new HashSet<>();
+
+			for (String strFormat : getSupportedSubtitlesFormats())
+			{
+				supportedSubtitlesFormatsSet.add(strFormat);
+			}
+		}
+
+		return supportedSubtitlesFormatsSet;
+	}
+
+	/**
+	 * Returns a String Array of all the supported Subtitle File Formats.
+	 */
+	public static String[] getSupportedSubtitlesFormats()
+	{
+		return supportedSubtitlesFormatsStr;
+	}
+
+	//endregion
 
 }

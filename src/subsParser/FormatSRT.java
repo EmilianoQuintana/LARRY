@@ -1,5 +1,7 @@
 package subsParser;
 
+import LARRY.Messages;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,9 +103,9 @@ public class FormatSRT implements TimedTextFileFormat
 					}
 					catch (Exception e) 
 					{
-						tto.warnings += captionNumber + Const.MSG_EXPECTED_AT    // " expected at line "	
+                        tto.warnings += captionNumber + Messages.MSG_EXPECTED_AT    // " expected at line "
 								     + lineCounter;
-						tto.warnings += Const.MSG_SKIPPING_TO_NEXT_LINE;          // "\n skipping to next line\n\n"
+                        tto.warnings += Messages.MSG_SKIPPING_TO_NEXT_LINE;          // "\n skipping to next line\n\n"
 					}
 					
 					if (allGood)
@@ -122,7 +124,7 @@ public class FormatSRT implements TimedTextFileFormat
 							caption.setEpisodeNum(nEpisodeNum);
 						}
 						catch (Exception e){
-							tto.warnings += Const.MSG_INCORRECT_TIME_FORMAT    // "incorrect time format at line " 
+                            tto.warnings += Messages.MSG_INCORRECT_TIME_FORMAT    // "incorrect time format at line "
 										 + lineCounter;
 							allGood = false;
 						}
@@ -154,7 +156,7 @@ public class FormatSRT implements TimedTextFileFormat
 						
 						if (key != caption.start.mseconds)
 						{
-							tto.warnings += Const.MSG_SAME_START_TIME;    // "caption with same start time found...\n\n"
+                            tto.warnings += Messages.MSG_SAME_START_TIME;    // "caption with same start time found...\n\n"
 						}
 						
 						// Adding the caption to the TimedTextObject:
@@ -177,7 +179,7 @@ public class FormatSRT implements TimedTextFileFormat
 		}
 		catch (NullPointerException e)
 		{
-			tto.warnings += Const.MSG_UNEXP_END_OF_FILE;    //  "unexpected end of file, maybe last caption is not complete.\n\n"
+            tto.warnings += Messages.MSG_UNEXP_END_OF_FILE;    //  "unexpected end of file, maybe last caption is not complete.\n\n"
 		}
 		
 		finally
