@@ -1,31 +1,31 @@
 package LARRY;
 
+import Database.MediaOperations;
 import subsParser.Caption;
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.List;
 
 public class GUI
 {
-    private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
-    private static final long EXTRA_TIME_AFTER_CAPTION = 100;
+    //    private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
+//    private static final long EXTRA_TIME_AFTER_CAPTION = 100;
     private final JFrame frame;
-    private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
-    private EmbeddedMediaPlayer mediaPlayer;
+    private MediaOperations mediaOperations;
+    //    private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
+//    private EmbeddedMediaPlayer mediaPlayer;
     private JTextArea subtitleDelayAmountText;
-    private long subtitleDelayMilliseconds;
-    private int lastMarkedCaptionIndex;
-    private List<Caption> markedCaptionMoments;
-    private String searchedWord;
+//    private long subtitleDelayMilliseconds;
+//    private int lastMarkedCaptionIndex;
+//    private List<Caption> markedCaptionMoments;
+//    private String searchedWord;
 
     public GUI()
     {
+        // Setting up Media Player Frame with a MediaOperations object:
         this.frame = new JFrame("LARRY app: no video playing");
         this.frame.setBounds(100, 100, 720, 480);
         this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -34,7 +34,7 @@ public class GUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                GUI.this.embeddedMediaPlayerComponent.release();
+                GUI.this.mediaOperations.getEmbeddedMPComp().release();
                 GUI.this.frame.dispose();
             }
         });
@@ -42,12 +42,10 @@ public class GUI
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
 
-        //Media player screen area
-        this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-        this.mediaPlayer = this.embeddedMediaPlayerComponent.getMediaPlayer();
-        contentPane.add(this.embeddedMediaPlayerComponent, BorderLayout.CENTER);
+        contentPane.add(this.mediaOperations.getEmbeddedMPComp(), BorderLayout.CENTER);
 
-        //Controls
+        //region Adding the Controls to GUI object:
+
         JPanel controlsPane = new JPanel();
 
         JButton pauseButton = new JButton("||");//"\u23F8");
@@ -55,6 +53,7 @@ public class GUI
             this.pauseOrResume();
             pauseButton.setText(pauseButton.getText().equals("▶") ? "||" : "▶");
         });
+
         pauseButton.setFont(Font.getFont("dialog"));
         controlsPane.add(pauseButton);
 
@@ -85,28 +84,34 @@ public class GUI
         nextCaptionButton.addActionListener(event -> this.skipToNextOrPrevCaption(true));
         controlsPane.add(nextCaptionButton);
 
+        //endregion
+
         contentPane.add(controlsPane, BorderLayout.SOUTH);
 
-        //Controls action listeners
-
         this.frame.setContentPane(contentPane);
+
         this.frame.setVisible(true);
     }
 
+    //region Comment this out, I moved all to inside this MediaOperations object:
+
     public void startPlayingMedia(String mediaString, long startTimeInMilliseconds)
     {
-        String mediaShortenedPath = mediaString
-                .substring(mediaString.lastIndexOf(File.separatorChar) + 1, mediaString.length());
+//        String mediaShortenedPath = mediaString
+//                .substring(mediaString.lastIndexOf(File.separatorChar) + 1, mediaString.length());
+//
+//        this.frame.setTitle("\"" + this.searchedWord + "\" in " + mediaShortenedPath + "- LARRY");
+        this.frame.setTitle(this.mediaOperations.getShortenedVideoTitle(mediaString));
 
-        this.frame.setTitle("\"" + this.searchedWord + "\" in " + mediaShortenedPath + "- LARRY");
+//        this.mediaPlayer.playMedia(mediaString);
+        this.mediaOperations.startPlayingMedia(mediaString, startTimeInMilliseconds);
 
-        this.mediaPlayer.playMedia(mediaString);
-        this.mediaPlayer.setTime(startTimeInMilliseconds + this.subtitleDelayMilliseconds);
-        if (this.subtitleDelayMilliseconds != 0)
-        {
-            //A-sync problem fix
-            this.mediaPlayer.setSpuDelay(this.subtitleDelayMilliseconds * 1000);
-        }
+//        this.mediaPlayer.setTime(startTimeInMilliseconds + this.mediaOperations.subtitleDelayMilliseconds);
+//        if (this.subtitleDelayMilliseconds != 0)
+//        {
+//            //A-sync problem fix
+//            this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+//        }
     }
 
     /**
@@ -114,107 +119,118 @@ public class GUI
      */
     public void setToTimestampWithSubtitleDelay(long timeInMilliseconds)
     {
-        long newTime = timeInMilliseconds + this.subtitleDelayMilliseconds;
-        if (newTime < 0 || newTime >= this.mediaPlayer.getLength())
-        {
-            newTime = 0;
-        }
+//        long newTime = timeInMilliseconds + this.mediaOperations.subtitleDelayMilliseconds;
+//        if (newTime < 0 || newTime >= this.mediaPlayer.getLength())
+//        {
+//            newTime = 0;
+//        }
+//
+//        this.mediaPlayer.setTime(newTime);
 
-        this.mediaPlayer.setTime(newTime);
+        this.mediaOperations.setToTimestampWithSubtitleDelay(timeInMilliseconds);
     }
 
     public void setSubtitleDelay(long delayInMilliseconds)
     {
-        this.subtitleDelayMilliseconds = delayInMilliseconds;
-        this.mediaPlayer.setSpuDelay(this.subtitleDelayMilliseconds * 1000);
-        this.subtitleDelayAmountText.setText(String.format("%d", this.subtitleDelayMilliseconds) + " ms");
+//        this.mediaOperations.subtitleDelayMilliseconds = delayInMilliseconds;
+//        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+        this.mediaOperations.setSubtitleDelay(delayInMilliseconds);
+
+        this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
     }
 
     private void skipToCaption(Caption caption)
     {
-        this.setToTimestampWithSubtitleDelay(caption.start.getMseconds() - EXTRA_TIME_BEFORE_CAPTION);
+        //this.setToTimestampWithSubtitleDelay(caption.start.getMseconds() - EXTRA_TIME_BEFORE_CAPTION);
+        this.mediaOperations.skipToCaption(caption);
     }
 
     private void skipToNextOrPrevCaption(boolean nextOrPrev)
     {
-        if (this.markedCaptionMoments.size() == 0)
-        {
-            return;
-        }
-        this.lastMarkedCaptionIndex += nextOrPrev ? +1 : -1;
+//        if (this.markedCaptionMoments.size() == 0)
+//        {
+//            return;
+//        }
+//        this.lastMarkedCaptionIndex += nextOrPrev ? +1 : -1;
+//
+//        //rotate around
+//        this.lastMarkedCaptionIndex += this.markedCaptionMoments.size();
+//        this.lastMarkedCaptionIndex %= this.markedCaptionMoments.size();
+//
+//        this.skipToCaption(this.markedCaptionMoments.get(this.lastMarkedCaptionIndex));
+        this.mediaOperations.skipToNextOrPrevCaption(nextOrPrev);
 
-        //rotate around
-        this.lastMarkedCaptionIndex += this.markedCaptionMoments.size();
-        this.lastMarkedCaptionIndex %= this.markedCaptionMoments.size();
-
-        this.skipToCaption(this.markedCaptionMoments.get(this.lastMarkedCaptionIndex));
     }
 
     public void setMarkedCaptionMoments(List<Caption> captions)
     {
-        this.markedCaptionMoments = captions;
-        if (this.markedCaptionMoments.size() == 0)
-        {
-            return;
-        }
-
-        this.lastMarkedCaptionIndex = 0;
+//        this.markedCaptionMoments = captions;
+//        if (this.markedCaptionMoments.size() == 0)
+//        {
+//            return;
+//        }
+//
+//        this.lastMarkedCaptionIndex = 0;
+        this.mediaOperations.setMarkedCaptionMoments(captions);
     }
 
     public void skipToMarkedCaptionByIndex(int index)
     {
-        if (index < 0 || index >= this.markedCaptionMoments.size())
-        {
-            throw new IndexOutOfBoundsException("No such caption index!");
-        }
-
-        this.lastMarkedCaptionIndex = index;
-        this.skipToCaption(this.markedCaptionMoments.get(this.lastMarkedCaptionIndex));
+//        if (index < 0 || index >= this.markedCaptionMoments.size())
+//        {
+//            throw new IndexOutOfBoundsException("No such caption index!");
+//        }
+//
+//        this.lastMarkedCaptionIndex = index;
+//        this.skipToCaption(this.markedCaptionMoments.get(this.lastMarkedCaptionIndex));
+        this.skipToMarkedCaptionByIndex(index);
     }
 
-    /**
-     * Belongs to smartChangeSubsDelay.
-     */
-    private int multiplier = 1;
 
     /**
      * This is sort of weird functionality, later I'll probably remove this or change
-     * it to depend on frequency of clicks in a short time period
+     * it to depend on frequency of clicks in a short time period ~~~~ Itamar
      *
      * @param increaseOrDecrease you know
      */
     private void smartChangeSubsDelay(boolean increaseOrDecrease)
     {
-        if (increaseOrDecrease == (this.multiplier > 0))
-        {
-            if (this.multiplier < 99 && this.multiplier > -99)
-            {
-                this.multiplier *= 2;
-            }
-        }
-        else
-        {
-            this.multiplier = increaseOrDecrease ? +1 : -1;
-        }
-
-        long deltaAmount = this.multiplier * 100; //100 ms minimum unit
-        this.subtitleDelayMilliseconds += deltaAmount;
-        this.mediaPlayer.setSpuDelay(this.subtitleDelayMilliseconds * 1000);
-        this.subtitleDelayAmountText.setText(String.format("%d", this.subtitleDelayMilliseconds) + " ms");
+//        if (increaseOrDecrease == (this.multiplier > 0))
+//        {
+//            if (this.multiplier < 99 && this.multiplier > -99)
+//            {
+//                this.multiplier *= 2;
+//            }
+//        }
+//        else
+//        {
+//            this.multiplier = increaseOrDecrease ? +1 : -1;
+//        }
+//
+//        long deltaAmount = this.multiplier * 100; //100 ms minimum unit
+//        this.mediaOperations.subtitleDelayMilliseconds += deltaAmount;
+////        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+//        this.mediaOperations.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+        this.mediaOperations.smartChangeSubsDelay(increaseOrDecrease);
+        this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
     }
 
     private void pauseOrResume()
     {
-        this.mediaPlayer.pause();
+        this.mediaOperations.pause();
     }
 
     private void skipTimeBy(long skipTimeInMilliseconds)
     {
-        this.mediaPlayer.skip(skipTimeInMilliseconds);
+//        this.mediaPlayer.skip(skipTimeInMilliseconds);
+        this.mediaOperations.skipTimeBy(skipTimeInMilliseconds);
     }
 
     public void setSearchedWord(String searchedWord)
     {
-        this.searchedWord = searchedWord;
+//        this.searchedWord = searchedWord;
+        this.mediaOperations.setSearchedWord(searchedWord);
     }
+
+    //endregion
 }
