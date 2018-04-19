@@ -86,7 +86,7 @@ public class DatabaseOperations
 
     public ResultSet executeQuery(String query) throws SQLException
     {
-        //TODO ESCAPE ALL QUERIES!!!!!!!!!!!!!!!
+        //TODO SANITIZE + ESCAPE ALL QUERIES!!!!!!!!!!!!!!!
         return this.statement.executeQuery(query);
     }
 
@@ -97,7 +97,7 @@ public class DatabaseOperations
      * @return
      * @throws SQLException
      */
-    public ResultSet executeQueryLimit(String query, int limit) throws SQLException
+    public ResultSet executeQuery(String query, int limit) throws SQLException
     {
         String limitStr;
 
@@ -113,4 +113,14 @@ public class DatabaseOperations
         return this.statement.executeQuery(query + limitStr);
     }
 
+    /**
+     * Executes a query for finding a single record.
+     * @param query SQL query to execute.
+     * @return The found record.
+     * @throws SQLException
+     */
+    public ResultSet executeQuerySingleRecord(String query) throws SQLException
+    {
+        return this.executeQuery(query, 1);
+    }
 }

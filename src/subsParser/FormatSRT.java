@@ -38,7 +38,7 @@ import java.util.Iterator;
 public class FormatSRT implements TimedTextFileFormat
 {	
 	public TimedTextObject parseFile(String fileName, 
-									 InputStream is, 
+									 InputStream inputStream,
 									 int nSeasonNum, 
 									 int nEpisodeNum) throws IOException
 	{
@@ -65,7 +65,7 @@ public class FormatSRT implements TimedTextFileFormat
 		String line;
 
 		// First, loading the file:
-		InputStreamReader in = new InputStreamReader(is);
+		InputStreamReader in = new InputStreamReader(inputStream);
 		BufferedReader br = new BufferedReader(in);
 
 		// Saving the file name:
@@ -185,7 +185,7 @@ public class FormatSRT implements TimedTextFileFormat
 		finally
 		{
 			// Closing the reader:
-			is.close();
+			inputStream.close();
 	    }
 		
 		tto.built = true;

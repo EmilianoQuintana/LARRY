@@ -1,6 +1,5 @@
 package subsParser;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,9 +34,9 @@ import java.util.Iterator;
 public class FormatSTL implements TimedTextFileFormat {
 
 	public TimedTextObject parseFile(String fileName, 
-									 InputStream is, 
+									 InputStream inputStream,
 									 int nSeasonNum, 
-									 int nEpisodeNum) throws IOException, FatalParsingException {
+									 int nEpisodeNum) throws FatalParsingException {
 
 		TimedTextObject tto = new TimedTextObject();
 		tto.fileName = fileName;
@@ -49,11 +48,11 @@ public class FormatSTL implements TimedTextFileFormat {
 		try {
 			//we read the file
 			//but first we create the possible styles
-			createSTLStyles(tto);
+            this.createSTLStyles(tto);
 
 			int bytesRead;
 			//the GSI block is loaded
-			bytesRead = is.read(gsiBlock);
+			bytesRead = inputStream.read(gsiBlock);
 			if (bytesRead<1024)
 				//the file must contain at least a GSI block and a TTI block
 				//this is a fatal parsing error.
@@ -119,7 +118,7 @@ public class FormatSTL implements TimedTextFileFormat {
 			//the TTI blocks are read
 			for (int i = 0; i < numberOfTTIBlocks; i++) {
 				//the TTI block is loaded
-				bytesRead = is.read(ttiBlock);
+				bytesRead = inputStream.read(ttiBlock);
 				if (bytesRead < 128){
 					//unexpected end of file
 					tto.warnings += "Unexpected end of file, "+i+" blocks read, expecting "+numberOfTTIBlocks+" blocks in total.\n\n";
@@ -138,16 +137,14 @@ public class FormatSTL implements TimedTextFileFormat {
 					tto.warnings += "Unexpected subtitle number at TTI block "+i+". Parsing proceeds...\n\n";
 				//EBN : Extension Block Number 3
 				int ebn = ttiBlock[3];
-				if (ebn != -1)
-					additionalText = true;
-				else additionalText = false;
+                additionalText = ebn != -1;
 
 				//CS : Cumulative Status 4
 				//TCI : Time Code In 5..8
 				String startTime = ""+ttiBlock[5]+":"+ttiBlock[6]+":"+ttiBlock[7]+":"+ttiBlock[8];
 				//TCO : Time Code Out 9..12
-				String endTime = ""+ttiBlock[9]+":"+ttiBlock[10]+":"+ttiBlock[11]+":"+ttiBlock[12];;
-				//VP : Vertical Position 13
+				String endTime = ""+ttiBlock[9]+":"+ttiBlock[10]+":"+ttiBlock[11]+":"+ttiBlock[12];
+                //VP : Vertical Position 13
 				//JC : Justification Code 14
 				int justification = ttiBlock[14];
 				//0:none, 1:left, 2:centered, 3:right
@@ -160,11 +157,11 @@ public class FormatSTL implements TimedTextFileFormat {
 
 					if(additionalText)
 						//if it is just additional text for the caption
-						parseTextForSTL(currentCaption,textField,justification,tto);
+                        this.parseTextForSTL(currentCaption,textField,justification,tto);
 					else {
 						currentCaption.start = new Time(Const.TIME_FORMAT_STL, startTime+"/"+fps);
 						currentCaption.end = new Time(Const.TIME_FORMAT_STL, endTime+"/"+fps);
-						parseTextForSTL(currentCaption,textField,justification,tto);
+                        this.parseTextForSTL(currentCaption,textField,justification,tto);
 					}
 				}
 				//we increase the subtitle number
@@ -176,7 +173,7 @@ public class FormatSTL implements TimedTextFileFormat {
 				tto.warnings += "Number of parsed subtitles ("+subtitleNumber+") different from expected number of subtitles ("+numberOfSubtitles+").\n\n";
 
 			//we close the reader
-			is.close();
+			inputStream.close();
 
 
 			tto.cleanUnusedStyles();

@@ -14,7 +14,7 @@ public class Caption
     public int mediaID;
     private int seasonNum;
     private int episodeNum;
-    public int captionNum;
+    public int captionID;
     public Time start;
     public Time end;
 
@@ -23,6 +23,31 @@ public class Caption
 
     // Cleaned-up content:
     public String content = "";
+
+    public Caption()
+    {
+        this.seasonNum = Caption.NO_SEASON;
+        this.episodeNum = Caption.NO_EPISODE;
+    }
+
+    public Caption(int seasonNum, int episodeNum, int captionID, Time startTime, Time endTime, String content)
+            throws Messages.SeasonNumberTooBigException
+    {
+        this.setAttributes(seasonNum, episodeNum, captionID, startTime, endTime, content);
+    }
+
+    //region Setters and Getters
+
+    public void setAttributes(int seasonNum, int episodeNum, int captionID, Time startTime, Time endTime,
+                              String content) throws Messages.SeasonNumberTooBigException
+    {
+        this.setSeasonNum(seasonNum);
+        this.setEpisodeNum(episodeNum);
+        this.setCaptionID(captionID);
+        this.setStartTime(startTime);
+        this.setEndTime(endTime);
+        this.setContent(content);
+    }
 
     /**
      * @return This Caption's Media ID number.
@@ -82,7 +107,15 @@ public class Caption
      */
     public void setEpisodeNum(int episodeNum)
     {
-
+        if (episodeNum < 0)
+        {
+            this.episodeNum = Caption.NO_EPISODE;
+        }
+        else
+        {
+            //TODO add a check for MAX EPISODE (no definition yet)
+            this.episodeNum = episodeNum;
+        }
     }
 
     /**
@@ -107,8 +140,34 @@ public class Caption
      */
     public String getEpisode(int i_Digits)
     {
-        return String.format("%0" + i_Digits + "d", this.episodeNum);
+        return (String.format("%0" + i_Digits + "d", this.episodeNum));
     }
+
+    public void setStartTime(Time start)
+    {
+        // TODO validation
+        this.start = start;
+    }
+
+    public void setEndTime(Time end)
+    {
+        // TODO validation
+        this.end = end;
+    }
+
+    public void setContent(String content)
+    {
+        // TODO validation
+        this.content = content;
+    }
+
+    public void setCaptionID(int captionID)
+    {
+        // TODO validation
+        this.captionID = captionID;
+    }
+
+    //endregion
 
     /**
      * Cleans this Caption's content from SRT garbage such as XML tags.
@@ -141,6 +200,7 @@ public class Caption
 
     /**
      * Returns this caption's details in an easy-to-read manner.
+     *
      * @return A <code>String</code> of this Caption's SeasonNumber, EpisodeNumber, Start- and End-Times.
      */
     @Override

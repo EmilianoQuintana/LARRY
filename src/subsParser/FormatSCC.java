@@ -35,7 +35,7 @@ import java.util.Iterator;
 public class FormatSCC implements TimedTextFileFormat {
 
 	public TimedTextObject parseFile(String fileName, 
-									 InputStream is, 
+									 InputStream inputStream,
 									 int nSeasonNum, 
 									 int nEpisodeNum) throws IOException, FatalParsingException
 	{
@@ -54,7 +54,7 @@ public class FormatSCC implements TimedTextFileFormat {
 		String color = null;
 
 		//first lets load the file
-		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
 		//the file name is saved
 		tto.fileName = fileName;
@@ -71,8 +71,8 @@ public class FormatSCC implements TimedTextFileFormat {
 				throw new FatalParsingException("The fist line should define the file type: \"Scenarist_SCC V1.0\"");
 
 			} else {
-				
-				createSCCStyles(tto);
+
+                this.createSCCStyles(tto);
 				
 				tto.warnings+="Only data from CC channel 1 will be extracted.\n\n";
 				line = br.readLine();
@@ -106,14 +106,14 @@ public class FormatSCC implements TimedTextFileFormat {
 									
 									if (isBuffered){
 										//we decode the byte and add it to the text buffer
-										textBuffer += decodeChar(c1);
+										textBuffer += this.decodeChar(c1);
 										//we decode the second char and add it, this one can be empty.
-										textBuffer += decodeChar(c2);
+										textBuffer += this.decodeChar(c2);
 									} else {
 										//we decode the byte and add it to the text screen
-										newCaption.content += decodeChar(c1);
+										newCaption.content += this.decodeChar(c1);
 										//we decode the second char and add it, this one can be empty.
-										newCaption.content += decodeChar(c2);
+										newCaption.content += this.decodeChar(c2);
 									}
 								}
 
@@ -261,10 +261,8 @@ public class FormatSCC implements TimedTextFileFormat {
 
 										} else if ((word&0x1770)==0x1120){
 											//it is a midrow style code
-											if((word&0x001)==1)
-												//it is underlined
-												underlined = true;
-											else underlined = false;
+                                            //it is underlined
+                                            underlined = (word & 0x001) == 1;
 											//setting style for text
 											word&=0x000e;
 											word = (short)(word>>1);
@@ -313,20 +311,20 @@ public class FormatSCC implements TimedTextFileFormat {
 											//coded value is extracted
 											if (isBuffered)
 												//we decode the special char and add it to the text buffer
-												textBuffer += decodeSpecialChar(word);
+												textBuffer += this.decodeSpecialChar(word);
 											 else 
 												//we decode the special char and add it to the text
-												 newCaption.content += decodeSpecialChar(word);
+												 newCaption.content += this.decodeSpecialChar(word);
 										} else if ((word&0x1660)==0x1220){
 											//it is an extended character code
 											word&=0x011f;
 											//coded value is extracted
 											if (isBuffered)
 												//we decode the extended char and add it to the text buffer
-												decodeXtChar(textBuffer, word);
+                                                this.decodeXtChar(textBuffer, word);
 											 else 
 												//we decode the extended char and add it to the text
-												decodeXtChar(newCaption.content, word);
+                                                this.decodeXtChar(newCaption.content, word);
 
 										} else {
 											//non recognized code
@@ -349,8 +347,8 @@ public class FormatSCC implements TimedTextFileFormat {
 				
 				if(newCaption != null) {
 					//we save any last shown caption
-					newCaption.end = new Time("h:m:s:f/fps", "99:59:59:29/29.97");;
-				}
+					newCaption.end = new Time("h:m:s:f/fps", "99:59:59:29/29.97");
+                }
 				if (newCaption.start != null){
 					//we save the caption
 					int key = newCaption.start.mseconds;
@@ -366,7 +364,7 @@ public class FormatSCC implements TimedTextFileFormat {
 			tto.warnings+= "unexpected end of file at line "+lineCounter+", maybe last caption is not complete.\n\n";
 		} finally{
 			//we close the reader
-			is.close();
+			inputStream.close();
 		}
 
 		tto.built = true;
@@ -431,7 +429,7 @@ public class FormatSCC implements TimedTextFileFormat {
 			}
 			
 			//we add the coded caption text along with any styles to the off-screen buffer
-			line += codeText(newC);
+			line += this.codeText(newC);
 			//lastly we display the caption
 			line += "8080 8080 942f 942f\n";
 			
@@ -480,7 +478,7 @@ public class FormatSCC implements TimedTextFileFormat {
 		//we add the caption style using midrow codes
 		
 		//we code the caption text
-		toReturn+= codeChar(lines[i].toCharArray());
+		toReturn+= this.codeChar(lines[i].toCharArray());
 
 		if (lines.length > 1){
 			//and next line
@@ -503,7 +501,7 @@ public class FormatSCC implements TimedTextFileFormat {
 			//we add the caption style using midrow codes
 
 			//we code the caption text
-			toReturn+= codeChar(lines[i].toCharArray());
+			toReturn+= this.codeChar(lines[i].toCharArray());
 
 			if (lines.length > 2){
 				//and next line
@@ -524,7 +522,7 @@ public class FormatSCC implements TimedTextFileFormat {
 				//we add the caption style using midrow codes
 
 				//we code the caption text
-				toReturn+= codeChar(lines[i].toCharArray());
+				toReturn+= this.codeChar(lines[i].toCharArray());
 
 				if (lines.length > 3){
 					//and next line
@@ -545,7 +543,7 @@ public class FormatSCC implements TimedTextFileFormat {
 					//we add the caption style using midrow codes
 
 					//we code the caption text
-					toReturn+= codeChar(lines[i].toCharArray());
+					toReturn+= this.codeChar(lines[i].toCharArray());
 
 				}
 			}

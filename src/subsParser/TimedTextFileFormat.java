@@ -33,14 +33,15 @@ import java.io.InputStream;
 public interface TimedTextFileFormat {
 	
 	/**
-	 * This methods receives the path to a file, parses it, and returns a TimedTextObject
+	 * Parses a subtitle file from a given FilePath, and returns a TimedTextObject of the parsed captions:
 	 * 
-	 * @param path String that contains the path to the file
+	 * @param fileName Path of the desired file
+	 * @param inputStream InputStream of the actual file.
 	 * @return TimedTextObject representing the parsed file
 	 * @throws java.io.IOException when having trouble reading the file from the given path
 	 */
 	TimedTextObject parseFile(String fileName, 
-							  InputStream is, 
+							  InputStream inputStream,
 							  int nSeasonNum, 
 							  int nEpisodeNum) throws IOException, FatalParsingException;
 	

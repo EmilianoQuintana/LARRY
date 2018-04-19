@@ -12,8 +12,11 @@ import java.util.regex.Pattern;
 
 public class SubsCollection
 {
+    private enum sqlGetCaptionsQueryVariation { ALL_CAPTIONS, CAPTIONS_FOR_SPECIFIC_EPISODE }
+
     private static final int NONEXISTENT_ID = -1;
     private static final int MINIMUM_SUBWORD_LENGTH = 3;
+    private static final String REGEX_SPLIT_TO_WORDS = "[^\\p{L}0-9']+"; // alternative: "\\P{L}+"
 
     public static final int MAX_FILES_TO_ADD = 999;
 
@@ -43,7 +46,7 @@ public class SubsCollection
 
     public boolean hasFileInLibrary(String fileName) throws SQLException
     {
-        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectFileFromFilesSeen(fileName), 1);
+        ResultSet results = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectFileFromFilesSeen(fileName));
 //                SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
 //                        SQL.sanitize(fileName) + "'", 1);
         return results.next();
@@ -91,23 +94,28 @@ public class SubsCollection
                         SQL.sanitize(caption.start.toSQLTime3()) + "', '" + SQL.sanitize(caption.end.toSQLTime3()) +
                         "', '" +
                         SQL.sanitize(caption.content) + "')");
-        ResultSet results = this.databaseOperations.executeQuery(SQL.SELECT + " LAST_INSERT_ID()");
+
+        ResultSet results = this.databaseOperations.executeQuery(SQL.SELECT + " " + SQL.LAST_INSERT_ID);
         results.next();
+
         int caption_id = results.getInt(1); //TODO test
 
         // Splitting the caption's text into words, using regex:
-        String[] wordsInCaption = caption.content.split("[^\\p{L}0-9']+"); // alternative: "\\P{L}+"
+        String[] wordsInCaption = caption.content.split(SubsCollection.REGEX_SPLIT_TO_WORDS);
 
         for (String fullWord : wordsInCaption)
         {
             fullWord = fullWord.toLowerCase();
-            //First insert the entire word
+
+            // First, inserting the entire word as in the original caption:
             boolean firstTimeWordIsInThisCaption = this.insertCaptionWord(fullWord, caption_id);
+
             if (!firstTimeWordIsInThisCaption)
             {
                 continue;
             }
-            // Iterate on every possible substring of the full word (to insert partial words)
+
+            // Iterating on every possible substring of the full word (to insert partial words, not yet variations on word's root etc.)
             for (int i = 0; i < fullWord.length(); i++)
             {
                 for (int j = i + 1; j <= fullWord.length(); j++)
@@ -136,61 +144,74 @@ public class SubsCollection
         }
     }
 
+    /**
+     * Returns all the captions that contain a given word.
+     * @param word The desired word to be contained in the found captions.
+     * @param captionCountLimit Maximum number of captions to return.
+     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @return All captions that contain the given word.
+     * @throws SQLException
+     * @throws Messages.SeasonNumberTooBigException
+     */
     public List<Caption> getAllCaptionsFor(String word, int captionCountLimit, boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
-        String lowercaseWord = word.toLowerCase();
+        return this.getAllCaptionsFor(SubsCollection.sqlGetCaptionsQueryVariation.ALL_CAPTIONS,  word, captionCountLimit, sortByQuality);
 
-        int wordID = this.getWordID(lowercaseWord);
-
-        if (wordID == NONEXISTENT_ID)
-        {
-            Messages.printInConsole(new Messages.WordNotFoundException(word).getMessage());
-            return new LinkedList<>();
-        }
-
-        /*
-        ResultSet captionIDsResults = databaseOperations.executeQueryLimit("SELECT caption_id FROM t_words_to_captions WHERE word_id = '" + wordID + "'", captionCountLimit);
-
-        List<Integer> captionIDs = new LinkedList<>();
-
-        while (captionIDsResults.next())
-        {
-            captionIDs.add(captionIDsResults.getInt(1));
-        }
-*/
-
-        ResultSet resultSet = this.databaseOperations.executeQueryLimit(
-                "SELECT " + SQL.TBL.CAPTIONS + ".*" +
-                        " FROM " + SQL.TBL.CAPTIONS +
-                        " INNER JOIN " + SQL.TBL.WORDS_TO_CAPTIONS +
-                        " ON " + SQL.TBL.WORDS_TO_CAPTIONS + ".word_id = " + SQL.TBL.WORDS + ".word_id" +
-                        " INNER JOIN " + SQL.TBL.WORDS +
-                        " ON " + SQL.TBL.WORDS + ".word = " + "'" + SQL.sanitize(lowercaseWord) + "'" +
-                        " WHERE " + SQL.TBL.CAPTIONS + ".caption_id = " + SQL.TBL.WORDS_TO_CAPTIONS + ".caption_id",
-                captionCountLimit);
-
-        List<Caption> result = new LinkedList<>();
-        Dictionary<Caption, Integer> captionSortKeys = new Hashtable<>();
-
-        while (resultSet.next())
-        {
-            Caption cap = new Caption();
-            cap.content = resultSet.getString("content");
-            cap.captionNum = resultSet.getInt("caption_id");
-            cap.setSeasonNum(resultSet.getInt("season_num"));
-            cap.setEpisodeNum(resultSet.getInt("episode_num"));
-            cap.start = new Time(Const.TIME_FORMAT_SRT, resultSet.getString("start"));
-            cap.end = new Time(Const.TIME_FORMAT_SRT, resultSet.getString("end"));
-            captionSortKeys.put(cap, SubsCollection.calcSortKeyForCaption(cap, lowercaseWord));
-            result.add(cap);
-        }
-
-        result.sort(Comparator.comparingInt(captionSortKeys::get));
-
-        return result;
+//        String lowercaseWord = word.toLowerCase();
+//        int wordID = this.getWordID(lowercaseWord);
+//
+//        List<Caption> result = new LinkedList<>();
+//
+//        if (wordID == NONEXISTENT_ID)
+//        {
+//            Messages.printInConsole(new Messages.WordNotFoundException(word).getMessage());
+//        }
+//        else
+//        {
+//            ResultSet resultSet = this.databaseOperations
+//                    .executeQuery(SQL.Query.selectAllCaptionsForWord(wordID), captionCountLimit);
+//
+//            Dictionary<Caption, Integer> captionSortKeys = new Hashtable<>();
+//
+//            while (resultSet.next())
+//            {
+//                Caption cap = new Caption(
+//                    resultSet.getInt(SQL.COL.SEASON_NUM),
+//                    resultSet.getInt(SQL.COL.EPISODE_NUM),
+//                    resultSet.getInt(SQL.COL.CAPTION_ID),
+//                    new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.START)),
+//                    new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.END)),
+//                    resultSet.getString(SQL.COL.CONTENT));
+//
+////                cap.content = resultSet.getString(SQL.COL.CONTENT);
+////                cap.captionID = resultSet.getInt(SQL.COL.CAPTION_ID);
+////                cap.setSeasonNum(resultSet.getInt(SQL.COL.SEASON_NUM));
+////                cap.setEpisodeNum(resultSet.getInt(SQL.COL.EPISODE_NUM));
+////                cap.start = new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.START));
+////                cap.end = new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.END));
+//
+//                captionSortKeys.put(cap, SubsCollection.calcSortKeyForCaption(cap, lowercaseWord));
+//                result.add(cap);
+//            }
+//
+//            result.sort(Comparator.comparingInt(captionSortKeys::get));
+//        }
+//
+//        return result;
     }
 
+    /**
+     * Returns all captions of a single episode that contain a given word.
+     * @param word The desired word to be contained in the found captions.
+     * @param seasonNum Number of the desired season to search in.
+     * @param episodeNum Number of the desired episode to search in.
+     * @param captionCountLimit Maximum number of captions to return.
+     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @return All captions of a single episode that contain the given word.
+     * @throws SQLException
+     * @throws Messages.SeasonNumberTooBigException
+     */
     public List<Caption> getAllCaptionsInEpisodeFor(String word, int seasonNum, int episodeNum, int captionCountLimit,
                                                     boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
@@ -212,10 +233,69 @@ public class SubsCollection
         return list;
     }
 
+    private List<Caption> getAllCaptionsFor(SubsCollection.sqlGetCaptionsQueryVariation queryVariation, String word, int captionCountLimit, boolean sortByQuality)
+            throws SQLException, Messages.SeasonNumberTooBigException
+    {
+        String lowercaseWord = word.toLowerCase();
+        int wordID = this.getWordID(lowercaseWord);
+
+        List<Caption> result = new LinkedList<>();
+
+        if (wordID == NONEXISTENT_ID)
+        {
+            Messages.printInConsole(new Messages.WordNotFoundException(word).getMessage());
+        }
+        else
+        {
+            String sqlQuery = null;
+
+            switch (queryVariation)
+            {
+                case ALL_CAPTIONS:
+                    sqlQuery = SQL.Query.selectAllCaptionsForWord(wordID);
+                    break;
+
+                case CAPTIONS_FOR_SPECIFIC_EPISODE:
+                    sqlQuery = SQL.Query.selectAllCaptionsForWord(word);
+                    break;
+            }
+
+            ResultSet resultSet = this.databaseOperations
+                    .executeQuery(sqlQuery, captionCountLimit);
+
+            Dictionary<Caption, Integer> captionSortKeys = new Hashtable<>();
+
+            while (resultSet.next())
+            {
+                Caption cap = new Caption(
+                        resultSet.getInt(SQL.COL.SEASON_NUM),
+                        resultSet.getInt(SQL.COL.EPISODE_NUM),
+                        resultSet.getInt(SQL.COL.CAPTION_ID),
+                        new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.START)),
+                        new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.END)),
+                        resultSet.getString(SQL.COL.CONTENT));
+
+//                cap.content = resultSet.getString(SQL.COL.CONTENT);
+//                cap.captionID = resultSet.getInt(SQL.COL.CAPTION_ID);
+//                cap.setSeasonNum(resultSet.getInt(SQL.COL.SEASON_NUM));
+//                cap.setEpisodeNum(resultSet.getInt(SQL.COL.EPISODE_NUM));
+//                cap.start = new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.START));
+//                cap.end = new Time(Const.TIME_FORMAT_SRT, resultSet.getString(SQL.COL.END));
+
+                captionSortKeys.put(cap, SubsCollection.calcSortKeyForCaption(cap, lowercaseWord));
+                result.add(cap);
+            }
+
+            result.sort(Comparator.comparingInt(captionSortKeys::get));
+        }
+
+        return result;
+    }
+
     public String getMediaName(int mediaID)
             throws SQLException
     {
-        ResultSet resultSet = this.databaseOperations.executeQueryLimit(SQL.Query.selectMediaIDFromMedias(mediaID), 1);
+        ResultSet resultSet = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectMediaNameFromMedias(mediaID));
 
         if (!resultSet.next())
         {
@@ -225,9 +305,15 @@ public class SubsCollection
         return resultSet.getString(SQL.COL.MEDIA_NAME);
     }
 
+    /**
+     * Returns the ID in the DB of a desired word.
+     * @param word The desired word.
+     * @return The numeric ID of the desired word.
+     * @throws SQLException
+     */
     private int getWordID(String word) throws SQLException
     {
-        ResultSet results = this.databaseOperations.executeQueryLimit(SQL.Query.selectWordIDFromWords(word), 1);
+        ResultSet results = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectWordIDFromWords(word));
 
         if (!results.next())
         {
@@ -237,6 +323,9 @@ public class SubsCollection
     }
 
     /**
+     * //TODO not use this method, instead work in batches with a single COMMIT at the end
+     * I have a feeling that this method is VERY WASTEFUL in resources. It accesses the DB multiple times and it only adds a single word!
+     * ~~~~ Cuky.
      * @return false if the word-caption pair was already in there
      */
     private boolean insertCaptionWord(String word, int caption_id) throws SQLException
@@ -251,25 +340,23 @@ public class SubsCollection
         int word_id = this.getWordID(word);
         if (word_id == NONEXISTENT_ID)
         {
-            this.databaseOperations
-                    .executeUpdate(
-                            SQL.INSERT_INTO + " " + SQL.TBL.WORDS + " (" + SQL.COL.WORD + ") " + SQL.VALUES + " ('" +
-                                    SQL.sanitize(word) + "')");
-            ResultSet results = this.databaseOperations.executeQuery("SELECT LAST_INSERT_ID()");
+            this.databaseOperations.executeUpdate(SQL.Query.insertWordIntoWords(word));
+
+            ResultSet results = this.databaseOperations.executeQuery(SQL.SELECT + SQL.LAST_INSERT_ID);
             results.next();
             word_id = results.getInt(1); //TODO test
         }
 
         // Now the word is in the collection in any case
 
-        //Now check if this word-caption combination is already in the words_to_captions table
-        ResultSet results = this.databaseOperations.executeQueryLimit(
-                "SELECT * FROM " + SQL.TBL.WORDS_TO_CAPTIONS + " WHERE word_id = " + SQL.sanitize(word_id) +
-                        " AND caption_id = " + SQL.sanitize(caption_id), 1);
+        // Now check if this word-caption combination is already in the words_to_captions table
+        ResultSet results = this.databaseOperations.executeQuerySingleRecord(
+                SQL.SELECT + "*" + SQL.FROM + SQL.TBL.WORDS_TO_CAPTIONS + SQL.WHERE + " word_id = " + SQL.sanitize(word_id) +
+                        " AND caption_id = " + SQL.sanitize(caption_id));
         if (!results.next())
         {
             this.databaseOperations.executeUpdate(
-                    SQL.INSERT_INTO + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) VALUES (" +
+                    SQL.INSERT_INTO + SQL.TBL.WORDS_TO_CAPTIONS + " (word_id, caption_id) " + SQL.VALUES + "(" +
                             SQL.sanitize(word_id) +
                             ", " + SQL.sanitize(caption_id) + ")");
             return true;
@@ -278,12 +365,19 @@ public class SubsCollection
         return false;
     }
 
+    /**
+     * Calculates the Sort Key for a given caption.
+     * @param cap The desired Caption, the content of which should be scanned and calculated on.
+     * @param lowercaseWord The desired word (in lower-case) to calculate the Sort Key for.
+     * @return 0 if the caption contains the given word in its whole, or 1 otherwise.
+     */
     private static int calcSortKeyForCaption(Caption cap, String lowercaseWord)
     {
         String regex = ".*\\b" + Pattern.quote(lowercaseWord) + "\\b.*";
+
         if (cap.content.matches(regex))
         {
-            //Content contains *whole* word, not as part of another word
+            //Content contains WHOLE word, not as part of another word:
             return 0;
         }
         else

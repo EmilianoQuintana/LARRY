@@ -241,3 +241,380 @@ org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL s
 2018-04-15 23:16:57 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
  LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:01:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:11:39 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:17:02 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:18:11 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement " LIMIT[*] 1"; SQL statement:
+ LIMIT 1 [42000-196]
+2018-04-18 23:23:41 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Syntax error in SQL statement "SELECT * LIMIT 10000 FROM[*] T_CAPTIONS "; SQL statement:
+select * limit 10000 from T_CAPTIONS [42000-196]
+2018-04-19 15:55:36 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Table "T_WORD_TO_CAPTIONS" not found; SQL statement:
+SELECT t_captions.*
+            FROM t_captions
+            INNER JOIN t_word_to_captions ON t_words_to_captions.caption_id = t_captions.caption_id
+            INNER JOIN t_words            ON t_words.word_id = t_words_to_captions.word_id
+            WHERE t_words.word = 'all' [42102-196]
+2018-04-19 16:18:21 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLException: Data conversion error converting "say"; SQL statement:
+SELECT t_captions.*
+                FROM t_words
+                INNER JOIN t_words_to_captions ON t_words_to_captions.word_id = t_words.word_id
+                INNER JOIN t_captions          ON t_captions.caption_id       = t_words_to_captions.caption_id
+                WHERE t_words.word_id = 'say' [22018-196]

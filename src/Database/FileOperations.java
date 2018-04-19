@@ -18,6 +18,13 @@ public class FileOperations
     private static final String ALL_FILE_EXTENSIONS = "*.*";
     private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
+    /**
+     * Scans a given folder for Subtitle files and inserts them into a given SubsCollection object.
+     * @param subsCollection SubsCollection object into which to put the found subtitles.
+     * @param filePrefix Fixed prefix for the subtitle files.
+     * @param folderPath Path to the desired folder.
+     * @throws Messages.EmptyFolderException
+     */
     public static void updateSubsCollectionFromFolder(SubsCollection subsCollection, String filePrefix,
                                                       String folderPath)
             throws Messages.EmptyFolderException
@@ -44,6 +51,26 @@ public class FileOperations
                 try
                 {
                     String name = currFile.getName();
+
+                    Messages.printInConsole(name + "\t\t");
+
+                    if (!name.startsWith(filePrefix))
+                    {
+                        Messages.printInConsole(
+                                new Messages.FileDoesNotStartWithPrefixException(filePrefix).getMessage());
+                        continue;
+                    }
+                    if (subsCollection.hasFileInLibrary(name))
+                    {
+                        Messages.printInConsole(new Messages.FileAlreadyInLibraryException(name).getMessage());
+                        continue;
+                    }
+                    else
+                    {
+                        subsCollection.addFileNameToLibrary(name);
+                        Messages.printInConsole(Messages.MSG_ADDING_FILE);
+                    }
+
                     String extension = FileOperations.getCleanExtension(name);
 
                     TimedTextFileFormat timedTextFileFormat;
@@ -69,49 +96,37 @@ public class FileOperations
                             timedTextFileFormat = null;
                             break; //will simply ignore the file
                     }
+
+                    // Ignoring empty or unsupported Subtitle files:
                     if (timedTextFileFormat == null)
                     {
                         continue;
                     }
 
-                    System.out.print(name + "\t\t");
-                    if (!name.startsWith(filePrefix))
-                    {
-                        Messages.printInConsole(
-                                new Messages.FileDoesNotStartWithPrefixException(filePrefix).getMessage());
-                        continue;
-                    }
-                    if (subsCollection.hasFileInLibrary(name))
-                    {
-                        Messages.printInConsole(new Messages.FileAlreadyInLibraryException(name).getMessage());
-                        continue;
-                    }
-                    else
-                    {
-                        subsCollection.addFileNameToLibrary(name);
-                        Messages.printInConsole(Messages.MSG_ADDING_FILE);
-                    }
-
+                    // Getting Season Number and Episode Number from the filename:
                     int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(name);
                     int seasonNum = Caption.NO_SEASON;
                     int episodeNum = Caption.NO_EPISODE;
+
+                    // Putting the found SeasonNum and EpisodeNum:
                     if (seasonAndEpisode != null)
                     {
                         seasonNum = seasonAndEpisode[0];
                         episodeNum = seasonAndEpisode[1];
                     }
 
+                    // Reading the currently iterated Subtitles file, parsing it and adding to the SubsCollection:
                     InputStream fileInputStream = new FileInputStream(currFile);
 
                     TimedTextObject tto = timedTextFileFormat
                             .parseFile(currFile.getName(), fileInputStream, seasonNum, episodeNum);
 
-                    for (Caption c : tto.captions.values())
+                    for (Caption caption : tto.captions.values())
                     {
-                        subsCollection.addCaption(c);
+                        subsCollection.addCaption(caption);
                     }
 
-                    Messages.printInConsole(Messages.MSG_ADDED_FILE); //continues from the "Adding..." line
+                    Messages.printInConsole(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
 
 
                 } catch (Exception ex)
@@ -394,9 +409,5 @@ public class FileOperations
         }
 
         return new int[]{seasonNum, episodeNum};
-
-        //// TEST - TEMPORARY
-
-
     }
 }

@@ -7,7 +7,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,9 +40,9 @@ import java.util.Iterator;
 public class FormatTTML implements TimedTextFileFormat
 {
 	public TimedTextObject parseFile(String fileName, 
-									 InputStream is, 
+									 InputStream inputStream,
 									 int nSeasonNum, 
-									 int nEpisodeNum) throws IOException, FatalParsingException {
+									 int nEpisodeNum) throws FatalParsingException {
 
 		TimedTextObject tto = new TimedTextObject();
 		tto.fileName = fileName;
@@ -52,7 +51,7 @@ public class FormatTTML implements TimedTextFileFormat
 		DocumentBuilder dBuilder;
 		try {
 			dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(is);
+			Document doc = dBuilder.parse(inputStream);
 			doc.getDocumentElement().normalize();
 			
 			//we recover the metadata
@@ -92,12 +91,12 @@ public class FormatTTML implements TimedTextFileFormat
 				//we check for background color
 				currentAtr = attr.getNamedItem("tts:backgroundColor");
 				if (currentAtr != null)
-					style.backgroundColor = parseColor(currentAtr.getNodeValue(),tto);
+					style.backgroundColor = this.parseColor(currentAtr.getNodeValue(),tto);
 				
 				//we check for color
 				currentAtr = attr.getNamedItem("tts:color");
 				if (currentAtr != null)
-					style.color = parseColor(currentAtr.getNodeValue(),tto);
+					style.color = this.parseColor(currentAtr.getNodeValue(),tto);
 				
 				//we check for font family
 				currentAtr = attr.getNamedItem("tts:fontFamily");
@@ -182,16 +181,17 @@ public class FormatTTML implements TimedTextFileFormat
 				caption.start = new Time("", "");
 				caption.end = new Time("", "");
 				if (currentAtr != null)
-					caption.start.mseconds = parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
+					caption.start.mseconds = this.parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
 
 				//we get the end time, if present, duration is ignored, otherwise end is calculated from duration
 				currentAtr = attr.getNamedItem("end");
 				if (currentAtr != null)
-					caption.end.mseconds = parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
+					caption.end.mseconds = this.parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
 				else {
 					currentAtr = attr.getNamedItem("dur");
 					if (currentAtr != null)
-						caption.end.mseconds = caption.start.mseconds + parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
+						caption.end.mseconds = caption.start.mseconds +
+                                this.parseTimeExpression(currentAtr.getNodeValue(), tto, doc);
 					else 
 						//no end or duration, invalid format, caption is discarded
 						validCaption = false;

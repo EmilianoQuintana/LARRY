@@ -30,7 +30,6 @@ public class DBLarry
 
     /**
      * Creates the whole DB structure, including tables, columns and their attributes.
-     *
      * @throws SQLException
      */
     private void initializeDatabase() throws SQLException
@@ -55,6 +54,7 @@ public class DBLarry
     }
 
     /**
+     * //TODO What is the purpose of this method? It seems I've wrote it but I cannot remember why. ~~~~ Cuky 18.04.2018
      * Tries to find a path for the file containing the given Caption.
      * It will return a found file if its name begins with the prefix string, including matching seasons/episode if necessary.
      * @param caption       Caption, according to which to search for a matching file.

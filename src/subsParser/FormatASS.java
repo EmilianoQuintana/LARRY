@@ -36,7 +36,7 @@ import java.util.Iterator;
 public class FormatASS implements TimedTextFileFormat {
 
 	public TimedTextObject parseFile(String fileName, 
-									 InputStream is, 
+									 InputStream inputStream,
 									 int nSeasonNum, 
 									 int nEpisodeNum) throws IOException {
 		
@@ -57,7 +57,7 @@ public class FormatASS implements TimedTextFileFormat {
 		String [] dialogueFormat;
 
 		//first lets load the file
-		InputStreamReader in= new InputStreamReader(is);
+		InputStreamReader in= new InputStreamReader(inputStream);
 		BufferedReader br = new BufferedReader(in);
 
 		String line;
@@ -114,8 +114,8 @@ public class FormatASS implements TimedTextFileFormat {
 							tto.warnings+="Format: (format definition) expected at line "+line+" for the styles section\n\n";
 							while (!line.startsWith("Format:")){
 								lineCounter++;
-								line=br.readLine().trim();;
-							}
+								line=br.readLine().trim();
+                            }
 						}
 						// we recover the format's fields
 						styleFormat = line.split(":")[1].trim().split(",");
@@ -126,7 +126,8 @@ public class FormatASS implements TimedTextFileFormat {
 							//we check it is a style
 							if (line.startsWith("Style:")){
 								//we parse the style
-								style = parseStyleForASS(line.split(":")[1].trim().split(","),styleFormat,lineCounter,isASS,tto.warnings);
+								style = this
+                                        .parseStyleForASS(line.split(":")[1].trim().split(","),styleFormat,lineCounter,isASS,tto.warnings);
 								//and save the style
 								tto.styling.put(style.iD, style);
 							}
@@ -160,7 +161,7 @@ public class FormatASS implements TimedTextFileFormat {
 							//WARNING: all other events are ignored.
 							if (line.startsWith("Dialogue:")){
 								//we parse the dialogue
-								caption = parseDialogueForASS(line.split(":",2)[1].trim().split(",",dialogueFormat.length),dialogueFormat,timer, tto);
+								caption = this.parseDialogueForASS(line.split(":",2)[1].trim().split(",",dialogueFormat.length),dialogueFormat,timer, tto);
 								//and save the caption
 								int key = caption.start.mseconds;
 								//in case the key is already there, we increase it by a millisecond, since no duplicates are allowed
@@ -193,7 +194,7 @@ public class FormatASS implements TimedTextFileFormat {
 			tto.warnings+= "unexpected end of file, maybe last caption is not complete.\n\n";
 		} finally{
 			//we close the reader
-			is.close();
+			inputStream.close();
 		}
 
 		tto.built = true;
@@ -261,11 +262,11 @@ public class FormatASS implements TimedTextFileFormat {
 			styleLine+= current.iD+",";
 			styleLine+= current.font+",";
 			styleLine+= current.fontSize+",";
-			styleLine+= getColorsForASS(tto.useASSInsteadOfSSA, current);
-			styleLine+= getOptionsForASS(tto.useASSInsteadOfSSA, current);
+			styleLine+= this.getColorsForASS(tto.useASSInsteadOfSSA, current);
+			styleLine+= this.getOptionsForASS(tto.useASSInsteadOfSSA, current);
 			//BorderStyle, Outline, Shadow
 			styleLine+= "1,2,2,";
-			styleLine+= getAlignForASS(tto.useASSInsteadOfSSA, current.textAlign);
+			styleLine+= this.getAlignForASS(tto.useASSInsteadOfSSA, current.textAlign);
 			//MarginL, MarginR, MarginV
 			styleLine+= ",0,0,0,";
 			//AlphaLevel
