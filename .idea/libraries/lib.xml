@@ -3,17 +3,22 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="file://$PROJECT_DIR$/lib/commons-io-2.6" />
+      <root url="file://$PROJECT_DIR$/lib/vlcj_api" />
     </CLASSES>
     <JAVADOC>
       <root url="file://$PROJECT_DIR$/lib/commons-io-2.6/docs" />
+      <root url="jar://$PROJECT_DIR$/lib/vlcj-3.10.1-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
       <root url="file://$PROJECT_DIR$/lib" />
       <root url="file://$PROJECT_DIR$/lib/commons-io-2.6" />
+      <root url="file://$PROJECT_DIR$/lib/vlcj_api" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/commons-io-2.6" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/vlcj_api" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" type="SOURCES" />
     <jarDirectory url="file://$PROJECT_DIR$/lib/commons-io-2.6" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/vlcj_api" recursive="false" type="SOURCES" />
   </library>
 </component>

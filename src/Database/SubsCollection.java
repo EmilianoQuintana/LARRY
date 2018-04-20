@@ -1,10 +1,12 @@
 package Database;
 
 import LARRY.Messages;
-import subsParser.Caption;
-import subsParser.Const;
-import subsParser.Time;
+import subsParser.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -12,8 +14,6 @@ import java.util.regex.Pattern;
 
 public class SubsCollection
 {
-    private enum sqlGetCaptionsQueryVariation { ALL_CAPTIONS, CAPTIONS_FOR_SPECIFIC_EPISODE }
-
     private static final int NONEXISTENT_ID = -1;
     private static final int MINIMUM_SUBWORD_LENGTH = 3;
     private static final String REGEX_SPLIT_TO_WORDS = "[^\\p{L}0-9']+"; // alternative: "\\P{L}+"
@@ -30,26 +30,78 @@ public class SubsCollection
 
     public void addFileNameToLibrary(String fileName) throws SQLException
     {
+//        SQL.INSERT_INTO + SQL.TBL.FILES_SEEN + " (" + SQL.COL.FILE_NAME + ") " +
+//          SQL.VALUES + " ('" + SQL.sanitize(fileName) + "')");
         this.databaseOperations.executeUpdate(SQL.Query.insertFileNameToFilesSeen(fileName));
-
-//                SQL.INSERT_INTO + SQL.TBL.FILES_SEEN + " (" + SQL.COL.FILE_NAME + ") " + SQL.VALUES + " ('" +
-//                        SQL.sanitize(fileName) + "')");
     }
 
     public void removeFileNameFromLibrary(String fileName) throws SQLException
     {
+//        SQL.DELETE + SQL.TBL.FILES_SEEN +
+//          SQL.WHERE + SQL.COL.FILE_NAME + " = '" + SQL.sanitize(fileName) + "'");
         this.databaseOperations.executeUpdate(SQL.Query.deleteFileNameFromFilesSeen(fileName));
-//                        SQL.DELETE + SQL.TBL.FILES_SEEN + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
-//                                SQL.sanitize(fileName) +
-//                                "'");
     }
 
     public boolean hasFileInLibrary(String fileName) throws SQLException
     {
+//        SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " +
+//          SQL.WHERE + SQL.COL.FILE_NAME + " = '" + SQL.sanitize(fileName) + "'", 1);
         ResultSet results = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectFileFromFilesSeen(fileName));
-//                SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " + SQL.WHERE + SQL.COL.FILE_NAME + " = '" +
-//                        SQL.sanitize(fileName) + "'", 1);
+
         return results.next();
+    }
+
+    public boolean parseAndAddCaptionToLibrary(File file)
+            throws Messages.FileNotFormattedWithSxxExxException, SQLException, IOException, FatalParsingException
+    {
+        boolean isSuccess = false;
+
+        TimedTextFileFormat timedTextFileFormat;
+
+        switch (FileOperations.getCleanExtension(file))
+        {
+            case Const.SUBS_FORMAT_SRT:
+                timedTextFileFormat = new FormatSRT();
+                break;
+            case Const.SUBS_FORMAT_ASS:
+                timedTextFileFormat = new FormatASS();
+                break;
+            case Const.SUBS_FORMAT_SCC:
+                timedTextFileFormat = new FormatSCC();
+                break;
+            case Const.SUBS_FORMAT_STL:
+                timedTextFileFormat = new FormatSTL();
+                break;
+            case Const.SUBS_FORMAT_TTML:
+                timedTextFileFormat = new FormatTTML();
+                break;
+            default:
+                timedTextFileFormat = null;
+                break; //will simply ignore the file
+        }
+
+        // Ignoring empty or unsupported Subtitle files:
+        if (timedTextFileFormat != null) {
+            // Getting Season Number and Episode Number from the filename:
+            int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(file.getName());
+            int seasonNum = seasonAndEpisode[0];
+            int episodeNum = seasonAndEpisode[1];
+
+            // Reading the currently iterated Subtitles file, parsing it and adding to the SubsCollection:
+            InputStream fileInputStream = new FileInputStream(file);
+
+            TimedTextObject tto = timedTextFileFormat
+                    .parseFile(file.getName(), fileInputStream, seasonNum, episodeNum);
+
+            for (Caption caption : tto.captions.values())
+            {
+                this.addCaption(caption);
+            }
+
+            isSuccess = true;
+        }
+
+        return isSuccess;
     }
 
     public void addCaption(Caption caption) throws SQLException
@@ -156,7 +208,9 @@ public class SubsCollection
     public List<Caption> getAllCaptionsFor(String word, int captionCountLimit, boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
-        return this.getAllCaptionsFor(SubsCollection.sqlGetCaptionsQueryVariation.ALL_CAPTIONS,  word, captionCountLimit, sortByQuality);
+        return this.getAllCaptionsFor(SQL.Query.selectAllCaptionsForWord(word), word, captionCountLimit, sortByQuality);
+
+        //region I have moved this code into the private method getAllCaptionsFor, in order to use it both here and in the other overloaded method. ~~~~ Cuky
 
 //        String lowercaseWord = word.toLowerCase();
 //        int wordID = this.getWordID(lowercaseWord);
@@ -199,6 +253,8 @@ public class SubsCollection
 //        }
 //
 //        return result;
+
+        //endregion
     }
 
     /**
@@ -216,24 +272,45 @@ public class SubsCollection
                                                     boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
-        List<Caption> list = new LinkedList<>();
+        return this.getAllCaptionsFor(SQL.Query.selectAllCaptionsForWordInEpisode(word, seasonNum, episodeNum), word, captionCountLimit, sortByQuality);
 
-        // Searching the list of captions for all occurrences of the given word:
-        for (Caption caption : this.getAllCaptionsFor(word, captionCountLimit, sortByQuality))
-        {
-            // Adding only the captions in the desired episode in the desired season:
-            if (caption.getSeasonNum() == seasonNum
-                    && caption.getEpisodeNum() == episodeNum)
-            {
-                list.add(caption);
-            }
-        }
+        //region old code, see comment inside
 
-        // @ TODO: ADD EXCEPTION HANDLING
-        return list;
+        // This code fetched ALL captions from the DB and then filtered it according to the given seasonNum and episodeNum.
+        // To improve performance, I instead used a SELECT query that already fetches the filtered results without the need
+        // to iterate over them.
+
+//        List<Caption> list = new LinkedList<>();
+//
+//        // Searching the list of captions for all occurrences of the given word:
+//        for (Caption caption : this.getAllCaptionsFor(word, captionCountLimit, sortByQuality))
+//        {
+//            // Adding only the captions in the desired episode in the desired season:
+//            if (caption.getSeasonNum() == seasonNum
+//                    && caption.getEpisodeNum() == episodeNum)
+//            {
+//                list.add(caption);
+//            }
+//        }
+//
+//        // @ TODO: ADD EXCEPTION HANDLING
+//        return list;
+
+        //endregion
     }
 
-    private List<Caption> getAllCaptionsFor(SubsCollection.sqlGetCaptionsQueryVariation queryVariation, String word, int captionCountLimit, boolean sortByQuality)
+    /**
+     * Returns all captions for a given SQL query, using a given word. Should only be used in SubsCollection class, hence its privacy.
+     * @param sqlQuery SQL Query to execute to get relevant captions.
+     * @param word Desired word to search all captions for.
+     * @param captionCountLimit Maximum number of captions to return.
+     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @return All found captions matching the given SQL Query.
+     * @throws SQLException
+     * @throws Messages.SeasonNumberTooBigException
+     */
+    private List<Caption> getAllCaptionsFor(String sqlQuery,
+                                            String word, int captionCountLimit, boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
         String lowercaseWord = word.toLowerCase();
@@ -247,19 +324,6 @@ public class SubsCollection
         }
         else
         {
-            String sqlQuery = null;
-
-            switch (queryVariation)
-            {
-                case ALL_CAPTIONS:
-                    sqlQuery = SQL.Query.selectAllCaptionsForWord(wordID);
-                    break;
-
-                case CAPTIONS_FOR_SPECIFIC_EPISODE:
-                    sqlQuery = SQL.Query.selectAllCaptionsForWord(word);
-                    break;
-            }
-
             ResultSet resultSet = this.databaseOperations
                     .executeQuery(sqlQuery, captionCountLimit);
 
