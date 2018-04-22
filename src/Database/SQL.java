@@ -104,8 +104,8 @@ public class SQL
 
         /**
          * When executed in the DB, this SQL query returns all captions for a given word (String).
-         * If you already know the matching ID (numeric) of the desired word, you should use the other version of
-         * <code>selectAllCaptionsForWord</code>, with the numeric <code>wordId</code> parameter.
+         * If you already know the numeric ID of the desired word, you should use method <code>selectAllCaptionsForWord</code>
+         * with this numeric ID instead of this method.
          * @param word The desired word to get all the captions that contain it.
          * @return The SQL query needed to select all captions for a given word.
          */
@@ -126,8 +126,7 @@ public class SQL
                     SQL.INNER_JOIN + SQL.TBL.WORDS +
                     SQL.ON + SQL.TBL.WORDS + "." + SQL.COL.WORD_ID + " = " + SQL.TBL.WORDS_TO_CAPTIONS + "." +
                     SQL.COL.WORD_ID +
-                    SQL.WHERE + SQL.TBL.WORDS + "." + SQL.COL.WORD + " = " + "'" + SQL.sanitize(word) + "'" +
-                    SQL.END_QUERY);
+                    SQL.WHERE + SQL.TBL.WORDS + "." + SQL.COL.WORD + " = " + "'" + SQL.sanitize(word) + "'");
 
 //            /*
 //            This SELECT syntax seems wrong but it WORKS, so no need to mess with it.
@@ -146,6 +145,52 @@ public class SQL
 //                    SQL.INNER_JOIN + SQL.TBL.WORDS +
 //                    SQL.ON + SQL.TBL.WORDS + "." + SQL.COL.WORD + " = " + "'" + SQL.sanitize(word) + "'" +
 //                    SQL.WHERE + SQL.TBL.CAPTIONS + "." + SQL.COL.CAPTION_ID + " = " + SQL.TBL.WORDS_TO_CAPTIONS + "." + SQL.COL.CAPTION_ID);
+        }
+
+        /**
+         * When executed in the DB, this SQL query returns all captions from a single episode for a given word (String).
+         * @param word The desired word to get all the captions that contain it.
+         * @param seasonNum Number of the desired season.
+         * @param episodeNum Number of the desired episode.
+         * @return The SQL query needed to select all captions for a given word.
+         */
+        public static String selectAllCaptionsForWordInEpisode(String word, int seasonNum, int episodeNum)
+        {
+            /*
+              SELECT t_captions.*
+                FROM t_captions
+                INNER JOIN t_words_to_captions ON t_words_to_captions.caption_id = t_captions.caption_id
+                INNER JOIN t_words             ON t_words.word_id                = t_words_to_captions.word_id
+                WHERE t_words.word = '{sanitize(word)}'
+                  AND t_captions.season_num = '{sanitize(seasonNum}'
+                  AND t_captions.episode_num = '{sanitize(episodeNum}';
+            */
+            return (SQL.Query.selectAllCaptionsForWord(word) +
+                    SQL.AND + SQL.TBL.CAPTIONS + "." + SQL.COL.SEASON_NUM + " = " + "'" +SQL.sanitize(seasonNum) + "'" +
+                    SQL.AND + SQL.TBL.CAPTIONS + "." + SQL.COL.EPISODE_NUM + " = " + "'" +SQL.sanitize(episodeNum) + "'");
+        }
+
+        /**
+         * When executed in the DB, this SQL query returns all captions from a single episode for a given word (String).
+         * @param wordId Numeric ID of the desired word to get all the captions that contain it.
+         * @param seasonNum Number of the desired season.
+         * @param episodeNum Number of the desired episode.
+         * @return The SQL query needed to select all captions for a given word.
+         */
+        public static String selectAllCaptionsForWordInEpisode(int wordId, int seasonNum, int episodeNum)
+        {
+            /*
+              SELECT t_captions.*
+                FROM t_captions
+                INNER JOIN t_words_to_captions ON t_words_to_captions.caption_id = t_captions.caption_id
+                INNER JOIN t_words             ON t_words.word_id                = t_words_to_captions.word_id
+                WHERE t_words.word = '{sanitize(word)}'
+                  AND t_captions.season_num = '{sanitize(seasonNum}'
+                  AND t_captions.episode_num = '{sanitize(episodeNum}';
+            */
+            return (SQL.Query.selectAllCaptionsForWord(wordId) +
+                    SQL.AND + SQL.TBL.CAPTIONS + "." + SQL.COL.SEASON_NUM + " = " + "'" +SQL.sanitize(seasonNum) + "'" +
+                    SQL.AND + SQL.TBL.CAPTIONS + "." + SQL.COL.EPISODE_NUM + " = " + "'" +SQL.sanitize(episodeNum) + "'");
         }
 
         public static String selectFileFromFilesSeen(String fileName)

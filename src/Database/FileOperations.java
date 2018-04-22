@@ -1,14 +1,19 @@
 package Database;
 
 import LARRY.Messages;
+import com.sun.deploy.util.ArrayUtil;
 import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import subsParser.*;
+import uk.co.caprica.vlcj.player.media.Media;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,63 +76,69 @@ public class FileOperations
                         Messages.printInConsole(Messages.MSG_ADDING_FILE);
                     }
 
-                    String extension = FileOperations.getCleanExtension(name);
+                    //region Moved this code into SubsCollection, because it is its responsibility, not FileOperations'.
 
-                    TimedTextFileFormat timedTextFileFormat;
+//                    String extension = FileOperations.getCleanExtension(name);
+//
+//                    TimedTextFileFormat timedTextFileFormat;
+//
+//                    switch (extension)
+//                    {
+//                        case Const.SUBS_FORMAT_SRT:
+//                            timedTextFileFormat = new FormatSRT();
+//                            break;
+//                        case Const.SUBS_FORMAT_ASS:
+//                            timedTextFileFormat = new FormatASS();
+//                            break;
+//                        case Const.SUBS_FORMAT_SCC:
+//                            timedTextFileFormat = new FormatSCC();
+//                            break;
+//                        case Const.SUBS_FORMAT_STL:
+//                            timedTextFileFormat = new FormatSTL();
+//                            break;
+//                        case Const.SUBS_FORMAT_TTML:
+//                            timedTextFileFormat = new FormatTTML();
+//                            break;
+//                        default:
+//                            timedTextFileFormat = null;
+//                            break; //will simply ignore the file
+//                    }
+//
+//                    // Ignoring empty or unsupported Subtitle files:
+//                    if (timedTextFileFormat == null)
+//                    {
+//                        continue;
+//                    }
+//
+//                    // Getting Season Number and Episode Number from the filename:
+//                    int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(name);
+//                    int seasonNum = Caption.NO_SEASON;
+//                    int episodeNum = Caption.NO_EPISODE;
+//
+//                    // Putting the found SeasonNum and EpisodeNum:
+//                    if (seasonAndEpisode != null)
+//                    {
+//                        seasonNum = seasonAndEpisode[0];
+//                        episodeNum = seasonAndEpisode[1];
+//                    }
+//
+//                    // Reading the currently iterated Subtitles file, parsing it and adding to the SubsCollection:
+//                    InputStream fileInputStream = new FileInputStream(currFile);
+//
+//                    TimedTextObject tto = timedTextFileFormat
+//                            .parseFile(currFile.getName(), fileInputStream, seasonNum, episodeNum);
+//
+//                    for (Caption caption : tto.captions.values())
+//                    {
+//                        subsCollection.addCaption(caption);
+//                    }
 
-                    switch (extension)
-                    {
-                        case Const.SUBS_FORMAT_SRT:
-                            timedTextFileFormat = new FormatSRT();
-                            break;
-                        case Const.SUBS_FORMAT_ASS:
-                            timedTextFileFormat = new FormatASS();
-                            break;
-                        case Const.SUBS_FORMAT_SCC:
-                            timedTextFileFormat = new FormatSCC();
-                            break;
-                        case Const.SUBS_FORMAT_STL:
-                            timedTextFileFormat = new FormatSTL();
-                            break;
-                        case Const.SUBS_FORMAT_TTML:
-                            timedTextFileFormat = new FormatTTML();
-                            break;
-                        default:
-                            timedTextFileFormat = null;
-                            break; //will simply ignore the file
+                    //endregion
+
+                    // Parsing and Adding the file to the SubsCollection library:
+                    if (subsCollection.parseAndAddCaptionToLibrary(currFile)) {
+                        Messages.printInConsole(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
                     }
-
-                    // Ignoring empty or unsupported Subtitle files:
-                    if (timedTextFileFormat == null)
-                    {
-                        continue;
-                    }
-
-                    // Getting Season Number and Episode Number from the filename:
-                    int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(name);
-                    int seasonNum = Caption.NO_SEASON;
-                    int episodeNum = Caption.NO_EPISODE;
-
-                    // Putting the found SeasonNum and EpisodeNum:
-                    if (seasonAndEpisode != null)
-                    {
-                        seasonNum = seasonAndEpisode[0];
-                        episodeNum = seasonAndEpisode[1];
-                    }
-
-                    // Reading the currently iterated Subtitles file, parsing it and adding to the SubsCollection:
-                    InputStream fileInputStream = new FileInputStream(currFile);
-
-                    TimedTextObject tto = timedTextFileFormat
-                            .parseFile(currFile.getName(), fileInputStream, seasonNum, episodeNum);
-
-                    for (Caption caption : tto.captions.values())
-                    {
-                        subsCollection.addCaption(caption);
-                    }
-
-                    Messages.printInConsole(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
-
 
                 } catch (Exception ex)
                 {
@@ -279,48 +290,57 @@ public class FileOperations
         Collection<File> filesCollection = FileUtils
                 .listFiles(folder, FileOperations.getCleanExtensions(extensions), recursiveSearch);
         File[] filesArray = new File[filesCollection.size()];
-
         return filesCollection.toArray(filesArray);
     }
 
     /**
-     * Returns a list of all the Subtitle files that are in a desired folder.
-     *
+     * Returns all the Subtitle files that are in a desired folder (non-recursive).
      * @param folderPath Path of the desired folder.
-     * @return File Array of the Subtitle files found.
+     * @return File Array of the Subtitle files found withing the given folder, non-recursive.
      */
     public static File[] getSubtitleFilesFromFolder(String folderPath)
     {
-        return FileOperations.getSubtitleFilesFromFolder(folderPath, Const.getSupportedSubtitlesFormats());
+        // This calls the private variation of this method, with the default list of supported subtitle formats:
+        return FileOperations.getSubtitleFilesFromFolder(folderPath,false);
+    }
+
+    /**
+     * Returns all the Subtitle files that are in a desired folder. Can also search the folders within (recursive search).
+     * @param folderPath Path of the desired folder.
+     * @param recursiveSearch Whether to also search the folders within the given folder.
+     * @return File Array of the Subtitle files found withing the given folder (and also the folders within, if required).
+     */
+    public static File[] getSubtitleFilesFromFolder(String folderPath, boolean recursiveSearch)
+    {
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, MediaOperations.getSupportedSubtitleFormats(), recursiveSearch);
     }
 
     /**
      * Returns all the Subtitle files of a given format that are in a desired folder.
-     *
      * @param folderPath Path of the desired folder.
-     * @param subsFormat Desired format of the subtitle files.
+     * @param singleSubsFormat Desired format of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
-    public static File[] getSubtitleFilesFromFolder(String folderPath, String subsFormat)
+    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat, boolean recursiveSearch)
     {
-        String[] subsFormats = new String[1];
-        subsFormats[0] = subsFormat;
+        String[] singleSubsFormatArray = new String[1];
+        singleSubsFormatArray[0] = singleSubsFormat;
 
-        return FileOperations.getSubtitleFilesFromFolder(folderPath, subsFormats);
+        // This calls the private variation of this method, with only the given (single) subtitle format:
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, singleSubsFormatArray, recursiveSearch);
     }
 
     /**
      * This method is PRIVATE by design! Do not turn into public. I don't want the ability to search only SOME of
-     * all the supported subtitle formats instead of all of them.
-     * Returns a list of all the Subtitle files of multiple given formats that are in a desired folder.
-     *
+     * the supported subtitle formats instead of all of them.
+     * Returns all the Subtitle files of multiple given formats that are in a desired folder.
      * @param folderPath  Path of the desired folder.
      * @param subsFormats Desired formats of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
-    private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats)
+    private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats, boolean recursiveSearch)
     {
-        return FileOperations.getFilesFromFolder(folderPath, subsFormats, false);
+        return FileOperations.getFilesFromFolder(folderPath, subsFormats, recursiveSearch);
     }
 
     /**
@@ -341,24 +361,71 @@ public class FileOperations
      * @param recursiveSearch Whether to also search the inner folders inside the given folder.
      * @return //TODO What data structure to use for storing matching pairs of files?
      */
-    public static Pair<File, File> getMatchingVideoAndSubtitleFiles(String folderPath, boolean recursiveSearch)
+    public static ArrayList<Pair<File, File>> getMatchingVideoAndSubtitleFiles(String folderPath, boolean recursiveSearch)
     {
-        int requiredExtensionsAmount = MediaOperations.getSupportedSubtitleFormats().length +
-                MediaOperations.getSupportedVideoExtensions().length;
-        String[] requiredExtensions = new String[requiredExtensionsAmount];
-        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath, requiredExtensions, false);
+        File[] videoFilesInFolder = FileOperations.getVideoFilesFromFolder(folderPath);
+        File[] subtitleFilesInFolder = FileOperations.getSubtitleFilesFromFolder(folderPath);
 
-//        filesInFolder.
-//        Pair<File, File> videoPairs;
-//        for (:
-//             )
-//        {
-//
-//        }
+        return FileOperations.matchVideoAndSubtitleFiles(videoFilesInFolder, subtitleFilesInFolder);
+    }
 
-//        return videoToSubtitleMap;
+    /**
+     * Scans two given arrays of files (video and subtitle) and tries to find matching pairs. Compares their filenames
+     * in various ways. Path of files is not relevant to the operation.
+     * @param videoFiles Array of video files.
+     * @param subtitleFiles Array of subtitle files.
+     * @return ArrayList of Pairs, containing matching video and subtitle files.
+     */
+    public static ArrayList<Pair<File, File>> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
+    {
+        // Sorting both arrays alphabetically:
+        Arrays.sort(videoFiles);
+        Arrays.sort(subtitleFiles);
 
-        return null;
+        ArrayList<Pair<File, File>> allFoundPairs = new ArrayList<>();
+
+        for (int currFileIndex = 0; currFileIndex < videoFiles.length; currFileIndex++)
+        {
+            // Comparing only the base name (without path or extension) of the video file and subtitle file in the current index.
+            // This will match pairs like "Curb.Your.Enthusiasm.S01E04.Xvid.mp4" and "Curb.Your.Enthusiasm.S01E04.Xvid.srt".
+            if (FilenameUtils.getBaseName(videoFiles[currFileIndex].getAbsolutePath()) == FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath()))
+            {
+                FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
+
+                continue;
+            }
+
+            int[] videoSeasonAndEpisode;
+            int[] subsSeasonAndEpisode;
+
+            // Trying to find SeasonNumber and EpisodeNumber ("SxxExx") in each of the file names, and comparing the numbers:
+            try
+            {
+                videoSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(videoFiles[currFileIndex].getName()));
+                subsSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getName()));
+            }
+            catch (Messages.FileNotFormattedWithSxxExxException e)
+            {
+                continue;
+            }
+
+            if ((videoSeasonAndEpisode[0] != Caption.NO_SEASON)
+                    && (videoSeasonAndEpisode[0] == subsSeasonAndEpisode[0])
+                    && (videoSeasonAndEpisode[1] != Caption.NO_EPISODE)
+                    && (videoSeasonAndEpisode[1] == subsSeasonAndEpisode[1]))
+            {
+                FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
+            }
+
+            //TODO try more ways to match pairs
+        }
+
+        return allFoundPairs;
+    }
+
+    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<Pair<File, File>> allPairs)
+    {
+        allPairs.add(new Pair<>(videoFile, subtitleFile));
     }
 
     //endregion
@@ -372,28 +439,30 @@ public class FileOperations
     {
         boolean isSupported;
 
-        isSupported = Const.getSupportedSubtitlesFormatsSet()
+        isSupported = MediaOperations.getSupportedMediaExtensions()
                 .contains(FileOperations.getCleanExtension(checkedFile));
 
-        if (!isSupported)
-        {
-            isSupported = MediaOperations.getSupportedVideoExtensionsSet().contains(checkedFile);
-        }
+//        if (!isSupported)
+//        {
+//            isSupported = MediaOperations.getSupportedVideoExtensionsSet().contains(checkedFile);
+//        }
 
         return isSupported;
     }
 
     /**
      * Finds the SeasonNumber and EpisodeNumber in a given FileName formatted with 'SxxExx' in it.
-     *
+     * If no season or episode numbers were found, returns a known constant for 'no season' and 'no episode'.
      * @param fileName FileName (The extension is irrelevant).
-     * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber.
+     * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber, or 'no season' and 'no episode' constants.
      * @throws Messages.FileNotFormattedWithSxxExxException if the given FileName is not formatted with 'SxxExx' in it.
      */
-    private static int[] parseSxxExxFromFilename(String fileName)
+    public static int[] parseSxxExxFromFilename(String fileName)
             throws Messages.FileNotFormattedWithSxxExxException
     {
-        int seasonNum, episodeNum;
+        int seasonNum = Caption.NO_SEASON;
+        int episodeNum = Caption.NO_EPISODE;
+
         Pattern pattern = Pattern.compile(REGEX_SxxExx);
         Matcher matcher = pattern.matcher(fileName);
 
@@ -405,7 +474,7 @@ public class FileOperations
         }
         else
         {
-            throw new Messages.FileNotFormattedWithSxxExxException(fileName);
+            //throw new Messages.FileNotFormattedWithSxxExxException(fileName);
         }
 
         return new int[]{seasonNum, episodeNum};

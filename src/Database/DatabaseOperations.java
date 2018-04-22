@@ -9,13 +9,6 @@ import java.sql.Statement;
 
 public class DatabaseOperations
 {
-    // SQL Statements Constants:
-//    public static final String SELECT = " SELECT ";
-//    public static final String LIMIT = " LIMIT ";
-//    public static final String UPDATE = " UPDATE ";
-//    public static final String CREATE_TABLE = " CREATE_TABLE ";
-//    public static final String IF_NOT_EXISTS = " IF NOT EXISTS ";
-
     private Statement statement;
 
     /***

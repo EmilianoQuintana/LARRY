@@ -1,12 +1,16 @@
 package LARRY;
 
+import Database.FileOperations;
 import Database.MediaOperations;
+import Database.SubsCollection;
 import subsParser.Caption;
 
 import javax.swing.*;
+import javax.tools.FileObject;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.List;
 
 public class GUI
@@ -114,6 +118,11 @@ public class GUI
 //        }
     }
 
+    private void pauseOrResume()
+    {
+        this.mediaOperations.pause();
+    }
+
     /**
      * Will not allow negative times!
      */
@@ -130,12 +139,48 @@ public class GUI
         this.mediaOperations.setToTimestampWithSubtitleDelay(timeInMilliseconds);
     }
 
+    private void skipTimeBy(long skipTimeInMilliseconds)
+    {
+//        this.mediaPlayer.skip(skipTimeInMilliseconds);
+        this.mediaOperations.skipTimeBy(skipTimeInMilliseconds);
+    }
+
+    //region Subtitles manipulation methods
+
     public void setSubtitleDelay(long delayInMilliseconds)
     {
 //        this.mediaOperations.subtitleDelayMilliseconds = delayInMilliseconds;
 //        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
         this.mediaOperations.setSubtitleDelay(delayInMilliseconds);
 
+        this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
+    }
+
+    /**
+     * This is sort of weird functionality, later I'll probably remove this or change
+     * it to depend on frequency of clicks in a short time period ~~~~ Itamar
+     *
+     * @param increaseOrDecrease you know
+     */
+    private void smartChangeSubsDelay(boolean increaseOrDecrease)
+    {
+//        if (increaseOrDecrease == (this.multiplier > 0))
+//        {
+//            if (this.multiplier < 99 && this.multiplier > -99)
+//            {
+//                this.multiplier *= 2;
+//            }
+//        }
+//        else
+//        {
+//            this.multiplier = increaseOrDecrease ? +1 : -1;
+//        }
+//
+//        long deltaAmount = this.multiplier * 100; //100 ms minimum unit
+//        this.mediaOperations.subtitleDelayMilliseconds += deltaAmount;
+////        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+//        this.mediaOperations.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
+        this.mediaOperations.smartChangeSubsDelay(increaseOrDecrease);
         this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
     }
 
@@ -186,45 +231,7 @@ public class GUI
         this.skipToMarkedCaptionByIndex(index);
     }
 
-
-    /**
-     * This is sort of weird functionality, later I'll probably remove this or change
-     * it to depend on frequency of clicks in a short time period ~~~~ Itamar
-     *
-     * @param increaseOrDecrease you know
-     */
-    private void smartChangeSubsDelay(boolean increaseOrDecrease)
-    {
-//        if (increaseOrDecrease == (this.multiplier > 0))
-//        {
-//            if (this.multiplier < 99 && this.multiplier > -99)
-//            {
-//                this.multiplier *= 2;
-//            }
-//        }
-//        else
-//        {
-//            this.multiplier = increaseOrDecrease ? +1 : -1;
-//        }
-//
-//        long deltaAmount = this.multiplier * 100; //100 ms minimum unit
-//        this.mediaOperations.subtitleDelayMilliseconds += deltaAmount;
-////        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
-//        this.mediaOperations.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
-        this.mediaOperations.smartChangeSubsDelay(increaseOrDecrease);
-        this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
-    }
-
-    private void pauseOrResume()
-    {
-        this.mediaOperations.pause();
-    }
-
-    private void skipTimeBy(long skipTimeInMilliseconds)
-    {
-//        this.mediaPlayer.skip(skipTimeInMilliseconds);
-        this.mediaOperations.skipTimeBy(skipTimeInMilliseconds);
-    }
+    //endregion
 
     public void setSearchedWord(String searchedWord)
     {
@@ -232,5 +239,19 @@ public class GUI
         this.mediaOperations.setSearchedWord(searchedWord);
     }
 
-    //endregion
+    //region File input methods
+
+    public void inputWholeFolder()
+    {
+        //TODO display open directory dialog
+        String folderPath = null;
+
+        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath, MediaOperations.getSupportedMediaExtensions(),false);
+
+    }
+
+    public void inputFolderForSubtitles()
+    {
+
+    }
 }

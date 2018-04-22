@@ -10,6 +10,63 @@ import java.util.List;
 
 public class Main
 {
+    // Temporary for TESTING
+    public static void main(String[] args)
+            throws SQLException
+    {
+        DBLarry DB = new DBLarry();
+
+        try
+        {
+            DB.updateSubsCollectionFromFolder("Curb", "Subtitles\\Subtitles");
+        } catch (Messages.EmptyFolderException exEmptyFolder)
+        {
+
+        }
+
+        new NativeDiscovery().discover();
+
+        SwingUtilities.invokeLater(() -> {
+            GUI gui = new GUI();
+
+            try
+            {
+                test1(gui, DB);
+            } catch (Messages.GhostFolderException e)
+            {
+                e.printStackTrace();
+            } catch (Messages.SeasonNumberTooBigException e)
+            {
+
+            }
+        });
+        
+        /*
+        long t1 = System.currentTimeMillis();
+        
+        String filePrefix = "Dirk";
+        String folderPath = "C:\\Itamar\\Workspace\\Larry\\LARRY\\resources\\temporary";
+        DB.updateSubsCollectionFromFolder(filePrefix, folderPath);
+    
+        long t2 = System.currentTimeMillis();
+        System.out.println("Total time:\t\t"+(t2-t1)+" ms");
+
+        t1 = System.currentTimeMillis();
+        List<Caption> results = DB.getAllCaptionsFor("you", 600);
+        t2 = System.currentTimeMillis();
+        
+        for (Caption cap : results)
+        {
+            System.out.println(cap.toString());
+        }
+    
+        System.out.println("Number of results:\t\t"+results.size());
+        System.out.println("Total time:\t\t"+(t2-t1)+" ms");
+        
+        */
+
+    }
+
     private static void test1(GUI gui, DBLarry DB)
             throws Messages.GhostFolderException, Messages.SeasonNumberTooBigException
     {
@@ -79,7 +136,7 @@ public class Main
             e.printStackTrace();
             return;
         }
-        
+
         /*
         for (Caption cap : results)
         {
@@ -96,62 +153,6 @@ public class Main
         gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
         gui.startPlayingMedia(resultFileAddress, 0);
         gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
-    }
-
-    // Temporary for TESTING
-    public static void main(String[] args)
-            throws SQLException
-    {
-        DBLarry DB = new DBLarry();
-
-        try
-        {
-            DB.updateSubsCollectionFromFolder("Curb", "Subtitles\\Subtitles");
-        } catch (Messages.EmptyFolderException exEmptyFolder)
-        {
-
-        }
-
-        new NativeDiscovery().discover();
-
-        SwingUtilities.invokeLater(() -> {
-            GUI gui = new GUI();
-            try
-            {
-                test1(gui, DB);
-            } catch (Messages.GhostFolderException e)
-            {
-                e.printStackTrace();
-            } catch (Messages.SeasonNumberTooBigException e)
-            {
-
-            }
-        });
-        
-        /*
-        long t1 = System.currentTimeMillis();
-        
-        String filePrefix = "Dirk";
-        String folderPath = "C:\\Itamar\\Workspace\\Larry\\LARRY\\resources\\temporary";
-        DB.updateSubsCollectionFromFolder(filePrefix, folderPath);
-    
-        long t2 = System.currentTimeMillis();
-        System.out.println("Total time:\t\t"+(t2-t1)+" ms");
-
-        t1 = System.currentTimeMillis();
-        List<Caption> results = DB.getAllCaptionsFor("you", 600);
-        t2 = System.currentTimeMillis();
-        
-        for (Caption cap : results)
-        {
-            System.out.println(cap.toString());
-        }
-    
-        System.out.println("Number of results:\t\t"+results.size());
-        System.out.println("Total time:\t\t"+(t2-t1)+" ms");
-        
-        */
-
     }
 
 }
