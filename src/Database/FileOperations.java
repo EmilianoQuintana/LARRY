@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +19,56 @@ public class FileOperations
     private static final String ALL_FILE_EXTENSIONS = "*.*";
     private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
-    // Concept and realization copied from https://codereview.stackexchange.com/a/97812
-//    public enum FileSorter
+    /**
+     * Enum for sorting collections of files in different ways.
+     */
+    public enum FileSorter implements Comparator<File>
+    {
+        // Concept and realization copied from https://codereview.stackexchange.com/a/97812
+
+        //        BY_TYPE(Comparator.comparing(FileSorter::extractExtension)),
+        BY_TYPE(Comparator.comparing(FileOperations::getCleanExtension)),
+        BY_NAME(Comparator.comparing(File::getName)),
+        BY_SIZE(Comparator.comparingLong(File::length));
+
+        private final Comparator<File> comparator;
+
+        /**
+         * When creating an instance of this enum, setting the inner comparator as the given one.
+         *
+         * @param comparator The desired comparator type, one of the available types in this enum.
+         */
+        private FileSorter(Comparator<File> comparator)
+        {
+            this.comparator = comparator;
+        }
+
+//        private static final String extractExtension(File file)
+//        {
+//            try
+//            {
+//                String probeContentType = Files.probeContentType(file.toPath());
+//                return probeContentType == null ? "probeContentTypeIsNull" : probeContentType;
+//            }
+//            catch (IOException e)
+//            {
+//                return null;
+//            }
+//        }
+
+        /**
+         * Compares two files using a desired comparator type from this enum.
+         *
+         * @param comparedFile1 The first file to be compared.
+         * @param comparedFile2 The second file to be compared.
+         * @return a negative integer, zero, or a positive integer, when the first argument is less than, equal to, or greater than the second.
+         */
+        @Override
+        public int compare(File comparedFile1, File comparedFile2)
+        {
+            return this.comparator.compare(comparedFile1, comparedFile2);
+        }
+    }
 
     /**
      * Scans a given folder for Subtitle files and inserts them into a given SubsCollection object.
@@ -135,7 +184,7 @@ public class FileOperations
                     //endregion
 
                     // Parsing and Adding the file to the SubsCollection library:
-                    if (subsCollection.parseAndAddCaptionToLibrary(currFile))
+                    if (subsCollection.parseFileAndAddCaptionsToLibrary(currFile))
                     {
                         Messages.printInConsole(
                                 Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
@@ -393,6 +442,8 @@ public class FileOperations
         return FileOperations.matchVideoAndSubtitleFiles(videoFilesInFolder, subtitleFilesInFolder);
     }
 
+    //endregion
+
     /**
      * Scans two given arrays of files (video and subtitle) and tries to find matching pairs. Compares their filenames
      * in various ways. Path of files is not relevant to the operation.
@@ -444,12 +495,17 @@ public class FileOperations
         return allFoundPairs;
     }
 
+    /**
+     * Adds a pair of matched files into a given ArrayList.
+     *
+     * @param videoFile    Matching Video file.
+     * @param subtitleFile Matching Subtitle file.
+     * @param allPairs     ArrayList of pairs, into which to add the new pair.
+     */
     private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<Pair<File, File>> allPairs)
     {
         allPairs.add(new Pair<>(videoFile, subtitleFile));
     }
-
-    //endregion
 
     /**
      * Checks if a specified file is supported by LARRY.
@@ -479,9 +535,9 @@ public class FileOperations
      * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber, or 'no season' and 'no episode' constants.
      */
     public static int[] parseSxxExxFromFilename(String fileName)
+//            throws Messages.FileNotFormattedWithSxxExxException
     {
-        int seasonNum = Caption.NO_SEASON;
-        int episodeNum = Caption.NO_EPISODE;
+        int[] seasonAndEpisode = new int[]{Caption.NO_SEASON, Caption.NO_EPISODE};
 
         Pattern pattern = Pattern.compile(REGEX_SxxExx);
         Matcher matcher = pattern.matcher(fileName);
@@ -489,14 +545,14 @@ public class FileOperations
         if (matcher.find())
         {
             String result = matcher.group();
-            seasonNum = Integer.parseInt(result.substring(1, 3));
-            episodeNum = Integer.parseInt(result.substring(4, 6));
+            seasonAndEpisode[0] = Integer.parseInt(result.substring(1, 3));
+            seasonAndEpisode[1] = Integer.parseInt(result.substring(4, 6));
         }
-        else
-        {
-            //throw new Messages.FileNotFormattedWithSxxExxException(fileName);
-        }
+//        else
+//        {
+//            throw new Messages.FileNotFormattedWithSxxExxException(fileName);
+//        }
 
-        return new int[]{seasonNum, episodeNum};
+        return seasonAndEpisode;
     }
 }

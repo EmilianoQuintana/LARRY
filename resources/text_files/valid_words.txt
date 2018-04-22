@@ -6316,7 +6316,7 @@ governing
 retailers
 depot
 kenneth
-comp
+comparator
 alt
 pie
 blend

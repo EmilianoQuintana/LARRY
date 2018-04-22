@@ -28,6 +28,24 @@ public class SubsCollection
         this.databaseOperations = dataOp;
     }
 
+    //region General Getters
+
+    public String getMediaName(int mediaID)
+            throws SQLException
+    {
+        ResultSet resultSet = this.databaseOperations
+                .executeQuerySingleRecord(SQL.Query.selectMediaNameFromMedias(mediaID));
+
+        if (!resultSet.next())
+        {
+            return "";
+        }
+
+        return resultSet.getString(SQL.COL.MEDIA_NAME);
+    }
+
+    //endregion
+
     public void addFileNameToLibrary(String fileName) throws SQLException
     {
 //        SQL.INSERT_INTO + SQL.TBL.FILES_SEEN + " (" + SQL.COL.FILE_NAME + ") " +
@@ -46,19 +64,23 @@ public class SubsCollection
     {
 //        SQL.SELECT_ALL + SQL.FROM + SQL.TBL.FILES_SEEN + " " +
 //          SQL.WHERE + SQL.COL.FILE_NAME + " = '" + SQL.sanitize(fileName) + "'", 1);
-        ResultSet results = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectFileFromFilesSeen(fileName));
+        ResultSet results = this.databaseOperations
+                .executeQuerySingleRecord(SQL.Query.selectFileFromFilesSeen(fileName));
 
         return results.next();
     }
 
-    public boolean parseAndAddCaptionToLibrary(File file)
-            throws Messages.FileNotFormattedWithSxxExxException, SQLException, IOException, FatalParsingException
+    /**
+     * Returns a TimedTextFileFormat for a given Subtitle Format.
+     *
+     * @param subtitleFormat Format of the Fubtitle file.
+     * @return A TimedTextFileFormat object that matches the given Subtitle Format.
+     */
+    public static TimedTextFileFormat getTimedTextFileFormat(String subtitleFormat)
     {
-        boolean isSuccess = false;
-
         TimedTextFileFormat timedTextFileFormat;
 
-        switch (FileOperations.getCleanExtension(file))
+        switch (subtitleFormat)
         {
             case Const.SUBS_FORMAT_SRT:
                 timedTextFileFormat = new FormatSRT();
@@ -80,8 +102,19 @@ public class SubsCollection
                 break; //will simply ignore the file
         }
 
+        return timedTextFileFormat;
+    }
+
+    public boolean parseFileAndAddCaptionsToLibrary(File file)
+            throws SQLException, IOException, FatalParsingException
+    {
+        boolean isSuccess = false;
+        TimedTextFileFormat timedTextFileFormat = SubsCollection
+                .getTimedTextFileFormat(FileOperations.getCleanExtension(file));
+
         // Ignoring empty or unsupported Subtitle files:
-        if (timedTextFileFormat != null) {
+        if (timedTextFileFormat != null)
+        {
             // Getting Season Number and Episode Number from the filename:
             int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(file.getName());
             int seasonNum = seasonAndEpisode[0];
@@ -104,7 +137,7 @@ public class SubsCollection
         return isSuccess;
     }
 
-    public void addCaption(Caption caption) throws SQLException
+    private void addCaption(Caption caption) throws SQLException
     {
         /*
         int processedCaptionsCounter = 0;
@@ -198,9 +231,10 @@ public class SubsCollection
 
     /**
      * Returns all the captions that contain a given word.
-     * @param word The desired word to be contained in the found captions.
+     *
+     * @param word              The desired word to be contained in the found captions.
      * @param captionCountLimit Maximum number of captions to return.
-     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @param sortByQuality     Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
      * @return All captions that contain the given word.
      * @throws SQLException
      * @throws Messages.SeasonNumberTooBigException
@@ -259,11 +293,12 @@ public class SubsCollection
 
     /**
      * Returns all captions of a single episode that contain a given word.
-     * @param word The desired word to be contained in the found captions.
-     * @param seasonNum Number of the desired season to search in.
-     * @param episodeNum Number of the desired episode to search in.
+     *
+     * @param word              The desired word to be contained in the found captions.
+     * @param seasonNum         Number of the desired season to search in.
+     * @param episodeNum        Number of the desired episode to search in.
      * @param captionCountLimit Maximum number of captions to return.
-     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @param sortByQuality     Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
      * @return All captions of a single episode that contain the given word.
      * @throws SQLException
      * @throws Messages.SeasonNumberTooBigException
@@ -272,7 +307,8 @@ public class SubsCollection
                                                     boolean sortByQuality)
             throws SQLException, Messages.SeasonNumberTooBigException
     {
-        return this.getAllCaptionsFor(SQL.Query.selectAllCaptionsForWordInEpisode(word, seasonNum, episodeNum), word, captionCountLimit, sortByQuality);
+        return this.getAllCaptionsFor(SQL.Query.selectAllCaptionsForWordInEpisode(word, seasonNum, episodeNum), word,
+                captionCountLimit, sortByQuality);
 
         //region old code, see comment inside
 
@@ -301,10 +337,11 @@ public class SubsCollection
 
     /**
      * Returns all captions for a given SQL query, using a given word. Should only be used in SubsCollection class, hence its privacy.
-     * @param sqlQuery SQL Query to execute to get relevant captions.
-     * @param word Desired word to search all captions for.
+     *
+     * @param sqlQuery          SQL Query to execute to get relevant captions.
+     * @param word              Desired word to search all captions for.
      * @param captionCountLimit Maximum number of captions to return.
-     * @param sortByQuality Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
+     * @param sortByQuality     Whether to sort the found captions by their quality. //TODO I'm not sure I understood that myself. ~~~~ Cuky
      * @return All found captions matching the given SQL Query.
      * @throws SQLException
      * @throws Messages.SeasonNumberTooBigException
@@ -356,21 +393,9 @@ public class SubsCollection
         return result;
     }
 
-    public String getMediaName(int mediaID)
-            throws SQLException
-    {
-        ResultSet resultSet = this.databaseOperations.executeQuerySingleRecord(SQL.Query.selectMediaNameFromMedias(mediaID));
-
-        if (!resultSet.next())
-        {
-            return "";
-        }
-
-        return resultSet.getString(SQL.COL.MEDIA_NAME);
-    }
-
     /**
      * Returns the ID in the DB of a desired word.
+     *
      * @param word The desired word.
      * @return The numeric ID of the desired word.
      * @throws SQLException
@@ -390,6 +415,7 @@ public class SubsCollection
      * //TODO not use this method, instead work in batches with a single COMMIT at the end
      * I have a feeling that this method is VERY WASTEFUL in resources. It accesses the DB multiple times and it only adds a single word!
      * ~~~~ Cuky.
+     *
      * @return false if the word-caption pair was already in there
      */
     private boolean insertCaptionWord(String word, int caption_id) throws SQLException
@@ -415,7 +441,8 @@ public class SubsCollection
 
         // Now check if this word-caption combination is already in the words_to_captions table
         ResultSet results = this.databaseOperations.executeQuerySingleRecord(
-                SQL.SELECT + "*" + SQL.FROM + SQL.TBL.WORDS_TO_CAPTIONS + SQL.WHERE + " word_id = " + SQL.sanitize(word_id) +
+                SQL.SELECT + "*" + SQL.FROM + SQL.TBL.WORDS_TO_CAPTIONS + SQL.WHERE + " word_id = " +
+                        SQL.sanitize(word_id) +
                         " AND caption_id = " + SQL.sanitize(caption_id));
         if (!results.next())
         {
@@ -431,7 +458,8 @@ public class SubsCollection
 
     /**
      * Calculates the Sort Key for a given caption.
-     * @param cap The desired Caption, the content of which should be scanned and calculated on.
+     *
+     * @param cap           The desired Caption, the content of which should be scanned and calculated on.
      * @param lowercaseWord The desired word (in lower-case) to calculate the Sort Key for.
      * @return 0 if the caption contains the given word in its whole, or 1 otherwise.
      */
