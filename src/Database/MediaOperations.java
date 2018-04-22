@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class MediaOperations
+
 {
     private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
     private static final long EXTRA_TIME_AFTER_CAPTION = 100;
@@ -39,18 +40,15 @@ public class MediaOperations
         return new VideoFileFilter().getExtensions();
     }
 
-    /**
-     * Returns all the Video-file Extensions supported by LARRY, in a String Set.
-     * @return String Set of the Video-file Extensions supported by the media playback API.
-     */
     public static Set<String> getSupportedVideoExtensionsSet()
     {
         return new VideoFileFilter().getExtensionSet();
     }
 
     /**
-     * Returns all the Subtitle Formats supported by LARRY, in a String array.
-     * @return String Array of the Subtitle Formats supported both by the subtitle parser API and by the media playback API.
+     * Returns all the Subtitle Formats supported by LARRY.
+     *
+     * @return String Array of the Subtitle Formats supported both by the subtitle parser API and the media playback API.
      */
     public static String[] getSupportedSubtitleFormats()
     {
@@ -90,7 +88,6 @@ public class MediaOperations
 
         return MediaOperations.supportedSubtitleFormats;
     }
-
     /**
      * Returns all the Subtitle Formats and Video-file Extensions supported by LARRY, in a String array.
      * @return String array of the Subtitle Formats and Video-file Extensions supported by LARRY.
@@ -98,9 +95,12 @@ public class MediaOperations
     public static ArrayList<String> getSupportedMediaExtensions()
     {
         // Initializing the static array of supported media extensions:
-        if((MediaOperations.supportedMediaExtensions == null) || (MediaOperations.supportedMediaExtensions.size() == 0))
+        if ((MediaOperations.supportedMediaExtensions == null) ||
+                (MediaOperations.supportedMediaExtensions.size() == 0))
         {
-            MediaOperations.supportedMediaExtensions = new ArrayList<>(MediaOperations.getSupportedSubtitleFormats().length + MediaOperations.getSupportedVideoExtensions().length);
+            MediaOperations.supportedMediaExtensions = new ArrayList<>(
+                    MediaOperations.getSupportedSubtitleFormats().length +
+                            MediaOperations.getSupportedVideoExtensions().length);
 
             for (String videoExtension : MediaOperations.getSupportedVideoExtensions())
             {
@@ -129,7 +129,6 @@ public class MediaOperations
 
     public MediaOperations()
     {
-        // Initializing the embeddedMediaPlayerComponent as Singleton:
         this.getEmbeddedMPComp();
     }
 

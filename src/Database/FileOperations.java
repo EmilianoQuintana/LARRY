@@ -1,17 +1,12 @@
 package Database;
 
 import LARRY.Messages;
-import com.sun.deploy.util.ArrayUtil;
 import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import subsParser.*;
-import uk.co.caprica.vlcj.player.media.Media;
+import subsParser.Caption;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,6 +17,9 @@ public class FileOperations
 {
     private static final String ALL_FILE_EXTENSIONS = "*.*";
     private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
+
+    // Concept and realization copied from https://codereview.stackexchange.com/a/97812
+//    public enum FileSorter
 
     /**
      * Scans a given folder for Subtitle files and inserts them into a given SubsCollection object.
@@ -290,6 +288,7 @@ public class FileOperations
         Collection<File> filesCollection = FileUtils
                 .listFiles(folder, FileOperations.getCleanExtensions(extensions), recursiveSearch);
         File[] filesArray = new File[filesCollection.size()];
+
         return filesCollection.toArray(filesArray);
     }
 
@@ -317,18 +316,34 @@ public class FileOperations
 
     /**
      * Returns all the Subtitle files of a given format that are in a desired folder.
+     *
      * @param folderPath Path of the desired folder.
      * @param singleSubsFormat Desired format of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
-    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat, boolean recursiveSearch)
+    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat)
     {
-        String[] singleSubsFormatArray = new String[1];
-        singleSubsFormatArray[0] = singleSubsFormat;
+        String[] subsFormats = new String[1];
+        subsFormats[0] = singleSubsFormat;
 
-        // This calls the private variation of this method, with only the given (single) subtitle format:
-        return FileOperations.getSubtitleFilesFromFolder(folderPath, singleSubsFormatArray, recursiveSearch);
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, subsFormats, false);
     }
+
+//    // I think this variation is not needed. ~~~~ Cuky
+//    /**
+//     * Returns all the Subtitle files of a given format that are in a desired folder.
+//     * @param folderPath Path of the desired folder.
+//     * @param singleSubsFormat Desired format of the subtitle files.
+//     * @return File Array of the Subtitle files found.
+//     */
+//    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat, boolean recursiveSearch)
+//    {
+//        String[] singleSubsFormatArray = new String[1];
+//        singleSubsFormatArray[0] = singleSubsFormat;
+//
+//        // This calls the private variation of this method, with only the given (single) subtitle format:
+//        return FileOperations.getSubtitleFilesFromFolder(folderPath, singleSubsFormatArray, recursiveSearch);
+//    }
 
     /**
      * This method is PRIVATE by design! Do not turn into public. I don't want the ability to search only SOME of
@@ -359,7 +374,7 @@ public class FileOperations
      *
      * @param folderPath      Path of the desired folder.
      * @param recursiveSearch Whether to also search the inner folders inside the given folder.
-     * @return //TODO What data structure to use for storing matching pairs of files?
+     * @return ArrayList of Pairs of Files, containing matching video and subtitle files that were found.
      */
     public static ArrayList<Pair<File, File>> getMatchingVideoAndSubtitleFiles(String folderPath, boolean recursiveSearch)
     {
@@ -374,7 +389,7 @@ public class FileOperations
      * in various ways. Path of files is not relevant to the operation.
      * @param videoFiles Array of video files.
      * @param subtitleFiles Array of subtitle files.
-     * @return ArrayList of Pairs, containing matching video and subtitle files.
+     * @return ArrayList of Pairs of files, containing matching video and subtitle files that were found.
      */
     public static ArrayList<Pair<File, File>> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
     {
@@ -452,13 +467,11 @@ public class FileOperations
 
     /**
      * Finds the SeasonNumber and EpisodeNumber in a given FileName formatted with 'SxxExx' in it.
-     * If no season or episode numbers were found, returns a known constant for 'no season' and 'no episode'.
+     *
      * @param fileName FileName (The extension is irrelevant).
      * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber, or 'no season' and 'no episode' constants.
-     * @throws Messages.FileNotFormattedWithSxxExxException if the given FileName is not formatted with 'SxxExx' in it.
      */
     public static int[] parseSxxExxFromFilename(String fileName)
-            throws Messages.FileNotFormattedWithSxxExxException
     {
         int seasonNum = Caption.NO_SEASON;
         int episodeNum = Caption.NO_EPISODE;
