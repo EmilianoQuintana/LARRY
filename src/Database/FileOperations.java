@@ -23,9 +23,10 @@ public class FileOperations
 
     /**
      * Scans a given folder for Subtitle files and inserts them into a given SubsCollection object.
+     *
      * @param subsCollection SubsCollection object into which to put the found subtitles.
-     * @param filePrefix Fixed prefix for the subtitle files.
-     * @param folderPath Path to the desired folder.
+     * @param filePrefix     Fixed prefix for the subtitle files.
+     * @param folderPath     Path to the desired folder.
      * @throws Messages.EmptyFolderException
      */
     public static void updateSubsCollectionFromFolder(SubsCollection subsCollection, String filePrefix,
@@ -134,8 +135,10 @@ public class FileOperations
                     //endregion
 
                     // Parsing and Adding the file to the SubsCollection library:
-                    if (subsCollection.parseAndAddCaptionToLibrary(currFile)) {
-                        Messages.printInConsole(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
+                    if (subsCollection.parseAndAddCaptionToLibrary(currFile))
+                    {
+                        Messages.printInConsole(
+                                Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
                     }
 
                 } catch (Exception ex)
@@ -274,6 +277,7 @@ public class FileOperations
     /**
      * Returns a list of all the files, of certain extensions, that are in a desired folder.
      * You can choose to also search the inner folders that are inside the given folder (recursive search).
+     *
      * @param folderPath      Path of the desired folder
      * @param extensions      Array of the desired extensions
      * @param recursiveSearch Whether to also search the inner folders inside the given folder
@@ -294,30 +298,33 @@ public class FileOperations
 
     /**
      * Returns all the Subtitle files that are in a desired folder (non-recursive).
+     *
      * @param folderPath Path of the desired folder.
      * @return File Array of the Subtitle files found withing the given folder, non-recursive.
      */
     public static File[] getSubtitleFilesFromFolder(String folderPath)
     {
         // This calls the private variation of this method, with the default list of supported subtitle formats:
-        return FileOperations.getSubtitleFilesFromFolder(folderPath,false);
+        return FileOperations.getSubtitleFilesFromFolder(folderPath, false);
     }
 
     /**
      * Returns all the Subtitle files that are in a desired folder. Can also search the folders within (recursive search).
-     * @param folderPath Path of the desired folder.
+     *
+     * @param folderPath      Path of the desired folder.
      * @param recursiveSearch Whether to also search the folders within the given folder.
      * @return File Array of the Subtitle files found withing the given folder (and also the folders within, if required).
      */
     public static File[] getSubtitleFilesFromFolder(String folderPath, boolean recursiveSearch)
     {
-        return FileOperations.getSubtitleFilesFromFolder(folderPath, MediaOperations.getSupportedSubtitleFormats(), recursiveSearch);
+        return FileOperations
+                .getSubtitleFilesFromFolder(folderPath, MediaOperations.getSupportedSubtitleFormats(), recursiveSearch);
     }
 
     /**
      * Returns all the Subtitle files of a given format that are in a desired folder.
      *
-     * @param folderPath Path of the desired folder.
+     * @param folderPath       Path of the desired folder.
      * @param singleSubsFormat Desired format of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
@@ -349,6 +356,7 @@ public class FileOperations
      * This method is PRIVATE by design! Do not turn into public. I don't want the ability to search only SOME of
      * the supported subtitle formats instead of all of them.
      * Returns all the Subtitle files of multiple given formats that are in a desired folder.
+     *
      * @param folderPath  Path of the desired folder.
      * @param subsFormats Desired formats of the subtitle files.
      * @return File Array of the Subtitle files found.
@@ -376,7 +384,8 @@ public class FileOperations
      * @param recursiveSearch Whether to also search the inner folders inside the given folder.
      * @return ArrayList of Pairs of Files, containing matching video and subtitle files that were found.
      */
-    public static ArrayList<Pair<File, File>> getMatchingVideoAndSubtitleFiles(String folderPath, boolean recursiveSearch)
+    public static ArrayList<Pair<File, File>> getMatchingVideoAndSubtitleFiles(String folderPath,
+                                                                               boolean recursiveSearch)
     {
         File[] videoFilesInFolder = FileOperations.getVideoFilesFromFolder(folderPath);
         File[] subtitleFilesInFolder = FileOperations.getSubtitleFilesFromFolder(folderPath);
@@ -387,7 +396,8 @@ public class FileOperations
     /**
      * Scans two given arrays of files (video and subtitle) and tries to find matching pairs. Compares their filenames
      * in various ways. Path of files is not relevant to the operation.
-     * @param videoFiles Array of video files.
+     *
+     * @param videoFiles    Array of video files.
      * @param subtitleFiles Array of subtitle files.
      * @return ArrayList of Pairs of files, containing matching video and subtitle files that were found.
      */
@@ -403,7 +413,8 @@ public class FileOperations
         {
             // Comparing only the base name (without path or extension) of the video file and subtitle file in the current index.
             // This will match pairs like "Curb.Your.Enthusiasm.S01E04.Xvid.mp4" and "Curb.Your.Enthusiasm.S01E04.Xvid.srt".
-            if (FilenameUtils.getBaseName(videoFiles[currFileIndex].getAbsolutePath()) == FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath()))
+            if (FilenameUtils.getBaseName(videoFiles[currFileIndex].getAbsolutePath()) ==
+                    FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath()))
             {
                 FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
 
@@ -414,15 +425,10 @@ public class FileOperations
             int[] subsSeasonAndEpisode;
 
             // Trying to find SeasonNumber and EpisodeNumber ("SxxExx") in each of the file names, and comparing the numbers:
-            try
-            {
-                videoSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(videoFiles[currFileIndex].getName()));
-                subsSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getName()));
-            }
-            catch (Messages.FileNotFormattedWithSxxExxException e)
-            {
-                continue;
-            }
+            videoSeasonAndEpisode = FileOperations
+                    .parseSxxExxFromFilename(FilenameUtils.getBaseName(videoFiles[currFileIndex].getName()));
+            subsSeasonAndEpisode = FileOperations
+                    .parseSxxExxFromFilename(FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getName()));
 
             if ((videoSeasonAndEpisode[0] != Caption.NO_SEASON)
                     && (videoSeasonAndEpisode[0] == subsSeasonAndEpisode[0])
@@ -447,6 +453,7 @@ public class FileOperations
 
     /**
      * Checks if a specified file is supported by LARRY.
+     *
      * @param checkedFile Desired file to check.
      * @return True if the file is supported, otherwise false.
      */
