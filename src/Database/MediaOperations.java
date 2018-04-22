@@ -7,8 +7,8 @@ import uk.co.caprica.vlcj.filter.SubTitleFileFilter;
 import uk.co.caprica.vlcj.filter.VideoFileFilter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
-import javax.print.attribute.standard.Media;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,8 +26,9 @@ public class MediaOperations
     private List<Caption> markedCaptionMoments;
 
     private static String[] supportedSubtitleFormats;
-    private static String[] supportedVideoExtensions;
-    private static String[] supportedMediaExtensions;
+//    private static String[] supportedVideoExtensions;
+    private static ArrayList<String> supportedMediaExtensions;
+    private static Set<String> supportedMediaExtensionsSet;
 
     /**
      * Returns all the Video-file Extensions supported by LARRY, in a String array.
@@ -94,22 +95,33 @@ public class MediaOperations
      * Returns all the Subtitle Formats and Video-file Extensions supported by LARRY, in a String array.
      * @return String array of the Subtitle Formats and Video-file Extensions supported by LARRY.
      */
-    public static String[] getSupportedMediaExtensions()
+    public static ArrayList<String> getSupportedMediaExtensions()
     {
         // Initializing the static array of supported media extensions:
-        if((MediaOperations.supportedMediaExtensions == null) || (MediaOperations.supportedMediaExtensions.length == 0)) {
-            int currMediaExtension = 0;
-            MediaOperations.supportedMediaExtensions = new String[MediaOperations.getSupportedSubtitleFormats().length + MediaOperations.getSupportedVideoExtensions().length];
+        if((MediaOperations.supportedMediaExtensions == null) || (MediaOperations.supportedMediaExtensions.size() == 0))
+        {
+            MediaOperations.supportedMediaExtensions = new ArrayList<>(MediaOperations.getSupportedSubtitleFormats().length + MediaOperations.getSupportedVideoExtensions().length);
 
-            for (; currMediaExtension < MediaOperations.getSupportedSubtitleFormats().length; currMediaExtension++) {
-                // Copying the subtitle format that matches the currently iterated index:
-                MediaOperations.supportedMediaExtensions[currMediaExtension] = MediaOperations.getSupportedSubtitleFormats()[currMediaExtension];
+            for (String videoExtension : MediaOperations.getSupportedVideoExtensions())
+            {
+                MediaOperations.supportedMediaExtensions.add(videoExtension);
             }
-            // Continuing iterating on the MediaExtensions array, without resetting the counter:
-            for (; currMediaExtension < MediaOperations.getSupportedMediaExtensions().length; currMediaExtension++) {
-                // Copying the video extensions that matches the currently iterated index minus the length of the subtitles formats array;
-                MediaOperations.supportedMediaExtensions[currMediaExtension] = MediaOperations.getSupportedVideoExtensions()[currMediaExtension - MediaOperations.getSupportedSubtitleFormats().length];
+
+            for (String subtitleExtension : MediaOperations.getSupportedSubtitleFormats())
+            {
+                MediaOperations.supportedMediaExtensions.add(subtitleExtension);
             }
+
+//            int currMediaExtension = 0;
+//            for (; currMediaExtension < MediaOperations.getSupportedSubtitleFormats().length; currMediaExtension++) {
+//                // Copying the subtitle format that matches the currently iterated index:
+//                MediaOperations.supportedMediaExtensions[currMediaExtension] = MediaOperations.getSupportedSubtitleFormats()[currMediaExtension];
+//            }
+//            // Continuing iterating on the MediaExtensions array, without resetting the counter:
+//            for (; currMediaExtension < MediaOperations.getSupportedMediaExtensions().length; currMediaExtension++) {
+//                // Copying the video extensions that matches the currently iterated index minus the length of the subtitles formats array;
+//                MediaOperations.supportedMediaExtensions[currMediaExtension] = MediaOperations.getSupportedVideoExtensions()[currMediaExtension - MediaOperations.getSupportedSubtitleFormats().length];
+//            }
         }
 
         return MediaOperations.supportedMediaExtensions;

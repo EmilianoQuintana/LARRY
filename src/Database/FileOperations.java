@@ -366,24 +366,66 @@ public class FileOperations
         File[] videoFilesInFolder = FileOperations.getVideoFilesFromFolder(folderPath);
         File[] subtitleFilesInFolder = FileOperations.getSubtitleFilesFromFolder(folderPath);
 
+        return FileOperations.matchVideoAndSubtitleFiles(videoFilesInFolder, subtitleFilesInFolder);
+    }
+
+    /**
+     * Scans two given arrays of files (video and subtitle) and tries to find matching pairs. Compares their filenames
+     * in various ways. Path of files is not relevant to the operation.
+     * @param videoFiles Array of video files.
+     * @param subtitleFiles Array of subtitle files.
+     * @return ArrayList of Pairs, containing matching video and subtitle files.
+     */
+    public static ArrayList<Pair<File, File>> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
+    {
         // Sorting both arrays alphabetically:
-        Arrays.sort(videoFilesInFolder);
-        Arrays.sort(subtitleFilesInFolder);
+        Arrays.sort(videoFiles);
+        Arrays.sort(subtitleFiles);
 
-        Pair<File, File> filesPair;
-        ArrayList<Pair<File, File>> foundFilesPairs = new ArrayList<>();
+        ArrayList<Pair<File, File>> allFoundPairs = new ArrayList<>();
 
-        for (int currFileIndex = 0; currFileIndex < videoFilesInFolder.length; currFileIndex++)
+        for (int currFileIndex = 0; currFileIndex < videoFiles.length; currFileIndex++)
         {
-            // Comparing only the base name (without path or extension) of the video file and subtitle file in the current index:
-            if (FilenameUtils.getBaseName(videoFilesInFolder[currFileIndex].getAbsolutePath()) == FilenameUtils.getBaseName(subtitleFilesInFolder[currFileIndex].getAbsolutePath()))
+            // Comparing only the base name (without path or extension) of the video file and subtitle file in the current index.
+            // This will match pairs like "Curb.Your.Enthusiasm.S01E04.Xvid.mp4" and "Curb.Your.Enthusiasm.S01E04.Xvid.srt".
+            if (FilenameUtils.getBaseName(videoFiles[currFileIndex].getAbsolutePath()) == FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath()))
             {
-                filesPair = new Pair<>(videoFilesInFolder[currFileIndex], subtitleFilesInFolder[currFileIndex]);
-                foundFilesPairs.add(filesPair);
+                FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
+
+                continue;
             }
+
+            int[] videoSeasonAndEpisode;
+            int[] subsSeasonAndEpisode;
+
+            // Trying to find SeasonNumber and EpisodeNumber ("SxxExx") in each of the file names, and comparing the numbers:
+            try
+            {
+                videoSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(videoFiles[currFileIndex].getName()));
+                subsSeasonAndEpisode = FileOperations.parseSxxExxFromFilename(FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getName()));
+            }
+            catch (Messages.FileNotFormattedWithSxxExxException e)
+            {
+                continue;
+            }
+
+            if ((videoSeasonAndEpisode[0] != Caption.NO_SEASON)
+                    && (videoSeasonAndEpisode[0] == subsSeasonAndEpisode[0])
+                    && (videoSeasonAndEpisode[1] != Caption.NO_EPISODE)
+                    && (videoSeasonAndEpisode[1] == subsSeasonAndEpisode[1]))
+            {
+                FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
+            }
+
+            //TODO try more ways to match pairs
         }
 
-        return foundFilesPairs;
+        return allFoundPairs;
+    }
+
+    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<Pair<File, File>> allPairs)
+    {
+        allPairs.add(new Pair<>(videoFile, subtitleFile));
     }
 
     //endregion
@@ -397,13 +439,13 @@ public class FileOperations
     {
         boolean isSupported;
 
-        isSupported = Const.getSupportedSubtitlesFormatsSet()
+        isSupported = MediaOperations.getSupportedMediaExtensions()
                 .contains(FileOperations.getCleanExtension(checkedFile));
 
-        if (!isSupported)
-        {
-            isSupported = MediaOperations.getSupportedVideoExtensionsSet().contains(checkedFile);
-        }
+//        if (!isSupported)
+//        {
+//            isSupported = MediaOperations.getSupportedVideoExtensionsSet().contains(checkedFile);
+//        }
 
         return isSupported;
     }
