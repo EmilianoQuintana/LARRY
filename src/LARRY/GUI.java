@@ -246,8 +246,9 @@ public class GUI
         //TODO display open directory dialog
         String folderPath = null;
 
-        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath, MediaOperations.getSupportedMediaExtensions(),false);
-
+        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath,
+                MediaOperations.getSupportedMediaExtensions().toArray(new String[MediaOperations.getSupportedMediaExtensions().size()]),
+                false);
     }
 
     public void inputFolderForSubtitles()
