@@ -18,8 +18,8 @@ public class MediaOperations
 {
     private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
     private static final long EXTRA_TIME_AFTER_CAPTION = 100;
-    private static EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
-    private static EmbeddedMediaPlayer mediaPlayer;
+    private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
+    public EmbeddedMediaPlayer mediaPlayer;
     private static int multiplier = 1;
     private long subtitleDelayMilliseconds;
     private int lastMarkedCaptionIndex;
@@ -129,7 +129,9 @@ public class MediaOperations
 
     public MediaOperations()
     {
-        this.getEmbeddedMPComp();
+//        this.getEmbeddedMPComp();
+        this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+        this.mediaPlayer = this.embeddedMediaPlayerComponent.getMediaPlayer();
     }
 
     /**
@@ -138,13 +140,13 @@ public class MediaOperations
      */
     public EmbeddedMediaPlayerComponent getEmbeddedMPComp()
     {
-        if ((MediaOperations.embeddedMediaPlayerComponent == null) || (MediaOperations.mediaPlayer == null))
-        {
-            embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-            mediaPlayer = MediaOperations.embeddedMediaPlayerComponent.getMediaPlayer();
-        }
+//        if ((this.embeddedMediaPlayerComponent == null) || (this.mediaPlayer == null))
+//        {
+//            this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+//            this.mediaPlayer = this.embeddedMediaPlayerComponent.getMediaPlayer();
+//        }
 
-        return embeddedMediaPlayerComponent;
+        return this.embeddedMediaPlayerComponent;
     }
 
     public void startPlayingMedia(String mediaString, long startTimeInMilliseconds)
@@ -154,8 +156,8 @@ public class MediaOperations
 
 //        this.frame.setTitle("\"" + this.searchedWord + "\" in " + mediaShortenedPath + "- LARRY");
 
-        mediaPlayer.playMedia(mediaString);
-        mediaPlayer.setTime(startTimeInMilliseconds + this.subtitleDelayMilliseconds);
+        this.mediaPlayer.playMedia(mediaString);
+        this.mediaPlayer.setTime(startTimeInMilliseconds + this.subtitleDelayMilliseconds);
 
         if (this.subtitleDelayMilliseconds != 0)
         {
@@ -171,12 +173,12 @@ public class MediaOperations
     public void setToTimestampWithSubtitleDelay(long timeInMilliseconds)
     {
         long newTime = timeInMilliseconds + this.subtitleDelayMilliseconds;
-        if (newTime < 0 || newTime >= mediaPlayer.getLength())
+        if (newTime < 0 || newTime >= this.mediaPlayer.getLength())
         {
             newTime = 0;
         }
 
-        mediaPlayer.setTime(newTime);
+        this.mediaPlayer.setTime(newTime);
     }
 
     public long getSubtitleDelay()
@@ -266,7 +268,7 @@ public class MediaOperations
 
     public void pause()
     {
-        mediaPlayer.pause();
+        this.mediaPlayer.pause();
     }
 
     public void pauseOrResume()
@@ -276,7 +278,7 @@ public class MediaOperations
 
     public void skipTimeBy(long skipTimeInMilliseconds)
     {
-        mediaPlayer.skip(skipTimeInMilliseconds);
+        this.mediaPlayer.skip(skipTimeInMilliseconds);
     }
 
     public void setSearchedWord(String searchedWord)
@@ -286,7 +288,7 @@ public class MediaOperations
 
     public void setSpuDelay()
     {
-        mediaPlayer.setSpuDelay(this.getDefaultSubtitleDelayInMs());
+        this.mediaPlayer.setSpuDelay(this.getDefaultSubtitleDelayInMs());
     }
 
     public String getShortenedVideoTitle(String mediaString)

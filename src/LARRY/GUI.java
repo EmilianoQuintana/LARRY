@@ -2,11 +2,10 @@ package LARRY;
 
 import Database.FileOperations;
 import Database.MediaOperations;
-import Database.SubsCollection;
 import subsParser.Caption;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.swing.*;
-import javax.tools.FileObject;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,7 +19,7 @@ public class GUI
     private final JFrame frame;
     private MediaOperations mediaOperations;
     //    private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
-//    private EmbeddedMediaPlayer mediaPlayer;
+    private EmbeddedMediaPlayer mediaPlayer;
     private JTextArea subtitleDelayAmountText;
 //    private long subtitleDelayMilliseconds;
 //    private int lastMarkedCaptionIndex;
@@ -29,6 +28,8 @@ public class GUI
 
     public GUI()
     {
+        this.mediaOperations = new MediaOperations();
+
         // Setting up Media Player Frame with a MediaOperations object:
         this.frame = new JFrame("LARRY app: no video playing");
         this.frame.setBounds(100, 100, 720, 480);
@@ -38,6 +39,7 @@ public class GUI
             @Override
             public void windowClosing(WindowEvent e)
             {
+//                GUI.this.mediaOperations.embeddedMediaPlayerComponent.release();
                 GUI.this.mediaOperations.getEmbeddedMPComp().release();
                 GUI.this.frame.dispose();
             }
@@ -46,6 +48,12 @@ public class GUI
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout());
 
+        //Media player screen area
+//        this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+//        this.mediaPlayer = embeddedMediaPlayerComponent.getMediaPlayer();
+
+//        contentPane.add(this.mediaOperations.getEmbeddedMPComp(), BorderLayout.CENTER);
+//        contentPane.add(this.mediaOperations.embeddedMediaPlayerComponent, BorderLayout.CENTER);
         contentPane.add(this.mediaOperations.getEmbeddedMPComp(), BorderLayout.CENTER);
 
         //region Adding the Controls to GUI object:

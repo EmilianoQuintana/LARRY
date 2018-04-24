@@ -68,7 +68,7 @@ public class Main
     }
 
     private static void test1(GUI gui, DBLarry DB)
-            throws Messages.GhostFolderException, Messages.SeasonNumberTooBigException
+            throws Messages.SeasonNumberTooBigException
     {
         final long subtitlesDelay = 0;
         final String testFolderPath = "E:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm - Seasons 1-6 + Extras" +
@@ -102,14 +102,22 @@ public class Main
         gui.setMarkedCaptionMoments(results);
 
         Caption firstCaption = results.get(0);
-        String resultFileAddress = DBLarry
-                .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm - ");
-        gui.setSearchedWord(wordToFind);
-        gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
-        gui.startPlayingMedia(resultFileAddress, firstCaption.start.getMseconds());
+        String resultFileAddress;
+        try
+        {
+            resultFileAddress = DBLarry
+                    .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm - ");
 
-        System.out.println("Playing media: " + resultFileAddress);
-        //gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
+            gui.setSearchedWord(wordToFind);
+            gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
+            gui.startPlayingMedia(resultFileAddress, firstCaption.start.getMseconds());
+
+            System.out.println("Playing media: " + resultFileAddress);
+            //gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
+        } catch (Messages.GhostFolderException e)
+        {
+
+        }
     }
 
     private static void test2(GUI gui, DBLarry DB)
