@@ -3,11 +3,13 @@ package Database;
 import subsParser.Caption;
 import subsParser.Const;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.filter.ExtensionFileFilter;
 import uk.co.caprica.vlcj.filter.SubTitleFileFilter;
 import uk.co.caprica.vlcj.filter.VideoFileFilter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -126,6 +128,13 @@ public class MediaOperations
 
         return MediaOperations.supportedMediaExtensions;
     }
+
+    public static String[] getSupportedMediaExtensionsArray()
+    {
+        String[] extensionsArray = new String[MediaOperations.getSupportedMediaExtensions().size()];
+        return MediaOperations.getSupportedMediaExtensions().toArray(extensionsArray);
+    }
+
 
     public MediaOperations()
     {

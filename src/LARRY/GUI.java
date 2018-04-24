@@ -1,15 +1,17 @@
 package LARRY;
 
-import Database.FileOperations;
-import Database.MediaOperations;
+import Database.*;
+import javafx.util.Pair;
 import subsParser.Caption;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUI
@@ -249,14 +251,26 @@ public class GUI
 
     //region File input methods
 
-    public void inputWholeFolder()
+    public void inputWholeFolder(DBLarry dbLarry)
     {
-        //TODO display open directory dialog
-        String folderPath = null;
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setMultiSelectionEnabled(false);
+        fileChooser.setFileFilter(FileOperations.getSupportedMediaExtensionsFileFilter());
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 
-        File[] filesInFolder = FileOperations.getFilesFromFolder(folderPath,
-                MediaOperations.getSupportedMediaExtensions().toArray(new String[MediaOperations.getSupportedMediaExtensions().size()]),
-                false);
+        int fileChooserResult = fileChooser.showOpenDialog(this.frame);
+
+        if (fileChooserResult == JFileChooser.APPROVE_OPTION) {
+
+            String folderPath = fileChooser.getSelectedFile().getAbsolutePath();
+
+            ArrayList<Pair<File, File>> matchingFilesFound = FileOperations.getMatchingVideoAndSubtitleFiles(folderPath, false);
+//            File[] filesInFolder = matchingFilesFound.toArray(new String[matchingFilesFound.size()]);
+
+//            dbLarry.updateSubsCollectionFromFolder();
+        }
     }
 
     public void inputFolderForSubtitles()

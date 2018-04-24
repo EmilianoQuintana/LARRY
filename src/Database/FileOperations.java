@@ -6,11 +6,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import subsParser.Caption;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -219,7 +217,7 @@ public class FileOperations
      */
     public static String getCleanExtension(String fileName)
     {
-        return FilenameUtils.getExtension(fileName).toLowerCase();
+        return FilenameUtils.getExtension(fileName).toLowerCase(Locale.ENGLISH);
     }
 
     /**
@@ -297,49 +295,53 @@ public class FileOperations
 
     //region Getters for List of Files from Folder
 
-    /**
-     * Returns a list of all the files within a given folder.
-     *
-     * @param folderPath Path of the desired folder
-     * @return Array of files in the given folder.
-     */
-    public static File[] getFilesFromFolder(String folderPath)
-    {
-        return new File(folderPath).listFiles();
-    }
+//    Unneeded. We only need to get the supported files.
+//    /**
+//     * Returns a list of all the files within a given folder.
+//     *
+//     * @param folderPath Path of the desired folder
+//     * @return Array of files in the given folder.
+//     */
+//    public static File[] getFilesFromFolder(String folderPath)
+//    {
+//        return new File(folderPath).listFiles();
+//    }
 
-    /**
-     * Returns a list of all the files, of a certain extension, that are in a desired folder.
-     *
-     * @param folderPath Path of the desired folder
-     * @param extension  Desired extensions of the files.
-     * @return File Array of the files found.
-     */
-    public static File[] getFilesFromFolder(String folderPath, String extension)
-    {
-        String[] extensions = new String[1];
-        extensions[0] = extension;
-
-        return FileOperations.getFilesFromFolder(folderPath, extensions, false);
-    }
+//    I've discovered the java syntax for single/multiple parameters (String... extensions), so I commented out this variation. ~~~~ Cuky
+//    /**
+//     * Returns a list of all the files, of a certain extension, that are in a desired folder.
+//     *
+//     * @param folderPath Path of the desired folder
+//     * @param extension  Desired extensions of the files.
+//     * @return File Array of the files found.
+//     */
+//    public static File[] getFilesFromFolder(String folderPath, String extension)
+//    {
+//        String[] extensions = new String[1];
+//        extensions[0] = extension;
+//
+//        return FileOperations.getFilesFromFolder(folderPath, extensions, false);
+//    }
 
     /**
      * Returns a list of all the files, of certain extensions, that are in a desired folder.
      * You can choose to also search the inner folders that are inside the given folder (recursive search).
      *
      * @param folderPath      Path of the desired folder
-     * @param extensions      Array of the desired extensions
+     * @param fileExtensions  Array of the desired extensions
      * @param recursiveSearch Whether to also search the inner folders inside the given folder
      * @return File Array of the files found.
      */
-    public static File[] getFilesFromFolder(String folderPath, String[] extensions,
-                                            boolean recursiveSearch)
+    public static File[] getFilesFromFolder(String folderPath,
+                                            boolean recursiveSearch, String... fileExtensions)
     {
         File folder = new File(folderPath);
+//        String[] extensions = new String[fileExtensions.length];
+//        extensions = fileExtensions;
 
         //WildcardFileFilter wildcardFileFilter = new WildcardFileFilter("*." + extension.getExtension());
         Collection<File> filesCollection = FileUtils
-                .listFiles(folder, FileOperations.getCleanExtensions(extensions), recursiveSearch);
+                .listFiles(folder, FileOperations.getCleanExtensions(fileExtensions), recursiveSearch);
         File[] filesArray = new File[filesCollection.size()];
 
         return filesCollection.toArray(filesArray);
@@ -412,7 +414,7 @@ public class FileOperations
      */
     private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats, boolean recursiveSearch)
     {
-        return FileOperations.getFilesFromFolder(folderPath, subsFormats, recursiveSearch);
+        return FileOperations.getFilesFromFolder(folderPath, recursiveSearch, subsFormats);
     }
 
     /**
@@ -423,7 +425,7 @@ public class FileOperations
      */
     public static File[] getVideoFilesFromFolder(String folderPath)
     {
-        return FileOperations.getFilesFromFolder(folderPath, MediaOperations.getSupportedVideoExtensions(), false);
+        return FileOperations.getFilesFromFolder(folderPath, false, MediaOperations.getSupportedVideoExtensions());
     }
 
     /**
@@ -506,6 +508,26 @@ public class FileOperations
     {
         allPairs.add(new Pair<>(videoFile, subtitleFile));
     }
+
+    /**
+     * Returns a File Filter object the supported file extensions.
+     * @return A FileNameExtensionFilter object with all the extensions supported by LARRY.
+     */
+    public static javax.swing.filechooser.FileNameExtensionFilter getSupportedMediaExtensionsFileFilter()
+    {
+        FileNameExtensionFilter fileExtensionsFilter = new FileNameExtensionFilter("Supported media files", MediaOperations.getSupportedMediaExtensionsArray());
+
+//        FileFilter fileFilter = new ExtensionFileFilter() {
+//            @Override
+//            public String[] getExtensions()
+//            {
+//                return MediaOperations.getSupportedMediaExtensionsArray();
+//            }
+//        };
+
+        return fileExtensionsFilter;
+    }
+
 
     /**
      * Checks if a specified file is supported by LARRY.
