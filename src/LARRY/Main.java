@@ -32,10 +32,12 @@ public class Main
             try
             {
                 test1(gui, DB);
-            } catch (Messages.GhostFolderException e)
-            {
-                e.printStackTrace();
-            } catch (Messages.SeasonNumberTooBigException e)
+            }
+//            catch (Messages.GhostFolderException e)
+//            {
+//                e.printStackTrace();
+//            }
+            catch (Messages.SeasonNumberTooBigException e)
             {
 
             }
