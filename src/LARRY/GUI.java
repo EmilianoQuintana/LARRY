@@ -16,8 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GUI
-{
+public class GUI {
     //    private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
 //    private static final long EXTRA_TIME_AFTER_CAPTION = 100;
     private final JFrame frame;
@@ -29,19 +28,16 @@ public class GUI
 //    private List<Caption> markedCaptionMoments;
 //    private String searchedWord;
 
-    public GUI()
-    {
+    public GUI() {
         this.mediaOperations = new MediaOperations();
 
         // Setting up Media Player Frame with a MediaOperations object:
         this.frame = new JFrame("LARRY app: no video playing");
         this.frame.setBounds(100, 100, 720, 480);
         this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.frame.addWindowListener(new WindowAdapter()
-        {
+        this.frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e)
-            {
+            public void windowClosing(WindowEvent e) {
 //                GUI.this.mediaOperations.embeddedMediaPlayerComponent.release();
                 GUI.this.mediaOperations.getEmbeddedMPComp().release();
                 GUI.this.frame.dispose();
@@ -62,40 +58,47 @@ public class GUI
         //region Adding the Controls to GUI object:
 
         JPanel controlsPane = new JPanel();
+        controlsPane.setBackground(new Color(50, 50, 50));
 
         JButton playOrPauseButton = new JButton(Resources.Icon.PLAY.getIcon());  //"\u23F8");
 
         playOrPauseButton.addActionListener(event -> {
-            if (this.mediaOperations.isPlaying()){
+            if (this.mediaOperations.isPlaying()) {
                 this.mediaOperations.pause();
-                playOrPauseButton.setIcon(Resources.Icon.PLAY.getIcon());
-            }
-            else
-            {
+                if (this.mediaOperations.isNotPlaying()) {
+                    playOrPauseButton.setIcon(Resources.Icon.PLAY.getIcon());
+                }
+            } else {
                 this.mediaOperations.play();
-                playOrPauseButton.setIcon(Resources.Icon.PAUSE.getIcon());
+                if (this.mediaOperations.isPlaying()) {
+                    playOrPauseButton.setIcon(Resources.Icon.PAUSE.getIcon());
+                }
             }
         });
 
-        playOrPauseButton.setFont(Font.getFont("dialog"));
+        this.stylizeButton(playOrPauseButton);
         controlsPane.add(playOrPauseButton);
 
         JButton rewindButton = new JButton(Resources.Icon.FAST_REWIND.getIcon());
 //        rewindButton.setMaximumSize(new Dimension(30, 30));
 
         rewindButton.addActionListener(event -> this.skipTimeBy(-10000));
+        this.stylizeButton(rewindButton);
         controlsPane.add(rewindButton);
 
         JButton skipButton = new JButton(Resources.Icon.FAST_FORWARD.getIcon());
         skipButton.addActionListener(event -> this.skipTimeBy(10000));
+        this.stylizeButton(skipButton);
         controlsPane.add(skipButton);
 
         JButton decreaseSubtitleDelay = new JButton("- Sub Delay");
         decreaseSubtitleDelay.addActionListener(event -> this.smartChangeSubsDelay(false));
+        this.stylizeButton(decreaseSubtitleDelay);
         controlsPane.add(decreaseSubtitleDelay);
 
         JButton increaseSubtitleDelay = new JButton("+ Sub Delay");
         increaseSubtitleDelay.addActionListener(event -> this.smartChangeSubsDelay(true));
+        this.stylizeButton(increaseSubtitleDelay);
         controlsPane.add(increaseSubtitleDelay);
 
         this.subtitleDelayAmountText = new JTextArea("0");
@@ -103,10 +106,12 @@ public class GUI
 
         JButton prevCaptionButton = new JButton("Prev");
         prevCaptionButton.addActionListener(event -> this.skipToNextOrPrevCaption(false));
+        this.stylizeButton(prevCaptionButton);
         controlsPane.add(prevCaptionButton);
 
         JButton nextCaptionButton = new JButton("Next");
         nextCaptionButton.addActionListener(event -> this.skipToNextOrPrevCaption(true));
+        this.stylizeButton(nextCaptionButton);
         controlsPane.add(nextCaptionButton);
 
         //endregion
@@ -120,8 +125,7 @@ public class GUI
 
     //region Comment this out, I moved all to inside this MediaOperations object:
 
-    public void startPlayingMedia(String mediaString, long startTimeInMilliseconds)
-    {
+    public void startPlayingMedia(String mediaString, long startTimeInMilliseconds) {
 //        String mediaShortenedPath = mediaString
 //                .substring(mediaString.lastIndexOf(File.separatorChar) + 1, mediaString.length());
 //
@@ -139,16 +143,14 @@ public class GUI
 //        }
     }
 
-    private void pauseOrResume()
-    {
+    private void pauseOrResume() {
         this.mediaOperations.pauseOrResume();
     }
 
     /**
      * Will not allow negative times!
      */
-    public void setToTimestampWithSubtitleDelay(long timeInMilliseconds)
-    {
+    public void setToTimestampWithSubtitleDelay(long timeInMilliseconds) {
 //        long newTime = timeInMilliseconds + this.mediaOperations.subtitleDelayMilliseconds;
 //        if (newTime < 0 || newTime >= this.mediaPlayer.getLength())
 //        {
@@ -160,16 +162,14 @@ public class GUI
         this.mediaOperations.setToTimestampWithSubtitleDelay(timeInMilliseconds);
     }
 
-    private void skipTimeBy(long skipTimeInMilliseconds)
-    {
+    private void skipTimeBy(long skipTimeInMilliseconds) {
 //        this.mediaPlayer.skip(skipTimeInMilliseconds);
         this.mediaOperations.skipTimeBy(skipTimeInMilliseconds);
     }
 
     //region Subtitles manipulation methods
 
-    public void setSubtitleDelay(long delayInMilliseconds)
-    {
+    public void setSubtitleDelay(long delayInMilliseconds) {
 //        this.mediaOperations.subtitleDelayMilliseconds = delayInMilliseconds;
 //        this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
         this.mediaOperations.setSubtitleDelay(delayInMilliseconds);
@@ -183,8 +183,7 @@ public class GUI
      *
      * @param increaseOrDecrease you know
      */
-    private void smartChangeSubsDelay(boolean increaseOrDecrease)
-    {
+    private void smartChangeSubsDelay(boolean increaseOrDecrease) {
 //        if (increaseOrDecrease == (this.multiplier > 0))
 //        {
 //            if (this.multiplier < 99 && this.multiplier > -99)
@@ -205,14 +204,12 @@ public class GUI
         this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.getSubtitleDelay()) + " ms");
     }
 
-    private void skipToCaption(Caption caption)
-    {
+    private void skipToCaption(Caption caption) {
         //this.setToTimestampWithSubtitleDelay(caption.start.getMseconds() - EXTRA_TIME_BEFORE_CAPTION);
         this.mediaOperations.skipToCaption(caption);
     }
 
-    private void skipToNextOrPrevCaption(boolean nextOrPrev)
-    {
+    private void skipToNextOrPrevCaption(boolean nextOrPrev) {
 //        if (this.markedCaptionMoments.size() == 0)
 //        {
 //            return;
@@ -228,8 +225,7 @@ public class GUI
 
     }
 
-    public void setMarkedCaptionMoments(List<Caption> captions)
-    {
+    public void setMarkedCaptionMoments(List<Caption> captions) {
 //        this.markedCaptionMoments = captions;
 //        if (this.markedCaptionMoments.size() == 0)
 //        {
@@ -240,8 +236,7 @@ public class GUI
         this.mediaOperations.setMarkedCaptionMoments(captions);
     }
 
-    public void skipToMarkedCaptionByIndex(int index)
-    {
+    public void skipToMarkedCaptionByIndex(int index) {
 //        if (index < 0 || index >= this.markedCaptionMoments.size())
 //        {
 //            throw new IndexOutOfBoundsException("No such caption index!");
@@ -254,16 +249,14 @@ public class GUI
 
     //endregion
 
-    public void setSearchedWord(String searchedWord)
-    {
+    public void setSearchedWord(String searchedWord) {
 //        this.searchedWord = searchedWord;
         this.mediaOperations.setSearchedWord(searchedWord);
     }
 
     //region File input methods
 
-    public void inputWholeFolder(DBLarry dbLarry)
-    {
+    public void inputWholeFolder(DBLarry dbLarry) {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogType(JFileChooser.OPEN_DIALOG);
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -284,9 +277,13 @@ public class GUI
         }
     }
 
-    public void inputFolderForSubtitles()
-    {
+    public void inputFolderForSubtitles() {
 
+    }
+
+    private void stylizeButton(JButton button) {
+        button.setBackground(new Color(37, 37, 37));
+        button.setFocusable(false);
     }
 
 }

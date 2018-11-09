@@ -2,11 +2,11 @@ package LARRY;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class Resources {
     public enum Icon{
@@ -29,7 +29,7 @@ public class Resources {
             this.filename = fileName;
         }
 
-        public StretchIcon getIcon() {
+        public ImageIcon getIcon() {
             String iconFilePathRelative = "/resources/icons/" + this.filename;
 
             try {
@@ -39,9 +39,11 @@ public class Resources {
                 }
 
                 BufferedImage buffImg = ImageIO.read(url);
-                return new StretchIcon(buffImg);
+                // TEMPORARY MEASURES - hardcoded image rescaling to 20x20
+                return new ImageIcon(buffImg.getScaledInstance(20, 20, Image.SCALE_FAST));
 
             } catch (IOException ex){
+                System.out.println("ERROR: Exception caught in getIcon(). Returning a null icon (will result in a blank/missing image)");
                 ex.printStackTrace();
                 return null;
             }
