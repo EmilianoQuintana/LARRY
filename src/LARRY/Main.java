@@ -1,8 +1,11 @@
 package LARRY;
 
 import Database.DBLarry;
+import com.sun.jna.NativeLibrary;
 import subsParser.Caption;
+import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -25,7 +28,11 @@ public class Main
                     " for the temporary Curb Your Enthusiasm subtitles.");
         }
 
-        new NativeDiscovery().discover();
+        boolean discovered = new NativeDiscovery().discover();
+        if (!discovered)
+        {
+            System.out.println("WARNING: LIBVLC WAS NOT DISCOVERED, APP WILL PROBABLY BREAK");
+        }
 
         SwingUtilities.invokeLater(() -> {
             GUI gui = new GUI();
