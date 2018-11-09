@@ -21,7 +21,8 @@ public class Main
             DB.updateSubsCollectionFromFolder("Curb", "Subtitles\\Subtitles");
         } catch (Messages.EmptyFolderException exEmptyFolder)
         {
-
+            System.out.println("Folder \"Subtitles/Subtitles\" not found when searching" +
+                    " for the temporary Curb Your Enthusiasm subtitles.");
         }
 
         new NativeDiscovery().discover();
@@ -39,7 +40,8 @@ public class Main
 //            }
             catch (Messages.SeasonNumberTooBigException e)
             {
-
+                System.out.println("Error: Season number too big!");
+                e.printStackTrace();
             }
         });
         

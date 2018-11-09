@@ -16,7 +16,7 @@ public class Messages
             MSG_WORD_NOT_FOUND = "Couldn't find '%s' in the database.",
             MSG_EMPTY_FOLDER = "No files were found in folder: %s",
             MSG_GHOST_FOLDER = "Unknown folder: %s",
-            MSG_DOES_NOT_START_PREFIX = "Does not start with Prefix %s",
+            MSG_DOES_NOT_START_PREFIX = "File does not start with Prefix %s",
             MSG_FILE_ALREADY_IN_LIBRARY = "File %s is already in library. ",
             MSG_MAXIMUM_FILES_ADDED = "Cannot add any more files; maximum amount is %d)", // Returning to calling function.",
             MSG_SUPPORTED_SUBTITLE_FORMATS = "Supported subtitle formats: %s",
@@ -26,8 +26,8 @@ public class Messages
             MSG_SEASON_NUM_TOO_BIG = "The given Season Number %d is too big";
 
     public static final String
-            MSG_ADDING_FILE = "Adding...",
-            MSG_ADDED_FILE = "...Added!";
+            MSG_ADDING_FILE = "Adding…",
+            MSG_ADDED_FILE = "…Added!";
 
     public static void printInConsole(String message)
     {
