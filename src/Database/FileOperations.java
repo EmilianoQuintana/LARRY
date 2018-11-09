@@ -1,7 +1,6 @@
 package Database;
 
 import LARRY.Messages;
-import javafx.util.Pair;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import subsParser.Caption;
@@ -14,6 +13,17 @@ import java.util.regex.Pattern;
 
 public class FileOperations
 {
+    public static class FilePair
+    {
+        public File key;
+        public File value;
+
+        public FilePair(File key, File value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
     private static final String ALL_FILE_EXTENSIONS = "*.*";
     private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
 
@@ -435,7 +445,7 @@ public class FileOperations
      * @param recursiveSearch Whether to also search the inner folders inside the given folder.
      * @return ArrayList of Pairs of Files, containing matching video and subtitle files that were found.
      */
-    public static ArrayList<Pair<File, File>> getMatchingVideoAndSubtitleFiles(String folderPath,
+    public static ArrayList<FilePair> getMatchingVideoAndSubtitleFiles(String folderPath,
                                                                                boolean recursiveSearch)
     {
         File[] videoFilesInFolder = FileOperations.getVideoFilesFromFolder(folderPath);
@@ -454,13 +464,13 @@ public class FileOperations
      * @param subtitleFiles Array of subtitle files.
      * @return ArrayList of Pairs of files, containing matching video and subtitle files that were found.
      */
-    public static ArrayList<Pair<File, File>> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
+    public static ArrayList<FilePair> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
     {
         // Sorting both arrays alphabetically:
         Arrays.sort(videoFiles);
         Arrays.sort(subtitleFiles);
 
-        ArrayList<Pair<File, File>> allFoundPairs = new ArrayList<>();
+        ArrayList<FilePair> allFoundPairs = new ArrayList<>();
 
         for (int currFileIndex = 0; currFileIndex < videoFiles.length; currFileIndex++)
         {
@@ -504,9 +514,9 @@ public class FileOperations
      * @param subtitleFile Matching Subtitle file.
      * @param allPairs     ArrayList of pairs, into which to add the new pair.
      */
-    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<Pair<File, File>> allPairs)
+    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<FilePair> allPairs)
     {
-        allPairs.add(new Pair<>(videoFile, subtitleFile));
+        allPairs.add(new FilePair(videoFile, subtitleFile));
     }
 
     /**

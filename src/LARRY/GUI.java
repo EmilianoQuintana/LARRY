@@ -1,7 +1,6 @@
 package LARRY;
 
 import Database.*;
-import javafx.util.Pair;
 import subsParser.Caption;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
@@ -266,7 +265,7 @@ public class GUI
 
             String folderPath = fileChooser.getSelectedFile().getAbsolutePath();
 
-            ArrayList<Pair<File, File>> matchingFilesFound = FileOperations.getMatchingVideoAndSubtitleFiles(folderPath, false);
+            ArrayList<FileOperations.FilePair> matchingFilesFound = FileOperations.getMatchingVideoAndSubtitleFiles(folderPath, false);
 //            File[] filesInFolder = matchingFilesFound.toArray(new String[matchingFilesFound.size()]);
 
 //            dbLarry.updateSubsCollectionFromFolder();
