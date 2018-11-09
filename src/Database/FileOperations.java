@@ -1,6 +1,7 @@
 package Database;
 
 import LARRY.Messages;
+//import javafx.util.Pair; // was working until it was removed from JDK 11 (September 2018). So we use our own in-house FilePair class.
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import subsParser.Caption;

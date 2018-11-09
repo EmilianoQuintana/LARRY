@@ -4,12 +4,15 @@ import Database.*;
 import subsParser.Caption;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +23,6 @@ public class GUI
     private final JFrame frame;
     private MediaOperations mediaOperations;
     //    private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
-    private EmbeddedMediaPlayer mediaPlayer;
     private JTextArea subtitleDelayAmountText;
 //    private long subtitleDelayMilliseconds;
 //    private int lastMarkedCaptionIndex;
@@ -61,20 +63,30 @@ public class GUI
 
         JPanel controlsPane = new JPanel();
 
-        JButton pauseButton = new JButton("||");//"\u23F8");
-        pauseButton.addActionListener(event -> {
-            this.pauseOrResume();
-            pauseButton.setText(pauseButton.getText().equals("▶") ? "||" : "▶");
+        JButton playOrPauseButton = new JButton(Resources.Icon.PLAY.getIcon());  //"\u23F8");
+
+        playOrPauseButton.addActionListener(event -> {
+            if (this.mediaOperations.isPlaying()){
+                this.mediaOperations.pause();
+                playOrPauseButton.setIcon(Resources.Icon.PLAY.getIcon());
+            }
+            else
+            {
+                this.mediaOperations.play();
+                playOrPauseButton.setIcon(Resources.Icon.PAUSE.getIcon());
+            }
         });
 
-        pauseButton.setFont(Font.getFont("dialog"));
-        controlsPane.add(pauseButton);
+        playOrPauseButton.setFont(Font.getFont("dialog"));
+        controlsPane.add(playOrPauseButton);
 
-        JButton rewindButton = new JButton("⏪");
+        JButton rewindButton = new JButton(Resources.Icon.FAST_REWIND.getIcon());
+//        rewindButton.setMaximumSize(new Dimension(30, 30));
+
         rewindButton.addActionListener(event -> this.skipTimeBy(-10000));
         controlsPane.add(rewindButton);
 
-        JButton skipButton = new JButton("⏩");
+        JButton skipButton = new JButton(Resources.Icon.FAST_FORWARD.getIcon());
         skipButton.addActionListener(event -> this.skipTimeBy(10000));
         controlsPane.add(skipButton);
 
@@ -129,7 +141,7 @@ public class GUI
 
     private void pauseOrResume()
     {
-        this.mediaOperations.pause();
+        this.mediaOperations.pauseOrResume();
     }
 
     /**
@@ -276,4 +288,5 @@ public class GUI
     {
 
     }
+
 }

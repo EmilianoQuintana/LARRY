@@ -21,7 +21,6 @@ public class MediaOperations
     private static final long EXTRA_TIME_BEFORE_CAPTION = 491;
     private static final long EXTRA_TIME_AFTER_CAPTION = 100;
     private final EmbeddedMediaPlayerComponent embeddedMediaPlayerComponent;
-    public EmbeddedMediaPlayer mediaPlayer;
     private static int multiplier = 1;
     private long subtitleDelayMilliseconds;
     private int lastMarkedCaptionIndex;
@@ -29,21 +28,22 @@ public class MediaOperations
     private List<Caption> markedCaptionMoments;
 
     private static String[] supportedSubtitleFormats;
-//    private static String[] supportedVideoExtensions;
+    //    private static String[] supportedVideoExtensions;
     private static ArrayList<String> supportedMediaExtensions;
     private static Set<String> supportedMediaExtensionsSet;
 
+    private EmbeddedMediaPlayer mediaPlayer;
+
     /**
      * Returns all the Video-file Extensions supported by LARRY, in a String array.
+     *
      * @return String Array of the Video-file Extensions supported by the media playback API.
      */
-    public static String[] getSupportedVideoExtensions()
-    {
+    public static String[] getSupportedVideoExtensions() {
         return new VideoFileFilter().getExtensions();
     }
 
-    public static Set<String> getSupportedVideoExtensionsSet()
-    {
+    public static Set<String> getSupportedVideoExtensionsSet() {
         return new VideoFileFilter().getExtensionSet();
     }
 
@@ -52,8 +52,7 @@ public class MediaOperations
      *
      * @return String Array of the Subtitle Formats supported both by the subtitle parser API and the media playback API.
      */
-    public static String[] getSupportedSubtitleFormats()
-    {
+    public static String[] getSupportedSubtitleFormats() {
         if ((MediaOperations.supportedSubtitleFormats == null) || (MediaOperations.supportedSubtitleFormats.length == 0)) {
             // Getting the supported subtitle extensions by SubsParser and by VLCJ:
             HashSet<String> supportedBySubsParser = Const.getSupportedSubtitlesFormatsSet();
@@ -90,27 +89,25 @@ public class MediaOperations
 
         return MediaOperations.supportedSubtitleFormats;
     }
+
     /**
      * Returns all the Subtitle Formats and Video-file Extensions supported by LARRY, in a String array.
+     *
      * @return String array of the Subtitle Formats and Video-file Extensions supported by LARRY.
      */
-    public static ArrayList<String> getSupportedMediaExtensions()
-    {
+    public static ArrayList<String> getSupportedMediaExtensions() {
         // Initializing the static array of supported media extensions:
         if ((MediaOperations.supportedMediaExtensions == null) ||
-                (MediaOperations.supportedMediaExtensions.size() == 0))
-        {
+                (MediaOperations.supportedMediaExtensions.size() == 0)) {
             MediaOperations.supportedMediaExtensions = new ArrayList<>(
                     MediaOperations.getSupportedSubtitleFormats().length +
                             MediaOperations.getSupportedVideoExtensions().length);
 
-            for (String videoExtension : MediaOperations.getSupportedVideoExtensions())
-            {
+            for (String videoExtension : MediaOperations.getSupportedVideoExtensions()) {
                 MediaOperations.supportedMediaExtensions.add(videoExtension);
             }
 
-            for (String subtitleExtension : MediaOperations.getSupportedSubtitleFormats())
-            {
+            for (String subtitleExtension : MediaOperations.getSupportedSubtitleFormats()) {
                 MediaOperations.supportedMediaExtensions.add(subtitleExtension);
             }
 
@@ -129,15 +126,13 @@ public class MediaOperations
         return MediaOperations.supportedMediaExtensions;
     }
 
-    public static String[] getSupportedMediaExtensionsArray()
-    {
+    public static String[] getSupportedMediaExtensionsArray() {
         String[] extensionsArray = new String[MediaOperations.getSupportedMediaExtensions().size()];
         return MediaOperations.getSupportedMediaExtensions().toArray(extensionsArray);
     }
 
 
-    public MediaOperations()
-    {
+    public MediaOperations() {
 //        this.getEmbeddedMPComp();
         this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
         this.mediaPlayer = this.embeddedMediaPlayerComponent.getMediaPlayer();
@@ -145,10 +140,10 @@ public class MediaOperations
 
     /**
      * Returns an initialized Singleton instance of the inner embeddedMediaPlayerComponent.
+     *
      * @return This instance's Singleton embeddedMediaPlayerComponent object.
      */
-    public EmbeddedMediaPlayerComponent getEmbeddedMPComp()
-    {
+    public EmbeddedMediaPlayerComponent getEmbeddedMPComp() {
 //        if ((this.embeddedMediaPlayerComponent == null) || (this.mediaPlayer == null))
 //        {
 //            this.embeddedMediaPlayerComponent = new EmbeddedMediaPlayerComponent();
@@ -158,8 +153,7 @@ public class MediaOperations
         return this.embeddedMediaPlayerComponent;
     }
 
-    public void startPlayingMedia(String mediaString, long startTimeInMilliseconds)
-    {
+    public void startPlayingMedia(String mediaString, long startTimeInMilliseconds) {
 //        String mediaShortenedPath = mediaString
 //                .substring(mediaString.lastIndexOf(File.separatorChar) + 1, mediaString.length());
 
@@ -168,8 +162,7 @@ public class MediaOperations
         this.mediaPlayer.playMedia(mediaString);
         this.mediaPlayer.setTime(startTimeInMilliseconds + this.subtitleDelayMilliseconds);
 
-        if (this.subtitleDelayMilliseconds != 0)
-        {
+        if (this.subtitleDelayMilliseconds != 0) {
             //A-sync problem fix
 //            this.mediaPlayer.setSpuDelay(this.mediaOperations.subtitleDelayMilliseconds * 1000);
             this.setSpuDelay();
@@ -179,39 +172,32 @@ public class MediaOperations
     /**
      * Will not allow negative times!
      */
-    public void setToTimestampWithSubtitleDelay(long timeInMilliseconds)
-    {
+    public void setToTimestampWithSubtitleDelay(long timeInMilliseconds) {
         long newTime = timeInMilliseconds + this.subtitleDelayMilliseconds;
-        if (newTime < 0 || newTime >= this.mediaPlayer.getLength())
-        {
+        if (newTime < 0 || newTime >= this.mediaPlayer.getLength()) {
             newTime = 0;
         }
 
         this.mediaPlayer.setTime(newTime);
     }
 
-    public long getSubtitleDelay()
-    {
+    public long getSubtitleDelay() {
         return this.subtitleDelayMilliseconds;
     }
 
-    public void setSubtitleDelay(long delayInMilliseconds)
-    {
+    public void setSubtitleDelay(long delayInMilliseconds) {
         this.subtitleDelayMilliseconds = delayInMilliseconds;
 //        this.mediaPlayer.setSpuDelay(this.subtitleDelayMilliseconds * 1000);
         this.setSpuDelay();
         //this.subtitleDelayAmountText.setText(String.format("%d", this.mediaOperations.subtitleDelayMilliseconds) + " ms");
     }
 
-    public void skipToCaption(Caption caption)
-    {
+    public void skipToCaption(Caption caption) {
         this.setToTimestampWithSubtitleDelay(caption.start.getMseconds() - EXTRA_TIME_BEFORE_CAPTION);
     }
 
-    public void skipToNextOrPrevCaption(boolean nextOrPrev)
-    {
-        if (this.markedCaptionMoments.size() == 0)
-        {
+    public void skipToNextOrPrevCaption(boolean nextOrPrev) {
+        if (this.markedCaptionMoments.size() == 0) {
             return;
         }
         this.lastMarkedCaptionIndex += nextOrPrev ? +1 : -1;
@@ -223,21 +209,17 @@ public class MediaOperations
         this.skipToCaption(this.markedCaptionMoments.get(this.lastMarkedCaptionIndex));
     }
 
-    public void setMarkedCaptionMoments(List<Caption> captions)
-    {
+    public void setMarkedCaptionMoments(List<Caption> captions) {
         this.markedCaptionMoments = captions;
-        if (this.markedCaptionMoments.size() == 0)
-        {
+        if (this.markedCaptionMoments.size() == 0) {
             return;
         }
 
         this.lastMarkedCaptionIndex = 0;
     }
 
-    public void skipToMarkedCaptionByIndex(int index)
-    {
-        if (index < 0 || index >= this.markedCaptionMoments.size())
-        {
+    public void skipToMarkedCaptionByIndex(int index) {
+        if (index < 0 || index >= this.markedCaptionMoments.size()) {
             throw new IndexOutOfBoundsException("No such caption index!");
         }
 
@@ -251,17 +233,12 @@ public class MediaOperations
      *
      * @param increaseOrDecrease you know
      */
-    public void smartChangeSubsDelay(boolean increaseOrDecrease)
-    {
-        if (increaseOrDecrease == (multiplier > 0))
-        {
-            if (multiplier < 99 && multiplier > -99)
-            {
+    public void smartChangeSubsDelay(boolean increaseOrDecrease) {
+        if (increaseOrDecrease == (multiplier > 0)) {
+            if (multiplier < 99 && multiplier > -99) {
                 multiplier *= 2;
             }
-        }
-        else
-        {
+        } else {
             multiplier = increaseOrDecrease ? +1 : -1;
         }
 
@@ -275,40 +252,49 @@ public class MediaOperations
         // this.subtitleDelayAmountText.setText(String.format("%d", this.subtitleDelayMilliseconds) + " ms");
     }
 
-    public void pause()
-    {
+    public void pauseOrResume() {
         this.mediaPlayer.pause();
     }
 
-    public void pauseOrResume()
-    {
-        this.pause();
+    public void pause() {
+        if (this.isPlaying()) {
+            this.mediaPlayer.pause();
+        }
     }
 
-    public void skipTimeBy(long skipTimeInMilliseconds)
-    {
+    public void play() {
+        if (this.isNotPlaying()) {
+            this.mediaPlayer.pause();
+        }
+    }
+
+    public boolean isPlaying() {
+        return this.mediaPlayer.isPlaying();
+    }
+
+    public boolean isNotPlaying() {
+        return !this.isPlaying();
+    }
+
+    public void skipTimeBy(long skipTimeInMilliseconds) {
         this.mediaPlayer.skip(skipTimeInMilliseconds);
     }
 
-    public void setSearchedWord(String searchedWord)
-    {
+    public void setSearchedWord(String searchedWord) {
         this.searchedWord = searchedWord;
     }
 
-    public void setSpuDelay()
-    {
+    public void setSpuDelay() {
         this.mediaPlayer.setSpuDelay(this.getDefaultSubtitleDelayInMs());
     }
 
-    public String getShortenedVideoTitle(String mediaString)
-    {
+    public String getShortenedVideoTitle(String mediaString) {
         String mediaShortenedPath = mediaString
                 .substring(mediaString.lastIndexOf(File.separatorChar) + 1, mediaString.length());
         return ("\"" + this.searchedWord + "\" in " + mediaShortenedPath + "- LARRY");
     }
 
-    private long getDefaultSubtitleDelayInMs()
-    {
+    private long getDefaultSubtitleDelayInMs() {
         return this.subtitleDelayMilliseconds * 1000;
     }
 }
