@@ -118,19 +118,19 @@ public class FileOperations
 
                     if (!name.startsWith(filePrefix))
                     {
-                        Messages.printInConsole(
+                        Messages.log(
                                 new Messages.FileDoesNotStartWithPrefixException(filePrefix).getMessage());
                         continue;
                     }
                     if (subsCollection.hasFileInLibrary(name))
                     {
-                        Messages.printInConsole(new Messages.FileAlreadyInLibraryException(name).getMessage());
+                        Messages.log(new Messages.FileAlreadyInLibraryException(name).getMessage());
                         continue;
                     }
                     else
                     {
                         subsCollection.addFileNameToLibrary(name);
-                        Messages.printInConsole(Messages.MSG_ADDING_FILE);
+                        Messages.log(Messages.MSG_ADDING_FILE);
                     }
 
                     //region Moved this code into SubsCollection, because it is its responsibility, not FileOperations'.
@@ -195,8 +195,7 @@ public class FileOperations
                     // Parsing and Adding the file to the SubsCollection library:
                     if (subsCollection.parseFileAndAddCaptionsToLibrary(currFile))
                     {
-                        Messages.printInConsole(
-                                Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
+                        Messages.log(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
                     }
 
                 } catch (Exception ex)

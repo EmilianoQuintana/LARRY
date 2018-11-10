@@ -1,9 +1,9 @@
 package LARRY;
 
 import Database.SubsCollection;
+import minlog_master.src.com.esotericsoftware.minlog.*;
 
-public class Messages
-{
+public class Messages {
     // Error messages
     // TODO find usages and replace with Exception
     public static final String MSG_SAME_START_TIME = "caption with same start time found...\n\n";
@@ -17,7 +17,7 @@ public class Messages
             MSG_EMPTY_FOLDER = "No files were found in folder: %s",
             MSG_GHOST_FOLDER = "Unknown folder: %s",
             MSG_DOES_NOT_START_PREFIX = "File does not start with Prefix %s",
-            MSG_FILE_ALREADY_IN_LIBRARY = "File %s is already in library. ",
+            MSG_FILE_ALREADY_IN_LIBRARY = "File \"%s\" is already in library. ",
             MSG_MAXIMUM_FILES_ADDED = "Cannot add any more files; maximum amount is %d)", // Returning to calling function.",
             MSG_SUPPORTED_SUBTITLE_FORMATS = "Supported subtitle formats: %s",
             MSG_SUPPORTED_VIDEO_FORMATS = "Supported video formats: %s",
@@ -29,13 +29,15 @@ public class Messages
             MSG_ADDING_FILE = "Adding…",
             MSG_ADDED_FILE = "…Added!";
 
-    public static void printInConsole(String message)
-    {
+    public static void printInConsole(String message) {
         System.out.println(message);
     }
 
-    public static class GhostFolderException extends Exception
-    {
+    public static void log(String message) {
+         Log.error(message);
+    }
+
+    public static class GhostFolderException extends Exception {
         private String folderPath;
 
         /*
@@ -45,20 +47,17 @@ public class Messages
         }
         */
 
-        public GhostFolderException(String folderPath)
-        {
+        public GhostFolderException(String folderPath) {
             this.folderPath = folderPath;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_GHOST_FOLDER, this.folderPath));
         }
     }
 
-    public static class EmptyFolderException extends Exception
-    {
+    public static class EmptyFolderException extends Exception {
         private String folderPath;
 
         /*
@@ -68,112 +67,91 @@ public class Messages
         }
         */
 
-        public EmptyFolderException(String folderPath)
-        {
+        public EmptyFolderException(String folderPath) {
             this.folderPath = folderPath;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_EMPTY_FOLDER, this.folderPath));
         }
     }
 
-    public static class WordNotFoundException extends Exception
-    {
+    public static class WordNotFoundException extends Exception {
         private String word;
 
-        public WordNotFoundException(String word)
-        {
+        public WordNotFoundException(String word) {
             this.word = word;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_WORD_NOT_FOUND, this.word));
         }
     }
 
-    public static class FileDoesNotStartWithPrefixException extends Exception
-    {
+    public static class FileDoesNotStartWithPrefixException extends Exception {
         private String prefix;
 
-        public FileDoesNotStartWithPrefixException(String prefix)
-        {
+        public FileDoesNotStartWithPrefixException(String prefix) {
             this.prefix = prefix;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_DOES_NOT_START_PREFIX, this.prefix));
         }
     }
 
-    public static class FileAlreadyInLibraryException extends Exception
-    {
+    public static class FileAlreadyInLibraryException extends Exception {
         private String fileName;
 
-        public FileAlreadyInLibraryException(String fileName)
-        {
+        public FileAlreadyInLibraryException(String fileName) {
             this.fileName = fileName;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_FILE_ALREADY_IN_LIBRARY, this.fileName));
         }
     }
 
-    public static class FileNotFormattedWithSxxExxException extends Exception
-    {
+    public static class FileNotFormattedWithSxxExxException extends Exception {
         private String fileName;
 
-        public FileNotFormattedWithSxxExxException(String fileName)
-        {
+        public FileNotFormattedWithSxxExxException(String fileName) {
             this.fileName = fileName;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_SxxExx_NOT_FOUND, this.fileName));
         }
     }
 
-    public static class MaximumAmountOfFilesAddedException extends Exception
-    {
+    public static class MaximumAmountOfFilesAddedException extends Exception {
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_MAXIMUM_FILES_ADDED, SubsCollection.MAX_FILES_TO_ADD));
         }
     }
 
-    public static class SupportedSubtitleFormats extends Exception
-    {
+    public static class SupportedSubtitleFormats extends Exception {
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return super.getMessage();
         }
     }
 
-    public static class SeasonNumberTooBigException extends Exception
-    {
+    public static class SeasonNumberTooBigException extends Exception {
         private int seasonNum;
 
-        public SeasonNumberTooBigException(int seasonNum)
-        {
+        public SeasonNumberTooBigException(int seasonNum) {
             this.seasonNum = seasonNum;
         }
 
         @Override
-        public String getMessage()
-        {
+        public String getMessage() {
             return (String.format(Messages.MSG_SEASON_NUM_TOO_BIG, this.seasonNum));
         }
     }

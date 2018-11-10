@@ -6,6 +6,10 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -34,7 +38,7 @@ public class GUI {
         // Setting up Media Player Frame with a MediaOperations object:
         this.frame = new JFrame("LARRY app: no video playing");
         this.frame.setBounds(100, 100, 720, 480);
-        this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -121,6 +125,22 @@ public class GUI {
         this.frame.setContentPane(contentPane);
 
         this.frame.setVisible(true);
+
+        System.out.println(UIManager.getInstalledLookAndFeels().toString());
+
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            SwingUtilities.updateComponentTreeUI(this.frame);
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
+
     }
 
     //region Comment this out, I moved all to inside this MediaOperations object:
@@ -284,6 +304,14 @@ public class GUI {
     private void stylizeButton(JButton button) {
         button.setBackground(new Color(37, 37, 37));
         button.setFocusable(false);
+//        button.setBorderPainted(true);
+        button.setForeground(new Color(255, 255, 255));
+        Border line = new LineBorder(Color.BLACK);
+        Border margin = new EmptyBorder(5, 15, 5, 15);
+        Border compound = new CompoundBorder(line, margin);
+        button.setBorder(compound);
+
+//        button.setContentAreaFilled(false);
     }
 
 }
