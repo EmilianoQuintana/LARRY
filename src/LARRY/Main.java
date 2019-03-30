@@ -82,9 +82,10 @@ public class Main
             throws Messages.SeasonNumberTooBigException
     {
         final long subtitlesDelay = 0;
-        final String testFolderPath = "E:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm - Seasons 1-6 + Extras" +
-                "\\Curb Your Enthusiasm - Season 3";
-        final String wordToFind = "red";
+
+        final String testFolderPath = "E:\\Movies\\aaa TV SHOWS\\Curb Your Enthusiasm Season 1, 2, 3, 4, 5, 6, 7 & 8 + Extras DVDRip TSV\\Season 3";
+
+        final String wordToFind = "hello";
 
         System.out.println("Running test 1---");
 
@@ -117,7 +118,7 @@ public class Main
         try
         {
             resultFileAddress = DBLarry
-                    .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm - ");
+                    .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm");
 
             gui.setSearchedWord(wordToFind);
             gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this

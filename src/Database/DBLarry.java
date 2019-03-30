@@ -1,6 +1,8 @@
 package Database;
 
 import LARRY.Messages;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import subsParser.Caption;
 
 import java.io.File;
@@ -59,14 +61,16 @@ public class DBLarry
      * It will return a found file if its name begins with the prefix string, including matching seasons/episode if necessary.
      * @param caption       Caption, according to which to search for a matching file.
      * @param folderPath    Path to the folder, in which to search for the file.
-     * @param filePrefix    String prefix for the filename.
+     * @param fileFilterPrefix    String prefix for the filename.
      * @return Absolute path for file, or null if no matching file was found
      */
-    public static String findAbsoluteFilePathForCaption(Caption caption, String folderPath, String filePrefix)
+    public static String findAbsoluteFilePathForCaption(Caption caption, String folderPath, String fileFilterPrefix)
             throws Messages.GhostFolderException
     {
         File folder = new File(folderPath);
         File[] listOfFiles = folder.listFiles();
+
+
         if (listOfFiles == null)
         {
             throw new Messages.GhostFolderException(folderPath);
@@ -74,27 +78,33 @@ public class DBLarry
         // Iterating over the files in the given folder
         for (File file : listOfFiles)
         {
-            if (file.getName().startsWith(filePrefix))
-            {
-                if (caption.getSeasonNum() == Caption.NO_SEASON
-                        && caption.getEpisodeNum() == Caption.NO_EPISODE)
-                {
-                    return file.getAbsolutePath();
-                }
-                String SxxExx = formatAsSxxExx(caption);
-                if (file.getName().contains(SxxExx))
-                {
-                    return file.getAbsolutePath();
-                }
+            if (!MediaOperations.getSupportedVideoExtensionsSet().contains(FileOperations.getCleanExtension(file))) {
+                continue;
+            }
+
+            if (!file.getName().startsWith(fileFilterPrefix)) {
+                continue;
+            }
+
+            if (caption.getSeasonNum() == Caption.NO_SEASON && caption.getEpisodeNum() == Caption.NO_EPISODE) {
+                return file.getAbsolutePath();
+            }
+
+            String captionSxxExx = formatAsSxxExx(caption.getSeasonNum(), caption.getEpisodeNum());
+            int[] seasonAndEpisode = FileOperations.parseSxxExxFromFilename(file.getName());
+            String fileSxxExx = formatAsSxxExx(seasonAndEpisode[0], seasonAndEpisode[1]);
+
+            if (fileSxxExx.equals(captionSxxExx)) {
+                return file.getAbsolutePath();
             }
         }
         return null;
     }
 
-    private static String formatAsSxxExx(Caption caption)
+    private static String formatAsSxxExx(int seasonNum, int episodeNum)
     {
-        return "S" + String.format("%02d", caption.getSeasonNum()) + "E" +
-                String.format("%02d", caption.getEpisodeNum());
+        return "S" + String.format("%02d", seasonNum) + "E" +
+                String.format("%02d", episodeNum);
     }
 
     public void updateSubsCollectionFromFolder(String filePrefix, String folderPath)

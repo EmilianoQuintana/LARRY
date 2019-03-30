@@ -28,9 +28,10 @@ public class MediaOperations
     private List<Caption> markedCaptionMoments;
 
     private static String[] supportedSubtitleFormats;
-    //    private static String[] supportedVideoExtensions;
+    private static String[] supportedVideoExtensions;
     private static ArrayList<String> supportedMediaExtensions;
     private static Set<String> supportedMediaExtensionsSet;
+    private static Set<String> supportedVideoExtensionsSet;
 
     private EmbeddedMediaPlayer mediaPlayer;
 
@@ -40,11 +41,19 @@ public class MediaOperations
      * @return String Array of the Video-file Extensions supported by the media playback API.
      */
     public static String[] getSupportedVideoExtensions() {
-        return new VideoFileFilter().getExtensions();
+        if (MediaOperations.supportedVideoExtensions == null) {
+            MediaOperations.supportedVideoExtensions = new VideoFileFilter().getExtensions();
+        }
+
+        return MediaOperations.supportedVideoExtensions;
     }
 
     public static Set<String> getSupportedVideoExtensionsSet() {
-        return new VideoFileFilter().getExtensionSet();
+        if (MediaOperations.supportedVideoExtensionsSet == null) {
+            MediaOperations.supportedVideoExtensionsSet = new VideoFileFilter().getExtensionSet();
+        }
+
+        return MediaOperations.supportedVideoExtensionsSet;
     }
 
     /**
@@ -159,7 +168,13 @@ public class MediaOperations
 
 //        this.frame.setTitle("\"" + this.searchedWord + "\" in " + mediaShortenedPath + "- LARRY");
 
-        this.mediaPlayer.playMedia(mediaString);
+        boolean didPlay = this.mediaPlayer.playMedia(mediaString);
+
+        if (!didPlay)
+        {
+            System.out.println("Error - did not play " + mediaString);
+        }
+
         this.mediaPlayer.setTime(startTimeInMilliseconds + this.subtitleDelayMilliseconds);
 
         if (this.subtitleDelayMilliseconds != 0) {

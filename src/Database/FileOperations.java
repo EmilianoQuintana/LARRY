@@ -12,10 +12,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileOperations
-{
-    public static class FilePair
-    {
+public class FileOperations {
+    public static class FilePair {
         public File key;
         public File value;
 
@@ -26,13 +24,13 @@ public class FileOperations
     }
 
     private static final String ALL_FILE_EXTENSIONS = "*.*";
-    private static final String REGEX_SxxExx = "[Ss]\\d\\d[Ee]\\d\\d"; // some characters, then: S__E__ (with digits), then some characters
+    private static final String REGEX_SxxExx = "S(\\d+)E(\\d+)"; // some characters, then: S__E__ (with digits), then some characters
+    private static final String REGEX_Season_xx_Episode_xx = "SEASON[ _.-]*(\\d+)[ _.-]*EPISODE[ _.-]*(\\d+)[ _.-]*"; // some characters, then: SEASON__EPISODE__ (with digits)
 
     /**
      * Enum for sorting collections of files in different ways.
      */
-    public enum FileSorter implements Comparator<File>
-    {
+    public enum FileSorter implements Comparator<File> {
         // Concept and realization copied from https://codereview.stackexchange.com/a/97812
 
         //        BY_TYPE(Comparator.comparing(FileSorter::extractExtension)),
@@ -47,8 +45,7 @@ public class FileOperations
          *
          * @param comparator The desired comparator type, one of the available types in this enum.
          */
-        private FileSorter(Comparator<File> comparator)
-        {
+        private FileSorter(Comparator<File> comparator) {
             this.comparator = comparator;
         }
 
@@ -73,8 +70,7 @@ public class FileOperations
          * @return a negative integer, zero, or a positive integer, when the first argument is less than, equal to, or greater than the second.
          */
         @Override
-        public int compare(File comparedFile1, File comparedFile2)
-        {
+        public int compare(File comparedFile1, File comparedFile2) {
             return this.comparator.compare(comparedFile1, comparedFile2);
         }
     }
@@ -89,46 +85,36 @@ public class FileOperations
      */
     public static void updateSubsCollectionFromFolder(SubsCollection subsCollection, String filePrefix,
                                                       String folderPath)
-            throws Messages.EmptyFolderException
-    {
+            throws Messages.EmptyFolderException {
         File workingFolder = new File(folderPath);
         File[] filesInFolder = workingFolder.listFiles();
 
         int amount = 0;
 
-        if (filesInFolder == null)
-        {
+        if (filesInFolder == null) {
             throw new Messages.EmptyFolderException(folderPath);
         }
-        for (File currFile : filesInFolder)
-        {
+        for (File currFile : filesInFolder) {
             amount++;
-            if (amount > SubsCollection.MAX_FILES_TO_ADD)
-            {
+            if (amount > SubsCollection.MAX_FILES_TO_ADD) {
                 Messages.printInConsole(new Messages.MaximumAmountOfFilesAddedException().getMessage());
                 break;
             }
-            if (currFile.isFile())
-            {
-                try
-                {
+            if (currFile.isFile()) {
+                try {
                     String name = currFile.getName();
 
                     Messages.printInConsole(name + "\t\t");
 
-                    if (!name.startsWith(filePrefix))
-                    {
+                    if (!name.startsWith(filePrefix)) {
                         Messages.log(
                                 new Messages.FileDoesNotStartWithPrefixException(filePrefix).getMessage());
                         continue;
                     }
-                    if (subsCollection.hasFileInLibrary(name))
-                    {
+                    if (subsCollection.hasFileInLibrary(name)) {
                         Messages.log(new Messages.FileAlreadyInLibraryException(name).getMessage());
                         continue;
-                    }
-                    else
-                    {
+                    } else {
                         subsCollection.addFileNameToLibrary(name);
                         Messages.log(Messages.MSG_ADDING_FILE);
                     }
@@ -193,13 +179,11 @@ public class FileOperations
                     //endregion
 
                     // Parsing and Adding the file to the SubsCollection library:
-                    if (subsCollection.parseFileAndAddCaptionsToLibrary(currFile))
-                    {
+                    if (subsCollection.parseFileAndAddCaptionsToLibrary(currFile)) {
                         Messages.log(Messages.MSG_ADDED_FILE);    //  "...Added!" - this ends the current line that was started with "Adding..." [filename]
                     }
 
-                } catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     ex.printStackTrace();
                 }
             }
@@ -214,8 +198,7 @@ public class FileOperations
      * @param file The desired file to get the extension of.
      * @return The extension of the given File, cleaned and in lower-case.
      */
-    public static String getCleanExtension(File file)
-    {
+    public static String getCleanExtension(File file) {
         return FileOperations.getCleanExtension(file.getName());
     }
 
@@ -225,8 +208,7 @@ public class FileOperations
      * @param fileName The desired filename to get the extension of.
      * @return The extension of the given filename, cleaned and in lower-case.
      */
-    public static String getCleanExtension(String fileName)
-    {
+    public static String getCleanExtension(String fileName) {
         return FilenameUtils.getExtension(fileName).toLowerCase(Locale.ENGLISH);
     }
 
@@ -236,16 +218,13 @@ public class FileOperations
      * @param files File Array of the desired files.
      * @return A String Array of file extensions from the given files, cleaned and in lower-case.
      */
-    public static String[] getCleanExtensions(File[] files)
-    {
+    public static String[] getCleanExtensions(File[] files) {
         String[] extensions = null;
 
-        if ((files != null) && (files.length > 0))
-        {
+        if ((files != null) && (files.length > 0)) {
             extensions = new String[files.length];
 
-            for (int iCurrFile = 0; iCurrFile < files.length; iCurrFile++)
-            {
+            for (int iCurrFile = 0; iCurrFile < files.length; iCurrFile++) {
                 extensions[iCurrFile] = FileOperations.getCleanExtension(files[iCurrFile]);
             }
 
@@ -260,16 +239,13 @@ public class FileOperations
      * @param filenames String Array of the desired filenames.
      * @return A String Array of file extensions from the given filenames, cleaned and in lower-case.
      */
-    public static String[] getCleanExtensions(String[] filenames)
-    {
+    public static String[] getCleanExtensions(String[] filenames) {
         String[] extensions = null;
 
-        if ((filenames != null) && (filenames.length > 0))
-        {
+        if ((filenames != null) && (filenames.length > 0)) {
             extensions = new String[filenames.length];
 
-            for (int iCurrFile = 0; iCurrFile < filenames.length; iCurrFile++)
-            {
+            for (int iCurrFile = 0; iCurrFile < filenames.length; iCurrFile++) {
                 extensions[iCurrFile] = FileOperations.getCleanExtension(filenames[iCurrFile]);
             }
         }
@@ -284,8 +260,7 @@ public class FileOperations
      *
      * @return File Extension after the dot character. e.g. "SomeSubtitles.srt" will return "srt"
      */
-    private static String getFileExtension(String fileName)
-    {
+    private static String getFileExtension(String fileName) {
         return FilenameUtils.getExtension(fileName);
     }
 
@@ -296,8 +271,7 @@ public class FileOperations
      *
      * @return File Extension after the dot character. e.g. "SomeSubtitles.srt" will return "srt"
      */
-    private static String getFileExtension(File file)
-    {
+    private static String getFileExtension(File file) {
         return FileOperations.getFileExtension(file.getName());
     }
 
@@ -343,8 +317,7 @@ public class FileOperations
      * @return File Array of the files found.
      */
     public static File[] getFilesFromFolder(String folderPath,
-                                            boolean recursiveSearch, String... fileExtensions)
-    {
+                                            boolean recursiveSearch, String... fileExtensions) {
         File folder = new File(folderPath);
 //        String[] extensions = new String[fileExtensions.length];
 //        extensions = fileExtensions;
@@ -363,8 +336,7 @@ public class FileOperations
      * @param folderPath Path of the desired folder.
      * @return File Array of the Subtitle files found withing the given folder, non-recursive.
      */
-    public static File[] getSubtitleFilesFromFolder(String folderPath)
-    {
+    public static File[] getSubtitleFilesFromFolder(String folderPath) {
         // This calls the private variation of this method, with the default list of supported subtitle formats:
         return FileOperations.getSubtitleFilesFromFolder(folderPath, false);
     }
@@ -376,8 +348,7 @@ public class FileOperations
      * @param recursiveSearch Whether to also search the folders within the given folder.
      * @return File Array of the Subtitle files found withing the given folder (and also the folders within, if required).
      */
-    public static File[] getSubtitleFilesFromFolder(String folderPath, boolean recursiveSearch)
-    {
+    public static File[] getSubtitleFilesFromFolder(String folderPath, boolean recursiveSearch) {
         return FileOperations
                 .getSubtitleFilesFromFolder(folderPath, MediaOperations.getSupportedSubtitleFormats(), recursiveSearch);
     }
@@ -389,8 +360,7 @@ public class FileOperations
      * @param singleSubsFormat Desired format of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
-    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat)
-    {
+    public static File[] getSubtitleFilesFromFolder(String folderPath, String singleSubsFormat) {
         String[] subsFormats = new String[1];
         subsFormats[0] = singleSubsFormat;
 
@@ -422,8 +392,7 @@ public class FileOperations
      * @param subsFormats Desired formats of the subtitle files.
      * @return File Array of the Subtitle files found.
      */
-    private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats, boolean recursiveSearch)
-    {
+    private static File[] getSubtitleFilesFromFolder(String folderPath, String[] subsFormats, boolean recursiveSearch) {
         return FileOperations.getFilesFromFolder(folderPath, recursiveSearch, subsFormats);
     }
 
@@ -433,8 +402,7 @@ public class FileOperations
      * @param folderPath Path of the desired folder.
      * @return File Array of the Video files found.
      */
-    public static File[] getVideoFilesFromFolder(String folderPath)
-    {
+    public static File[] getVideoFilesFromFolder(String folderPath) {
         return FileOperations.getFilesFromFolder(folderPath, false, MediaOperations.getSupportedVideoExtensions());
     }
 
@@ -446,8 +414,7 @@ public class FileOperations
      * @return ArrayList of Pairs of Files, containing matching video and subtitle files that were found.
      */
     public static ArrayList<FilePair> getMatchingVideoAndSubtitleFiles(String folderPath,
-                                                                               boolean recursiveSearch)
-    {
+                                                                       boolean recursiveSearch) {
         File[] videoFilesInFolder = FileOperations.getVideoFilesFromFolder(folderPath);
         File[] subtitleFilesInFolder = FileOperations.getSubtitleFilesFromFolder(folderPath);
 
@@ -464,21 +431,18 @@ public class FileOperations
      * @param subtitleFiles Array of subtitle files.
      * @return ArrayList of Pairs of files, containing matching video and subtitle files that were found.
      */
-    public static ArrayList<FilePair> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles)
-    {
+    public static ArrayList<FilePair> matchVideoAndSubtitleFiles(File[] videoFiles, File[] subtitleFiles) {
         // Sorting both arrays alphabetically:
         Arrays.sort(videoFiles);
         Arrays.sort(subtitleFiles);
 
         ArrayList<FilePair> allFoundPairs = new ArrayList<>();
 
-        for (int currFileIndex = 0; currFileIndex < videoFiles.length; currFileIndex++)
-        {
+        for (int currFileIndex = 0; currFileIndex < videoFiles.length; currFileIndex++) {
             // Comparing only the base name (without path or extension) of the video file and subtitle file in the current index.
             // This will match pairs like "Curb.Your.Enthusiasm.S01E04.Xvid.mp4" and "Curb.Your.Enthusiasm.S01E04.Xvid.srt".
             if (FilenameUtils.getBaseName(videoFiles[currFileIndex].getAbsolutePath()) ==
-                    FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath()))
-            {
+                    FilenameUtils.getBaseName(subtitleFiles[currFileIndex].getAbsolutePath())) {
                 FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
 
                 continue;
@@ -496,8 +460,7 @@ public class FileOperations
             if ((videoSeasonAndEpisode[0] != Caption.NO_SEASON)
                     && (videoSeasonAndEpisode[0] == subsSeasonAndEpisode[0])
                     && (videoSeasonAndEpisode[1] != Caption.NO_EPISODE)
-                    && (videoSeasonAndEpisode[1] == subsSeasonAndEpisode[1]))
-            {
+                    && (videoSeasonAndEpisode[1] == subsSeasonAndEpisode[1])) {
                 FileOperations.addFilesPair(videoFiles[currFileIndex], subtitleFiles[currFileIndex], allFoundPairs);
             }
 
@@ -514,17 +477,16 @@ public class FileOperations
      * @param subtitleFile Matching Subtitle file.
      * @param allPairs     ArrayList of pairs, into which to add the new pair.
      */
-    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<FilePair> allPairs)
-    {
+    private static void addFilesPair(File videoFile, File subtitleFile, ArrayList<FilePair> allPairs) {
         allPairs.add(new FilePair(videoFile, subtitleFile));
     }
 
     /**
      * Returns a File Filter object the supported file extensions.
+     *
      * @return A FileNameExtensionFilter object with all the extensions supported by LARRY.
      */
-    public static javax.swing.filechooser.FileNameExtensionFilter getSupportedMediaExtensionsFileFilter()
-    {
+    public static javax.swing.filechooser.FileNameExtensionFilter getSupportedMediaExtensionsFileFilter() {
         FileNameExtensionFilter fileExtensionsFilter = new FileNameExtensionFilter("Supported media files", MediaOperations.getSupportedMediaExtensionsArray());
 
 //        FileFilter fileFilter = new ExtensionFileFilter() {
@@ -545,8 +507,7 @@ public class FileOperations
      * @param checkedFile Desired file to check.
      * @return True if the file is supported, otherwise false.
      */
-    public static boolean checkIfFileIsSupported(File checkedFile)
-    {
+    public static boolean checkIfFileIsSupported(File checkedFile) {
         boolean isSupported;
 
         isSupported = MediaOperations.getSupportedMediaExtensions()
@@ -561,7 +522,8 @@ public class FileOperations
     }
 
     /**
-     * Finds the SeasonNumber and EpisodeNumber in a given FileName formatted with 'SxxExx' in it.
+     * Finds the SeasonNumber and EpisodeNumber in a given FileName, provided that it contains
+     * the Season and Episode number in a readable manner.
      *
      * @param fileName FileName (The extension is irrelevant).
      * @return <code>Array (type int, length 2)</code> with the found SeasonNumber and EpisodeNumber, or 'no season' and 'no episode' constants.
@@ -569,22 +531,30 @@ public class FileOperations
     public static int[] parseSxxExxFromFilename(String fileName)
 //            throws Messages.FileNotFormattedWithSxxExxException
     {
-        int[] seasonAndEpisode = new int[]{Caption.NO_SEASON, Caption.NO_EPISODE};
+        int[] seasonAndEpisode = new int[]{-1, -1}; // temporary values
+        Pattern pattern;
+        Matcher matcher;
 
-        Pattern pattern = Pattern.compile(REGEX_SxxExx);
-        Matcher matcher = pattern.matcher(fileName);
+        // SxxExx
+        pattern = Pattern.compile(FileOperations.REGEX_SxxExx);
+        matcher = pattern.matcher(fileName);
 
-        if (matcher.find())
-        {
-            String result = matcher.group();
-            seasonAndEpisode[0] = Integer.parseInt(result.substring(1, 3));
-            seasonAndEpisode[1] = Integer.parseInt(result.substring(4, 6));
+        if (matcher.find()) {
+            seasonAndEpisode[0] = Integer.parseInt(matcher.group(1));
+            seasonAndEpisode[1] = Integer.parseInt(matcher.group(2));
+            return seasonAndEpisode;
         }
-//        else
-//        {
-//            throw new Messages.FileNotFormattedWithSxxExxException(fileName);
-//        }
 
-        return seasonAndEpisode;
+        // Season xx Episode xx
+        pattern = Pattern.compile(FileOperations.REGEX_Season_xx_Episode_xx, Pattern.CASE_INSENSITIVE);
+        matcher = pattern.matcher(fileName);
+
+        if (matcher.find()) {
+            seasonAndEpisode[0] = Integer.parseInt(matcher.group(1));
+            seasonAndEpisode[1] = Integer.parseInt(matcher.group(2));
+            return seasonAndEpisode;
+        }
+
+        return new int[] {Caption.NO_SEASON, Caption.NO_EPISODE};
     }
 }
