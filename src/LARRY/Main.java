@@ -49,6 +49,9 @@ public class Main
             {
                 System.out.println("Error: Season number too big!");
                 e.printStackTrace();
+            } catch (Messages.GhostFolderException e) {
+                System.out.println("Error: Failed to find a file/folder.");
+                e.printStackTrace();
             }
         });
         
@@ -79,7 +82,7 @@ public class Main
     }
 
     private static void test1(GUI gui, DBLarry DB)
-            throws Messages.SeasonNumberTooBigException
+            throws Messages.SeasonNumberTooBigException, Messages.GhostFolderException
     {
         final long subtitlesDelay = 0;
 
@@ -115,21 +118,15 @@ public class Main
 
         Caption firstCaption = results.get(0);
         String resultFileAddress;
-        try
-        {
-            resultFileAddress = DBLarry
-                    .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm");
+        resultFileAddress = DBLarry
+                .findAbsoluteFilePathForCaption(firstCaption, testFolderPath, "Curb Your Enthusiasm");
 
-            gui.setSearchedWord(wordToFind);
-            gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
-            gui.startPlayingMedia(resultFileAddress, firstCaption.start.getMseconds());
+        gui.setSearchedWord(wordToFind);
+        gui.setSubtitleDelay(subtitlesDelay); //hardcoded value for one specific video, don't keep this
+        gui.startPlayingMedia(resultFileAddress, firstCaption.start.getMseconds());
 
-            System.out.println("Playing media: " + resultFileAddress);
-            //gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
-        } catch (Messages.GhostFolderException e)
-        {
-
-        }
+        System.out.println("Playing media: " + resultFileAddress);
+        //gui.setToTimestampWithSubtitleDelay(firstCaption.start.getMseconds());
     }
 
     private static void test2(GUI gui, DBLarry DB)
